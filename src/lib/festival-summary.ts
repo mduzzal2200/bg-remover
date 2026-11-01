@@ -1,6 +1,6 @@
 import { FESTIVALS, REGIONS, festivalAppSlug, monthsLabel, searchText, type Festival, type Region } from "@/lib/festivals";
 import { getCreativeApp, previewUrl } from "@/lib/creative-apps";
-import { creativeSources } from "@/lib/app-creatives";
+import { creativeSources, mainSources } from "@/lib/app-creatives";
 
 /** What a festival card and the search need: small enough to hand to the browser for all 40. */
 export interface FestivalSummary {
@@ -30,7 +30,7 @@ export function summarize(f: Festival): FestivalSummary {
     regions: f.regions,
     haystack: searchText(f),
     imageSlug,
-    sources: creativeSources(imageSlug, "after", previewUrl(imageSlug)),
+    sources: [...mainSources(imageSlug), ...creativeSources(imageSlug, "after", previewUrl(imageSlug))],
     gradient: f.gradient,
     appCount: f.apps.length,
   };
@@ -54,7 +54,7 @@ export interface FestivalAppCardData {
 export function festivalAppCards(f: Festival): FestivalAppCardData[] {
   return f.apps.map((spec) => {
     const slug = festivalAppSlug(f, spec);
-    return { slug, name: spec.name, blurb: spec.blurb, emoji: spec.emoji, gradient: f.gradient, sources: creativeSources(slug, "after", previewUrl(slug)) };
+    return { slug, name: spec.name, blurb: spec.blurb, emoji: spec.emoji, gradient: f.gradient, sources: [...mainSources(slug), ...creativeSources(slug, "after", previewUrl(slug))] };
   });
 }
 
