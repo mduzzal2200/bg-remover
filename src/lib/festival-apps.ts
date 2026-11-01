@@ -18,6 +18,10 @@ import { FESTIVALS, festivalAppSlug, type Festival, type FestivalAppSpec } from 
 const RESPECT =
   "Show the celebration respectfully and accurately: no caricature or costume stereotypes, no deities, prophets or other sacred figures, no scripture or religious script, and add no religious head covering or symbol the person isn't already wearing.";
 
+/** Shared photographic finish; festival-specific art direction remains authoritative. */
+const PHOTO_FINISH =
+  "Photograph this as a real premium festival campaign, not as an illustration or a generic AI filter. Use believable professional portrait photography, a flattering 50mm or 85mm lens perspective, natural facial geometry, fine skin texture and pores, realistic hair strands, detailed fabric weave and jewellery, coherent light direction, grounded shadows, accurate hands and fingers, and a softly separated background. Keep the festival's own palette and decorations recognisable; do not introduce props or symbols from another celebration. Preserve the source photo's recognizable identity, age, skin tone and body proportions. No plastic skin, face reshaping, excessive beauty retouching, extra fingers, duplicated people, malformed jewellery, random text, logos or watermarks.";
+
 function promptFor(f: Festival, spec: FestivalAppSpec): string {
   const s = f.style;
   const scene = `Place them ${s.setting}, with ${s.decor}. Use a palette of ${s.palette} and ${s.light}.`;
@@ -43,7 +47,7 @@ function promptFor(f: Festival, spec: FestivalAppSpec): string {
       base = `Keep the person exactly as they are in the photo: the same face, hair, clothes, pose, expression and framing. Replace only the background with a ${f.name} scene ${s.setting}, with ${s.decor}, in a palette of ${s.palette}. Match the light on the person to the new scene, ${s.light}, with a clean, natural edge between the person and the background.`;
       break;
   }
-  return [base, spec.detail, RESPECT, s.avoid, KEEP_FACE, PHOTOREAL].filter(Boolean).join(" ");
+  return [base, spec.detail, RESPECT, s.avoid, PHOTO_FINISH, KEEP_FACE, PHOTOREAL].filter(Boolean).join(" ");
 }
 
 function uploadAdvice(spec: FestivalAppSpec): string {
