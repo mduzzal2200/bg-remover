@@ -404,7 +404,7 @@ export default function NavBar() {
                       { icon: "📘", label: "Docs", href: "/docs" },
                       { icon: "✨", label: "Prompt library", href: "/prompts" },
                       { icon: "🎬", label: "Video prompts", href: "/prompts/video" },
-                      ...(PAID_FEATURES_ENABLED ? [{ icon: "✦", label: "Creative Apps", href: "/creative" }] : []),
+                      ...(PAID_FEATURES_ENABLED ? [{ icon: "✦", label: "Creative Apps", href: "/creative" }, { icon: "🪔", label: "Festival photos", href: "/festivals" }] : []),
                       { icon: "💎", label: "Pricing", href: "/pricing" },
                     ].map(link => (
                       <a key={link.href} href={link.href} onClick={() => setShowToolsDropdown(false)}

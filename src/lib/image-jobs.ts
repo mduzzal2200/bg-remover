@@ -10,6 +10,7 @@
  */
 
 import { CREATIVE_APPS, type CreativeApp } from "@/lib/creative-apps";
+import { festivalOfApp, type FestivalKind } from "@/lib/festivals";
 import { CAT_META, type AppCat } from "@/lib/app-catalog";
 import { presetsFor, PRESET_IMAGE_BUCKET } from "@/lib/app-presets";
 import { CONVERSIONS, buildContent } from "@/lib/conversions";
@@ -50,6 +51,8 @@ export interface ImageJob {
    * the plain one loses nothing a visitor would notice.
    */
   editOfFallback?: string;
+  /** The festival an app image belongs to, so its images can be made on their own (?only=festival). */
+  festival?: string;
 }
 
 const LANDING = "landing";
@@ -125,6 +128,12 @@ const SOURCE_SUBJECTS: Record<string, string> = {
   "couple-1": "An ordinary smartphone snapshot of two friends in their thirties standing side by side in everyday clothes against a plain wall, flat indoor light, both faces clearly visible, slightly awkward framing.",
   "couple-2": "An ordinary smartphone snapshot of a young couple standing close together outdoors in front of a plain garden fence on a dull day, everyday clothes, flat light, both faces clearly visible.",
   "family-1": "An ordinary smartphone snapshot of three family members standing in a row in a plain living room in everyday clothes, flat ceiling light, slightly crooked framing, all faces visible.",
+  // For the festival couple and family apps: a romantic couple, and families
+  // of different sizes and backgrounds, so forty festivals don't all show the
+  // same three people.
+  "couple-3": "An ordinary smartphone snapshot of a South Asian couple in their thirties standing close together, arms round each other, in everyday clothes in a plain living room, flat indoor light, both faces clearly visible.",
+  "family-2": "An ordinary smartphone snapshot of a Black family, two parents and two young children, standing together in a plain hallway in everyday clothes, flat ceiling light, all four faces clearly visible.",
+  "family-3": "An ordinary smartphone snapshot of an East Asian family of three generations, a grandmother, two parents and a child, standing together in a plain living room in everyday clothes, flat light, all faces clearly visible.",
   "baby-1": "An ordinary snapshot of a baby sitting on a plain rug in a living room, flat indoor light, slightly awkward framing, nothing styled.",
 
   // Animals.
@@ -229,6 +238,20 @@ const SOURCE_GROUPS: Record<string, string[]> = {
   lowres: ["lowres-1", "lowres-2"],
 };
 
+/**
+ * Festival apps pick their photo by what they make, not by their name: the
+ * name rules would read "Spring Festival" as jewellery ("ring") and
+ * "Swedish" as food ("dish").
+ */
+const FESTIVAL_SOURCES: Record<FestivalKind, string[]> = {
+  portrait: ["plain-1", "plain-2", "plain-3", "face-1", "face-2", "face-3", "face-4"],
+  couple: ["couple-2", "couple-3"],
+  family: ["family-1", "family-2", "family-3"],
+  friends: ["couple-1", "family-1", "family-2"],
+  card: ["face-1", "face-2", "face-3", "face-4"],
+  scene: ["body-1", "body-2", "body-3", "plain-2"],
+};
+
 /** Which group an app's card should be built from. First match wins. */
 const SOURCE_RULES: [RegExp, keyof typeof SOURCE_GROUPS][] = [
   [/unpixelate|unblur|upscal|enlarge|sharpen|denoise|hd-photo|4k|image-enlarger/, "lowres"],
@@ -245,6 +268,11 @@ const SOURCE_RULES: [RegExp, keyof typeof SOURCE_GROUPS][] = [
   [/product|amazon|ecommerce|shopify|ebay|magento|woocommerce|beauty|electronics|gadget|png-maker|white-background|background-remover|shoe|sneaker|bottle|furniture/, "product"],
   [/aesthetic|photoshoot|selfie|travel|instagram|facebook|birthday|festival|christmas|diwali|halloween|graduation|prom|thanksgiving|maternity|retro|vintage|filter/, "dim"],
 ];
+
+function festivalPool(app: CreativeApp): string[] | undefined {
+  const kind = festivalOfApp(app.slug)?.spec.kind;
+  return kind ? FESTIVAL_SOURCES[kind] : undefined;
+}
 
 /** FNV-1a, so the choice within a group is stable across builds. */
 function hashSlug(s: string): number {
@@ -265,7 +293,7 @@ function groupFor(app: CreativeApp): keyof typeof SOURCE_GROUPS {
 /** The source photo an app's creative is built from — exported so the app page
  * can show that same photo as the "before" beside the generated result. */
 export function sourceFor(app: CreativeApp): string {
-  const pool = SOURCE_GROUPS[groupFor(app)];
+  const pool = festivalPool(app) ?? SOURCE_GROUPS[groupFor(app)];
   return pool[hashSlug(app.slug) % pool.length];
 }
 
@@ -277,7 +305,7 @@ export function sourceFor(app: CreativeApp): string {
  * back to a clear face, which is the safest generic "before".
  */
 function fallbackFor(app: CreativeApp): string | undefined {
-  const pool = SOURCE_GROUPS[groupFor(app)];
+  const pool = festivalPool(app) ?? SOURCE_GROUPS[groupFor(app)];
   if (pool.length < 2) return "face-1";
   const i = hashSlug(app.slug) % pool.length;
   return pool[(i + 1) % pool.length];
@@ -425,6 +453,7 @@ const APPS: ImageJob[] = CREATIVE_APPS.map((a) => {
     // 4:5 portrait: the card on the homepage and the hub, and the "after" on
     // the app's own page, where the source photo sits beside it.
     aspect: "4:5",
+    festival: festivalOfApp(a.slug)?.festival.slug,
     // The app's own prompt, unchanged — so the image is the tool's real output
     // rather than a model's impression of it.
     prompt: noInput
@@ -488,7 +517,8 @@ const PRESETS: ImageJob[] = (() => {
   const seen = new Set<string>();
   for (const app of CREATIVE_APPS) {
     const cat = app.cat;
-    if (!cat || seen.has(cat)) continue;
+    // Festival apps never show the style picker, so their thumbnails would go unseen.
+    if (!cat || seen.has(cat) || cat === "festival") continue;
     seen.add(cat);
     for (const p of presetsFor(app, "solo")) {
       const subject = thumbSubject(cat, `${cat}__${p.id}`);

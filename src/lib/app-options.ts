@@ -1,4 +1,5 @@
 import type { CreativeApp } from "@/lib/creative-apps";
+import { festivalOfApp } from "@/lib/festivals";
 
 /**
  * app-options.ts — the per-app choices that actually reach the prompt.
@@ -1116,9 +1117,38 @@ export function primaryTextOption(options: AppOption[]): AppOption | undefined {
   return options.find((o) => o.kind === "text");
 }
 
+/**
+ * A festival app's controls. Portraits and group photos take an optional
+ * outfit; cards choose their lettering; backgrounds need nothing. Each is one
+ * tap without touching them.
+ */
+function festivalOptions(slug: string): AppOption[] | undefined {
+  const hit = festivalOfApp(slug);
+  if (!hit) return undefined;
+  const { festival, spec } = hit;
+  if (spec.kind === "scene") return [];
+  if (spec.kind === "card") {
+    return [
+      sel("greeting", "Text on the card", [
+        c("festival", `"${festival.style.greeting}"`, ""),
+        c("none", "No text", "Add no text, letters or words anywhere on the card: leave the calm area empty."),
+      ]),
+      text(
+        "words", "Or your own words",
+        `e.g. ${festival.style.greeting} from all of us`,
+        "Letter these words instead of any other greeting, spelled exactly like this: \"{value}\".",
+        "Lettering can come out misspelled: check it before you share."
+      ),
+    ];
+  }
+  return [OUTFIT_TEXT];
+}
+
 export function optionsFor(app: CreativeApp): AppOption[] {
   const bySlug = BY_SLUG[app.slug];
   if (bySlug) return bySlug;
+  const festival = festivalOptions(app.slug);
+  if (festival) return festival;
   const cat = app.cat ?? CURATED_CAT[app.slug];
   return (cat && BY_CATEGORY[cat]) || [];
 }

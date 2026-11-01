@@ -6,6 +6,9 @@ import { CREATIVE_APPS, CREATIVE_BASE, previewUrl } from "@/lib/creative-apps";
 import { creativeSources, uploadedCreative } from "@/lib/app-creatives";
 import { appsWithExamples } from "@/lib/creative-examples.server";
 import { categorizedApps, categoryAnchor, type CategoryGroup } from "@/lib/creative-categories";
+import { FESTIVALS, upcomingFestivals } from "@/lib/festivals";
+import { summarize } from "@/lib/festival-summary";
+import FestivalCard from "@/app/festivals/_components/FestivalCard";
 import { creativeKey, readOverrides, type ShowcaseImage } from "@/lib/overrides";
 import type { CreativeApp } from "@/lib/creative-apps";
 
@@ -113,8 +116,11 @@ export default async function CreativeHub() {
     if (page.main && key.startsWith("creative/")) mains.set(key.slice("creative/".length), page.main);
   }
 
-  const groups = categorizedApps(readyFirst(withExamples, mains));
+  // Festival apps are reached through /festivals: 158 of them here would bury
+  // the rest. The hub links to the festivals instead (below).
+  const groups = categorizedApps(readyFirst(withExamples, mains)).filter((g) => g.id !== "festival");
   const flat = groups.flatMap((g) => g.apps);
+  const upcoming = upcomingFestivals(new Date().getMonth() + 1, 4).map(summarize);
 
   return (
     <>
@@ -154,6 +160,16 @@ export default async function CreativeHub() {
                 {g.emoji} {g.label} <span style={{ color: "var(--text-faint)" }}>({g.apps.length})</span>
               </a>
             ))}
+            <a
+              href={`#${categoryAnchor("festival")}`}
+              style={{
+                fontSize: 13, fontWeight: 700, color: "var(--accent-strong)", textDecoration: "none",
+                background: "var(--accent-soft)", border: "1px solid var(--accent-border)", borderRadius: 999,
+                padding: "7px 14px", whiteSpace: "nowrap",
+              }}
+            >
+              🪔 Festivals <span style={{ opacity: 0.75 }}>({FESTIVALS.length})</span>
+            </a>
           </div>
         </nav>
 
@@ -172,6 +188,20 @@ export default async function CreativeHub() {
                 </div>
               </div>
             ))}
+            <div id={categoryAnchor("festival")} style={{ marginTop: 56, scrollMarginTop: 24 }}>
+              <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 22 }}>
+                <div>
+                  <h2 style={{ fontSize: "clamp(1.3rem,2.6vw,1.7rem)", fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-0.02em" }}>
+                    🪔 Festivals
+                  </h2>
+                  <p style={{ fontSize: 13.5, color: "var(--text-muted)", margin: "6px 0 0" }}>One-tap portraits, family photos, cards and backgrounds for {FESTIVALS.length} festivals around the world. Coming up soon:</p>
+                </div>
+                <a href="/festivals" style={{ fontSize: 14, fontWeight: 800, color: "var(--accent-strong)", textDecoration: "none" }}>Browse all {FESTIVALS.length} festivals →</a>
+              </div>
+              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 190px), 1fr))", gap: 16 }}>
+                {upcoming.map((f) => <li key={f.slug} style={{ minWidth: 0 }}><FestivalCard f={f} href={`/festivals/${f.slug}`} /></li>)}
+              </ul>
+            </div>
           </div>
         </section>
       </main>

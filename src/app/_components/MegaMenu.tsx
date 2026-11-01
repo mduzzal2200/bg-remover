@@ -161,6 +161,9 @@ export default function MegaMenu({ onClose }: { onClose: () => void }) {
         <a href="/creative" onClick={onClose} style={{ display: "inline-flex", alignItems: "center", gap: 8, margin: "10px 0 0 10px", fontSize: 13.5, fontWeight: 800, color: "var(--accent)", textDecoration: "none" }}>
           <ToolIcon id="apps" size={22} /> See all apps →
         </a>
+        <a href="/festivals" onClick={onClose} style={{ display: "flex", alignItems: "center", gap: 8, margin: "8px 0 0 10px", fontSize: 13.5, fontWeight: 800, color: "var(--accent)", textDecoration: "none" }}>
+          <span aria-hidden style={{ width: 22, textAlign: "center" }}>🪔</span> Festival photos →
+        </a>
       </div>
     </div>
   );

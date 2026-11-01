@@ -26,6 +26,8 @@ export const maxDuration = 300;
  *   ...&force=1    regenerate files that already exist
  *   ...&model=gpt-image    use GPT Image instead of Nano Banana
  *   ...&path=creative/ghibli-style.png    one specific slot
+ *   ...&set=apps&only=festival             only the festival apps' images
+ *   ...&set=apps&festival=diwali           only one festival's images
  */
 
 /** bucket + path, joined for set membership. Buckets cannot contain "|". */
@@ -42,6 +44,17 @@ function publicUrl(bucket: string, path: string): string {
 
 function baseUrl(req: NextRequest): string {
   return `${req.nextUrl.origin}${req.nextUrl.pathname}`;
+}
+
+/** The link for the next batch, carrying every filter of this one. */
+function batchUrl(req: NextRequest, limit: number): string {
+  const q = req.nextUrl.searchParams;
+  const keep = new URLSearchParams({ token: adminToken() ?? "", set: q.get("set") || "all", run: "1", limit: String(limit) });
+  for (const k of ["only", "festival", "model"]) {
+    const v = q.get(k);
+    if (v) keep.set(k, v);
+  }
+  return `${baseUrl(req)}?${keep.toString()}`;
 }
 
 /** Which of these jobs already have a file in the bucket. */
@@ -77,6 +90,9 @@ export async function GET(req: NextRequest) {
 
   let jobs = jobsFor(set);
   if (onePath) jobs = jobs.filter((j) => j.path === onePath);
+  if (q.get("only") === "festival") jobs = jobs.filter((j) => j.festival);
+  const festival = q.get("festival");
+  if (festival) jobs = jobs.filter((j) => j.festival === festival);
   if (!jobs.length) {
     return NextResponse.json({ error: "No jobs match", sets: jobCounts() }, { status: 400 });
   }
@@ -101,7 +117,7 @@ export async function GET(req: NextRequest) {
       ...(q.get("show") === "1"
         ? { prompts: todo.slice(0, Number(q.get("showLimit") || limit)).map((j) => ({ path: `${j.bucket}/${j.path}`, aspect: j.aspect, prompt: j.prompt })) }
         : {}),
-      runNext: `${baseUrl(req)}?token=${adminToken()}&set=${set || "all"}&run=1&limit=${limit}`,
+      runNext: batchUrl(req, limit),
     });
   }
 
@@ -150,8 +166,6 @@ export async function GET(req: NextRequest) {
     results,
     // No offset needed: the files just written are no longer missing, so the
     // recomputed list on the next call starts where this batch finished.
-    next: remaining > 0
-      ? `${baseUrl(req)}?token=${adminToken()}&set=${set || "all"}&run=1&limit=${limit}`
-      : null,
+    next: remaining > 0 ? batchUrl(req, limit) : null,
   });
 }

@@ -70,6 +70,16 @@ export function creativeIndexable(slug: string): boolean {
   return !!CREATIVE_CONTENT[slug] || hasAppPage(slug);
 }
 
+/**
+ * A festival page is indexed when its own write-up is there to read: at least
+ * 100 words of copy unique to that festival, on top of its apps, tips and
+ * FAQ. The festival apps' own pages share template copy and stay noindex via
+ * creativeIndexable above.
+ */
+export function festivalIndexable(f: { about: string[] }): boolean {
+  return f.about.join(" ").split(/\s+/).filter(Boolean).length >= 100;
+}
+
 // ── Prompts ───────────────────────────────────────────────────────────────
 
 /*

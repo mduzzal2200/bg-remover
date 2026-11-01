@@ -172,6 +172,7 @@ export function iconKeyForHref(href: string): string {
     "/editor?tool=generate-bg": "generate-bg",
     "/editor?tool=upscale": "upscale-ai",
     "/creative": "apps",
+    "/festivals": "apps",
     "/generations": "generations",
     "/app": "dashboard",
     "/tools": "tools",

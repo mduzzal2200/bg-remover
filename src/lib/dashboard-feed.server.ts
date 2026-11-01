@@ -163,15 +163,17 @@ export function popularApps(apps: AppCardData[]): AppCardData[] {
   }
   for (const a of apps) {
     if (out.length >= 8) break;
-    if (a.hasExample && !out.includes(a)) out.push(a);
+    // Festival apps have their own tab, and a Christmas card in July is noise.
+    if (a.hasExample && a.category !== "festival" && !out.includes(a)) out.push(a);
   }
   return out.slice(0, 8);
 }
 
 /** The dashboard's automatic "Explore AI apps": apps with an example, when there are enough of them. */
 export function exploreApps(apps: AppCardData[]): AppCardData[] {
-  const withExample = apps.filter((a) => a.hasExample);
-  return withExample.length >= 12 ? withExample : apps;
+  const everyday = apps.filter((a) => a.category !== "festival");
+  const withExample = everyday.filter((a) => a.hasExample);
+  return withExample.length >= 12 ? withExample : everyday;
 }
 
 export const APP_CATEGORIES = (Object.keys(CAT_META) as AppCat[]).map((id) => ({ id, label: CAT_META[id].label, emoji: CAT_META[id].emoji }));

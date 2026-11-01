@@ -44,6 +44,8 @@
  * "make the sky bluer" has not asked for new clothes.
  */
 
+import { festivalKindOf } from "@/lib/festivals";
+
 export type StagingMode = "restage" | "restyle" | "subject" | "scene" | "minimal" | "product" | "space";
 
 const IDENTITY =
@@ -242,6 +244,7 @@ const BY_CATEGORY: Record<string, StagingMode> = {
   portrait:   "restage",
   style:      "restage",
   fun:        "restage",
+  festival:   "restage",
   product:    "product",
   social:     "restage",
   background: "subject",
@@ -347,6 +350,8 @@ export function stagingModeFor(app: { slug: string; cat?: string }, curatedCat?:
   const bySlug = BY_SLUG[app.slug];
   if (bySlug) return bySlug;
   if (ARTWORK_RESTYLE.has(app.slug)) return "restyle";
+  // A festival background app keeps the person and swaps only what's behind them.
+  if (festivalKindOf(app.slug) === "scene") return "subject";
   const cat = app.cat ?? curatedCat;
   // Unknown categories restage. Most apps here are transformations, and the
   // failure this file exists to fix is the one that comes from doing too
@@ -367,7 +372,7 @@ export function stagingDirective(mode: StagingMode, slug?: string): string {
     if (mode === "restage") return ART_RESTAGE;
     return DIRECTIVE[mode].replace(IDENTITY, LIKENESS);
   }
-  if (slug && mode === "restage" && ARTEFACT_SLUGS.has(slug)) return ARTEFACT_RESTAGE;
+  if (slug && mode === "restage" && isArtefact(slug)) return ARTEFACT_RESTAGE;
   if (slug === "ai-baby-predictor") return DIRECTIVE[mode].replace(IDENTITY, BLENDED);
   return DIRECTIVE[mode];
 }
@@ -422,10 +427,15 @@ const ARTEFACT_SLUGS = new Set([
   "youtube-thumbnail-generator",
 ]);
 
+/** A designed object: the listed apps, and every festival greeting card. */
+function isArtefact(slug: string): boolean {
+  return ARTEFACT_SLUGS.has(slug) || festivalKindOf(slug) === "card";
+}
+
 export type OutputForm = "photograph" | "product" | "artefact" | "artwork";
 
 export function outputFormFor(app: { slug: string; cat?: string }): OutputForm {
-  if (ARTEFACT_SLUGS.has(app.slug)) return "artefact";
+  if (isArtefact(app.slug)) return "artefact";
   // A drawing is not "a real person photographed directly", but it is still
   // one picture with nothing printed around it.
   if (ARTWORK_SLUGS.has(app.slug)) return "artwork";

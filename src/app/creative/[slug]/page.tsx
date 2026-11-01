@@ -19,7 +19,9 @@ import { applyOverride, creativeKey, readOverrides } from "@/lib/overrides";
 import { creativeIndexable, NOINDEX } from "@/lib/seo/index-policy";
 import { APP_OFFERS } from "@/lib/seo/offers";
 import { appPage, withAppPage } from "@/lib/app-pages";
+import { festivalArticle } from "@/lib/festival-article";
 import AppArticle from "./AppArticle";
+import { festivalOfApp } from "@/lib/festivals";
 
 export const revalidate = 300;
 
@@ -113,6 +115,11 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
   const related = [...candidates].sort((x, y) => rank(x) - rank(y)).slice(0, 6);
   const cat = categoryOf(a);
   const catMeta = cat ? CAT_META[cat] : null;
+  // A festival app lives under its festival, and shows one generated example
+  // rather than a before and after: the festival pages promise a picture of
+  // the look, and the sample "before" adds nothing to that.
+  const festival = festivalOfApp(a.slug)?.festival;
+  const single = !!festival;
 
   // Preset thumbnails and sample photos are resolved from Supabase at ISR time,
   // so they appear as soon as they're uploaded — no redeploy needed.
@@ -122,8 +129,10 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
   ]);
   const content = getCreativeContent(slug);
   const lc = longContentFor(a);
-  const faq = ap ? a.faq : lc.faq;
-  const steps = ap?.howTo ?? lc.howTo;
+  // Festival apps get copy written from their festival, not the portrait bank.
+  const fa = !ap && festival ? festivalArticle(a.slug) : undefined;
+  const faq = ap || fa ? a.faq : lc.faq;
+  const steps = ap?.howTo ?? fa?.howTo ?? lc.howTo;
 
   // Hand-written copy wins where it exists; the composed copy fills the rest of
   // the page. Tips are merged rather than replaced so the 42 hand-written apps
@@ -157,9 +166,17 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: BASE },
-      { "@type": "ListItem", position: 2, name: "Creative Apps", item: `${BASE}${CREATIVE_BASE}` },
-      // Not the category: its link is a #section of the hub, not a page of its own.
-      { "@type": "ListItem", position: 3, name: a.h1, item: url },
+      ...(festival
+        ? [
+            { "@type": "ListItem", position: 2, name: "Festivals", item: `${BASE}/festivals` },
+            { "@type": "ListItem", position: 3, name: festival.name, item: `${BASE}/festivals/${festival.slug}` },
+            { "@type": "ListItem", position: 4, name: a.h1, item: url },
+          ]
+        : [
+            { "@type": "ListItem", position: 2, name: "Creative Apps", item: `${BASE}${CREATIVE_BASE}` },
+            // Not the category: its link is a #section of the hub, not a page of its own.
+            { "@type": "ListItem", position: 3, name: a.h1, item: url },
+          ]),
     ],
   };
 
@@ -179,8 +196,16 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
             <nav aria-label="Breadcrumb" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 22, fontSize: 12.5, fontWeight: 700 }}>
               <a href="/" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Home</a>
               <span aria-hidden style={{ color: "var(--text-faint)" }}>›</span>
+              {festival ? (
+                <>
+                  <a href="/festivals" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Festivals</a>
+                  <span aria-hidden style={{ color: "var(--text-faint)" }}>›</span>
+                  <a href={`/festivals/${festival.slug}`} style={{ color: "var(--text-muted)", textDecoration: "none" }}>{festival.emoji} {festival.name}</a>
+                </>
+              ) : (
               <a href={CREATIVE_BASE} style={{ color: "var(--text-muted)", textDecoration: "none" }}>Creative Apps</a>
-              {catMeta && (
+              )}
+              {!festival && catMeta && (
                 <>
                   <span aria-hidden style={{ color: "var(--text-faint)" }}>›</span>
                   <a href={`${CREATIVE_BASE}#${categoryAnchor(cat!)}`} style={{ color: "var(--text-muted)", textDecoration: "none" }}>{catMeta.emoji} {catMeta.label}</a>
@@ -204,7 +229,7 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
         <section style={{ padding: "72px 24px", background: "linear-gradient(160deg,var(--surface-2) 0%,var(--accent-soft) 100%)" }}>
           <div style={{ maxWidth: 960, margin: "0 auto" }}>
             <div style={{ maxWidth: 820, margin: "0 auto 56px", textAlign: "center" }}>
-              <h2 style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 900, color: "var(--text)", margin: "0 0 28px", letterSpacing: "-0.02em" }}>See it in action — real before &amp; after</h2>
+              <h2 style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 900, color: "var(--text)", margin: "0 0 28px", letterSpacing: "-0.02em" }}>{single ? "See an example" : <>See it in action — real before &amp; after</>}</h2>
             {/*
               One frame, two flush halves — the layout the comparison actually
               wants. It used to be two separate cards with a gap between them,
@@ -262,6 +287,20 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
                     />
                   </div>
                 </div>
+              ) : single ? (
+                /* One generated example, shown whole: the look this app makes. */
+                <div style={{ position: "relative", aspectRatio: "4 / 5", width: "min(100%, 440px)", margin: "0 auto", borderRadius: 18, overflow: "hidden", border: "1px solid var(--border)", background: "var(--surface-2)", boxShadow: "var(--shadow-sm)" }}>
+                  <ExampleImage
+                    sources={creativeSources(a.slug, "after", previewUrl(a.slug))}
+                    alt={`An example made with ${a.h1}`}
+                    slug={a.slug}
+                    name={a.h1}
+                    emoji={a.emoji}
+                    gradient={[a.gradient[0], a.gradient[1]]}
+                    sizes="(max-width: 768px) 100vw, 440px"
+                    eager
+                  />
+                </div>
               ) : (
               <div
                 style={{
@@ -302,6 +341,8 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
               )}
               <figcaption style={{ fontSize: 12.5, color: "var(--text-faint)", marginTop: 12 }}>
                 {ap ? ap.exampleCaption
+                  : single
+                  ? <>Made with {a.h1} from a sample photo — the same thing your upload goes through.</>
                   : mainImage
                   ? <>Made with {a.h1} — the same thing your upload goes through.</>
                   : <>The right-hand image is this app&apos;s own prompt run over the photo on the left — the same thing your upload goes through.</>}
@@ -309,7 +350,7 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
             </figure>
             </div>
 
-            <h2 style={{ fontSize: "clamp(1.6rem,3vw,2.2rem)", fontWeight: 900, color: "var(--text)", textAlign: "center", margin: "0 0 48px", letterSpacing: "-0.02em" }}>{ap?.howToHeading ?? `How to use ${a.h1}`}</h2>
+            <h2 style={{ fontSize: "clamp(1.6rem,3vw,2.2rem)", fontWeight: 900, color: "var(--text)", textAlign: "center", margin: "0 0 48px", letterSpacing: "-0.02em" }}>{ap?.howToHeading ?? fa?.howToHeading ?? `How to use ${a.h1}`}</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 28 }}>
               {steps.map((step, i) => (
                 <div key={step.t} style={{ textAlign: "center" }}>
@@ -365,8 +406,8 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
           </section>
         )}
 
-        {ap ? (
-          <AppArticle sections={ap.sections} />
+        {ap || fa ? (
+          <AppArticle sections={(ap ?? fa)!.sections} />
         ) : (
         <>
         {/* Why use — composed per category, led by this app's own description */}
