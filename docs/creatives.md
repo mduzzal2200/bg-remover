@@ -119,3 +119,35 @@ would make an uploaded creative invisible behind a stale path.
   on the busiest part of the frame rather than the middle.
 - A missing file is still a normal state: the page draws the app's own
   placeholder artwork, never a broken image.
+
+---
+
+## Festival apps: the "Festival creatives" bucket
+
+Every festival app (`/festivals`) shows one before/after image made by the
+owner. The originals go in the public Supabase bucket **Festival creatives**,
+named after the app:
+
+```
+<app-slug>-before-after.png      e.g. diwali-portrait-before-after.png
+```
+
+The app slug is the last part of the app's URL, `/creative/<app-slug>`
+(`christmas-photo` and `thanksgiving-photoshoot` are the Christmas and
+Thanksgiving portraits).
+
+Then run:
+
+```
+npm run festival:creatives
+```
+
+It downloads every one, writes a 1200 px WebP to
+`public/festivals/creatives/<app-slug>.webp` (about 110 KB instead of 2.5 MB),
+a 1200×630 share image per festival to `public/festivals/og/<festival>.jpg`,
+and the list `src/lib/festival-creatives.json`. It stops and lists any app
+that has no image. Commit the result; the pages pick the files up from the
+list, served from the site rather than from the bucket.
+
+To replace one image, upload the new file to the bucket under the same name
+and run the script again.

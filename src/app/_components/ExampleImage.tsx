@@ -34,6 +34,7 @@ export default function ExampleImage({
   eager = false,
   onSourceLoad,
   fitFor,
+  containPosition = "center",
 }: {
   src?: string;
   /**
@@ -65,6 +66,8 @@ export default function ExampleImage({
    * before/after can show whole in a tall box while a portrait still fills it.
    */
   fitFor?: (src: string) => "cover" | "contain";
+  /** Where a contained image sits in its box (object-position). */
+  containPosition?: string;
 }) {
   // isRenderable, not Boolean: a URL whose host next/image has not been
   // told about throws during render rather than firing onError, so it has to
@@ -117,6 +120,7 @@ export default function ExampleImage({
         onError={() => setIndex((i) => i + 1)}
         style={{
           objectFit: fit,
+          ...(fit === "contain" ? { objectPosition: containPosition } : {}),
           opacity: loaded ? 1 : 0,
           transition: "opacity .3s var(--ease)",
         }}

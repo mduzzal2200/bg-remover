@@ -1,6 +1,17 @@
 import { FESTIVALS, REGIONS, festivalAppSlug, monthsLabel, searchText, type Festival, type Region } from "@/lib/festivals";
 import { getCreativeApp, previewUrl } from "@/lib/creative-apps";
 import { creativeSources, mainSources } from "@/lib/app-creatives";
+import { festivalCreative } from "@/lib/festival-creatives";
+
+/**
+ * Example image URLs for a festival app, best first: the owner's before/after
+ * (known to exist, so nothing is tried and missed before it), then an admin
+ * "main" creative, then the generated example and its fallbacks.
+ */
+function festivalSources(slug: string): string[] {
+  const own = festivalCreative(slug);
+  return [...(own ? [own.src] : []), ...mainSources(slug), ...creativeSources(slug, "after", previewUrl(slug))];
+}
 
 /** What a festival card and the search need: small enough to hand to the browser for all 40. */
 export interface FestivalSummary {
@@ -30,7 +41,7 @@ export function summarize(f: Festival): FestivalSummary {
     regions: f.regions,
     haystack: searchText(f),
     imageSlug,
-    sources: [...mainSources(imageSlug), ...creativeSources(imageSlug, "after", previewUrl(imageSlug))],
+    sources: festivalSources(imageSlug),
     gradient: f.gradient,
     appCount: f.apps.length,
   };
@@ -46,15 +57,18 @@ export interface FestivalAppCardData {
   blurb: string;
   emoji: string;
   gradient: [string, string];
-  /** Example image URLs, best first: one generated picture, never a before/after. */
+  /** Example image URLs, best first. */
   sources: string[];
+  /** The image box's aspect ratio: 3:2 for a before/after, 4:5 for a single picture. */
+  ratio: string;
 }
 
-/** A festival's four apps as cards, each with its single generated example. */
+/** A festival's four apps as cards, each with its example. */
 export function festivalAppCards(f: Festival): FestivalAppCardData[] {
   return f.apps.map((spec) => {
     const slug = festivalAppSlug(f, spec);
-    return { slug, name: spec.name, blurb: spec.blurb, emoji: spec.emoji, gradient: f.gradient, sources: [...mainSources(slug), ...creativeSources(slug, "after", previewUrl(slug))] };
+    const own = festivalCreative(slug);
+    return { slug, name: spec.name, blurb: spec.blurb, emoji: spec.emoji, gradient: f.gradient, sources: festivalSources(slug), ratio: own ? `${own.w} / ${own.h}` : "4 / 5" };
   });
 }
 
@@ -65,5 +79,5 @@ export function festivalRelatedCards(f: Festival): FestivalAppCardData[] {
     .filter((slug) => !own.has(slug))
     .map((slug) => getCreativeApp(slug))
     .filter((a): a is NonNullable<typeof a> => !!a)
-    .map((a) => ({ slug: a.slug, name: a.h1, blurb: a.intro, emoji: a.emoji, gradient: [a.gradient[0], a.gradient[1]] as [string, string], sources: creativeSources(a.slug, "after", previewUrl(a.slug)) }));
+    .map((a) => ({ slug: a.slug, name: a.h1, blurb: a.intro, emoji: a.emoji, gradient: [a.gradient[0], a.gradient[1]] as [string, string], sources: creativeSources(a.slug, "after", previewUrl(a.slug)), ratio: "4 / 5" }));
 }

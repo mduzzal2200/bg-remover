@@ -22,6 +22,8 @@ import { appPage, withAppPage } from "@/lib/app-pages";
 import { festivalArticle } from "@/lib/festival-article";
 import AppArticle from "./AppArticle";
 import { festivalOfApp } from "@/lib/festivals";
+import { festivalCreative } from "@/lib/festival-creatives";
+import Image from "next/image";
 
 export const revalidate = 300;
 
@@ -43,7 +45,8 @@ async function generateMetadataBase({ params }: { params: Promise<{ slug: string
   const a = applyOverride(base, o.pages[creativeKey(slug)]);
   const url = `${BASE}${CREATIVE_BASE}/${slug}`;
   // A shared link shows the app's own before and after, else its result.
-  const image = o.pages[creativeKey(slug)]?.main ? uploadedCreative(slug, "main") : localAfter(slug) ?? previewUrl(slug);
+  const fc = festivalCreative(slug);
+  const image = o.pages[creativeKey(slug)]?.main ? uploadedCreative(slug, "main") : fc ? `${BASE}${fc.src}` : localAfter(slug) ?? previewUrl(slug);
   return {
     title: { absolute: brandedTitle(a.title) },
     description: a.metaDescription,
@@ -120,6 +123,8 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
   // the look, and the sample "before" adds nothing to that.
   const festival = festivalOfApp(a.slug)?.festival;
   const single = !!festival;
+  // The owner's before/after for this festival app, when one has been added.
+  const fc = festival && !mainImage ? festivalCreative(a.slug) : null;
 
   // Preset thumbnails and sample photos are resolved from Supabase at ISR time,
   // so they appear as soon as they're uploaded — no redeploy needed.
@@ -229,7 +234,7 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
         <section style={{ padding: "72px 24px", background: "linear-gradient(160deg,var(--surface-2) 0%,var(--accent-soft) 100%)" }}>
           <div style={{ maxWidth: 960, margin: "0 auto" }}>
             <div style={{ maxWidth: 820, margin: "0 auto 56px", textAlign: "center" }}>
-              <h2 style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 900, color: "var(--text)", margin: "0 0 28px", letterSpacing: "-0.02em" }}>{single ? "See an example" : <>See it in action — real before &amp; after</>}</h2>
+              <h2 style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 900, color: "var(--text)", margin: "0 0 28px", letterSpacing: "-0.02em" }}>{fc ? "See the before and after" : single ? "See an example" : <>See it in action — real before &amp; after</>}</h2>
             {/*
               One frame, two flush halves — the layout the comparison actually
               wants. It used to be two separate cards with a gap between them,
@@ -287,6 +292,18 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
                     />
                   </div>
                 </div>
+              ) : fc ? (
+                /* The festival before/after, whole: it carries its own labels. */
+                <div style={{ position: "relative", width: "100%", aspectRatio: `${fc.w} / ${fc.h}`, borderRadius: 18, overflow: "hidden", border: "1px solid var(--border)", background: "var(--surface-2)", boxShadow: "var(--shadow-sm)" }}>
+                  <Image
+                    src={fc.src}
+                    alt={`${a.h1} — before and after`}
+                    fill
+                    sizes="(max-width: 1008px) 100vw, 960px"
+                    priority
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
               ) : single ? (
                 /* One generated example, shown whole: the look this app makes. */
                 <div style={{ position: "relative", aspectRatio: "4 / 5", width: "min(100%, 440px)", margin: "0 auto", borderRadius: 18, overflow: "hidden", border: "1px solid var(--border)", background: "var(--surface-2)", boxShadow: "var(--shadow-sm)" }}>
@@ -341,6 +358,8 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
               )}
               <figcaption style={{ fontSize: 12.5, color: "var(--text-faint)", marginTop: 12 }}>
                 {ap ? ap.exampleCaption
+                  : fc
+                  ? <>Made with {a.h1} — the same thing your upload goes through.</>
                   : single
                   ? <>Made with {a.h1} from a sample photo — the same thing your upload goes through.</>
                   : mainImage

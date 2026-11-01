@@ -8,6 +8,7 @@ import { FESTIVALS, REGIONS, festivalAppSlug, getFestival, type Festival } from 
 import { festivalAppCards, festivalRelatedCards, summarize } from "@/lib/festival-summary";
 import { festivalIndexable, NOINDEX } from "@/lib/seo/index-policy";
 import { previewUrl } from "@/lib/creative-apps";
+import { festivalOgImage } from "@/lib/festival-creatives";
 import FestivalAppCard from "../_components/FestivalAppCard";
 import FestivalCard from "../_components/FestivalCard";
 import FestivalFaq from "../_components/FestivalFaq";
@@ -25,13 +26,17 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   if (!f) return {};
   const url = `${BASE}/festivals/${f.slug}`;
   const title = `${f.name} AI Photos — Portraits, Family Photos & Cards`;
+  const portrait = festivalAppSlug(f, f.apps[0]);
+  // The festival's portrait before/after as a 1200×630 share image.
+  const og = festivalOgImage(f.slug, portrait) ?? previewUrl(portrait);
   return seoMeta({
     title: { absolute: brandedTitle(`${title} | Pixel Shine`) },
     description: f.short,
     keywords: [`${f.name.toLowerCase()} photo`, `${f.name.toLowerCase()} ai photo`, `${f.name.toLowerCase()} photo editor`, `${f.name.toLowerCase()} greeting card with photo`, ...f.aliases.slice(0, 3).map((a) => `${a.toLowerCase()} photo`)].join(", "),
     alternates: { canonical: url },
     ...(festivalIndexable(f) ? {} : { robots: NOINDEX }),
-    openGraph: { title, description: f.short, url, type: "website", images: [previewUrl(festivalAppSlug(f, f.apps[0]))] },
+    openGraph: { title, description: f.short, url, type: "website", images: [og] },
+    twitter: { card: "summary_large_image", title, description: f.short, images: [og] },
   });
 }
 

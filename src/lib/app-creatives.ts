@@ -95,7 +95,11 @@ export function mainSources(slug: string): string[] {
   return [uploadedCreative(slug, "main")].filter(isRenderable);
 }
 
-/** True for a URL from mainSources(): one wide image, the before and after side by side. */
-export function isMainImage(src: string): boolean {
-  return /-main\.webp(\?|$)/.test(src);
+/**
+ * True for an image that is already a before and after, side by side: an
+ * admin "main" creative, or a festival creative (lib/festival-creatives).
+ * Cards show these whole and badge them.
+ */
+export function isBeforeAfter(src: string): boolean {
+  return /-main\.webp(\?|$)/.test(src) || src.startsWith("/festivals/creatives/");
 }
