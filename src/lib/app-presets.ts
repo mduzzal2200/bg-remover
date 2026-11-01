@@ -167,6 +167,7 @@ export function presetsFor(app: CreativeApp, tab: PresetTab): Preset[] {
  */
 import { stagingDirective, stagingModeFor, photorealDirective, stripOwnPhotoreal, outputDirective, outputFormFor, referenceDirective } from "@/lib/staging";
 import { curatedCategory, isTextOnlyApp } from "@/lib/app-options";
+import { festivalOfApp } from "@/lib/festivals";
 
 export function buildPrompt(
   app: CreativeApp,
@@ -285,6 +286,8 @@ const DEFAULT_RATIO: Record<string, AspectRatio> = {
 };
 
 export function defaultRatioFor(slug: string): AspectRatio {
+  // Festival apps come out 4:5, the same shape as their example images.
+  if (festivalOfApp(slug)) return "4:5";
   return DEFAULT_RATIO[slug] ?? "1:1";
 }
 

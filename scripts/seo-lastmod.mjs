@@ -41,6 +41,7 @@ const DATA = {
   "/compress": ["src/lib/compressions.ts"],
   "/crop": ["src/lib/crops.ts"],
   "/creative": ["src/lib/creative-apps.ts", "src/lib/app-catalog.ts"],
+  "/festivals": ["src/lib/festivals.ts", "src/lib/festival-apps.ts", "src/lib/festival-summary.ts"],
   "/ai": ["src/lib/growth-pages.ts"],
   "/use-cases": ["src/lib/growth-pages.ts"],
   "/guides": ["src/lib/blog-topics.ts"],

@@ -24,7 +24,7 @@ import { isArtworkApp } from "@/lib/staging";
 
 export type AppCat =
   | "headshot" | "portrait" | "style" | "retouch" | "restore"
-  | "background" | "remove" | "enhance" | "product" | "social" | "fun";
+  | "background" | "remove" | "enhance" | "product" | "social" | "fun" | "festival";
 
 export const CAT_META: Record<AppCat, { label: string; emoji: string; gradient: [string, string]; blurb: string }> = {
   headshot:   { label: "Headshots",          emoji: "💼", gradient: ["#1D4ED8", "#0E7490"], blurb: "Profile-ready portraits for work." },
@@ -38,6 +38,7 @@ export const CAT_META: Record<AppCat, { label: string; emoji: string; gradient: 
   product:    { label: "Product & business", emoji: "🛍️", gradient: ["#065F46", "#047857"], blurb: "Catalogue-ready shots." },
   social:      { label: "Social",            emoji: "📱", gradient: ["#DB2777", "#F97316"], blurb: "Sized and styled per platform." },
   fun:        { label: "For fun",            emoji: "🎉", gradient: ["#F59E0B", "#DC2626"], blurb: "Novelty looks worth sharing." },
+  festival:   { label: "Festivals",          emoji: "🪔", gradient: ["#F59E0B", "#B91C1C"], blurb: "One-tap looks for festivals around the world." },
 };
 
 /** slug, display name, emoji, category, one-line description, model prompt */
@@ -45,9 +46,9 @@ export type Row = [string, string, string, AppCat, string, string];
 
 // Identity preservation is the single thing users notice most, so it is appended
 // to every prompt that edits a photo of a person rather than trusted to each row.
-const KEEP_FACE =
+export const KEEP_FACE =
   "Preserve the same person's recognizable identity from the uploaded reference: face shape, forehead, cheekbones, jawline, eye shape and spacing, eyebrows, nose, lips, natural asymmetry, age appearance, skin tone and distinctive features. Do not replace them with a generic AI face or beautify/idealize their features. Keep natural skin texture and pores; avoid waxy smoothing, exaggerated eyes, reshaped facial features and artificial symmetry. Change only what the app's requested transformation requires.";
-const PHOTOREAL =
+export const PHOTOREAL =
   "For photographic results, use realistic camera detail: natural skin texture and pores, believable eyes and hair strands, coherent lighting and shadows, correct anatomy and perspective, and matching sharpness across face, neck and body. Avoid waxy skin, over-retouching, distorted features, face-morphing and pasted-on faces. If the app intentionally creates artwork, render the requested medium consistently across the whole image instead of forcing photorealism.";
 
 const NON_PERSON: AppCat[] = ["product", "enhance", "remove", "background"];

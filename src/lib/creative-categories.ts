@@ -18,6 +18,7 @@
 import { CAT_META, type AppCat } from "@/lib/app-catalog";
 import { curatedCategory } from "@/lib/app-options";
 import { CREATIVE_APPS, type CreativeApp } from "@/lib/creative-apps";
+import { festivalAppSlug, festivalOfApp } from "@/lib/festivals";
 
 export function categoryOf(app: Pick<CreativeApp, "slug" | "cat">): AppCat | undefined {
   return (app.cat as AppCat | undefined) ?? (curatedCategory(app.slug) as AppCat | undefined);
@@ -65,6 +66,31 @@ export function categorizedApps(sortWithin?: (a: CreativeApp, b: CreativeApp) =>
  * niche.
  */
 export function relatedApps(app: CreativeApp, n = 6): CreativeApp[] {
+  // A festival app's neighbours are the same festival's other apps, then the
+  // existing apps that suit it, before any other festival.
+  const festival = festivalOfApp(app.slug)?.festival;
+  if (festival) {
+    const first = [...festival.apps.map((s) => festivalAppSlug(festival, s)), ...(festival.related ?? [])]
+      .filter((s) => s !== app.slug)
+      .map((s) => CREATIVE_APPS.find((x) => x.slug === s))
+      .filter((x): x is CreativeApp => !!x);
+    const seen = new Set(first.map((x) => x.slug).concat(app.slug));
+    // Then other festivals' apps: the same kind from the same part of the
+    // world first, then anything from there, then the same kind anywhere.
+    // "Worldwide" doesn't count as a shared region: it would pair Hanami
+    // with Diwali just because both are celebrated abroad.
+    const kind = festivalOfApp(app.slug)!.spec.kind;
+    const home = festival.regions.filter((r) => r !== "worldwide");
+    const score = (x: CreativeApp) => {
+      const o = festivalOfApp(x.slug)!;
+      const near = o.festival.regions.some((r) => r !== "worldwide" && home.includes(r));
+      const same = o.spec.kind === kind;
+      return near && same ? 0 : near ? 1 : same ? 2 : 3;
+    };
+    const others = CREATIVE_APPS.filter((x) => !seen.has(x.slug) && !!festivalOfApp(x.slug))
+      .sort((x, y) => score(x) - score(y));
+    return [...first, ...others].slice(0, n);
+  }
   const cat = categoryOf(app);
   const sameCat = CREATIVE_APPS.filter((x) => x.slug !== app.slug && categoryOf(x) === cat);
   if (sameCat.length >= n) return sameCat.slice(0, n);

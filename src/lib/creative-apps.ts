@@ -1,5 +1,6 @@
 import { PageFAQ } from "@/lib/page-config";
 import { CATALOG_ROWS, expand } from "@/lib/app-catalog";
+import { FESTIVAL_APPS } from "@/lib/festival-apps";
 
 /**
  * creative-apps.ts — Pixel Shine Creative Apps.
@@ -876,7 +877,12 @@ function slugHash(slug: string): number {
   return h >>> 0;
 }
 
-/** Curated apps first on a slug clash, then everything from the catalogue. */
+/**
+ * Curated apps first on a slug clash, then everything from the catalogue,
+ * then the festival apps (lib/festival-apps.ts). The festival apps go after
+ * the shuffled list rather than into it: they are reached through
+ * /festivals, and 158 of them mixed in would bury the rest of the catalogue.
+ */
 function mergeApps(): CreativeApp[] {
   const bySlug = new Map<string, CreativeApp>();
   for (const a of CURATED_APPS) bySlug.set(a.slug, a);
@@ -884,7 +890,13 @@ function mergeApps(): CreativeApp[] {
     const a = expand(row);
     if (!bySlug.has(a.slug)) bySlug.set(a.slug, a);
   }
-  return Array.from(bySlug.values()).sort((x, y) => slugHash(x.slug) - slugHash(y.slug));
+  const main = Array.from(bySlug.values()).sort((x, y) => slugHash(x.slug) - slugHash(y.slug));
+  for (const a of FESTIVAL_APPS) {
+    // A festival slug that collides would silently replace a real app's page.
+    if (bySlug.has(a.slug)) throw new Error(`Festival app slug "${a.slug}" is already an app`);
+    bySlug.set(a.slug, a);
+  }
+  return [...main, ...FESTIVAL_APPS];
 }
 
 export const CREATIVE_APPS: CreativeApp[] = mergeApps();

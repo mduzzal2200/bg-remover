@@ -1,0 +1,642 @@
+{
+  "baisakhi-background": [
+    1200,
+    800
+  ],
+  "baisakhi-friends-photo": [
+    1200,
+    800
+  ],
+  "baisakhi-greeting-card": [
+    1200,
+    800
+  ],
+  "baisakhi-portrait": [
+    1200,
+    800
+  ],
+  "christmas-background": [
+    1200,
+    800
+  ],
+  "christmas-family-photo": [
+    1200,
+    800
+  ],
+  "christmas-greeting-card": [
+    1200,
+    800
+  ],
+  "christmas-photo": [
+    1200,
+    800
+  ],
+  "chuseok-background": [
+    1200,
+    800
+  ],
+  "chuseok-family-photo": [
+    1200,
+    800
+  ],
+  "chuseok-greeting-card": [
+    1200,
+    800
+  ],
+  "chuseok-portrait": [
+    1200,
+    800
+  ],
+  "day-of-the-dead-background": [
+    1200,
+    800
+  ],
+  "day-of-the-dead-family-photo": [
+    1200,
+    800
+  ],
+  "day-of-the-dead-greeting-card": [
+    1200,
+    800
+  ],
+  "day-of-the-dead-portrait": [
+    1200,
+    800
+  ],
+  "diwali-background": [
+    1200,
+    800
+  ],
+  "diwali-family-photo": [
+    1200,
+    800
+  ],
+  "diwali-greeting-card": [
+    1200,
+    800
+  ],
+  "diwali-portrait": [
+    1200,
+    800
+  ],
+  "dragon-boat-background": [
+    1200,
+    800
+  ],
+  "dragon-boat-friends-photo": [
+    1200,
+    800
+  ],
+  "dragon-boat-greeting-card": [
+    1200,
+    800
+  ],
+  "dragon-boat-portrait": [
+    1200,
+    800
+  ],
+  "durga-puja-background": [
+    1200,
+    800
+  ],
+  "durga-puja-family-photo": [
+    1200,
+    800
+  ],
+  "durga-puja-greeting-card": [
+    1200,
+    800
+  ],
+  "durga-puja-portrait": [
+    1200,
+    800
+  ],
+  "easter-background": [
+    1200,
+    800
+  ],
+  "easter-family-photo": [
+    1200,
+    800
+  ],
+  "easter-greeting-card": [
+    1200,
+    800
+  ],
+  "easter-portrait": [
+    1200,
+    800
+  ],
+  "eid-al-adha-background": [
+    1200,
+    800
+  ],
+  "eid-al-adha-family-photo": [
+    1200,
+    800
+  ],
+  "eid-al-adha-greeting-card": [
+    1200,
+    800
+  ],
+  "eid-al-adha-portrait": [
+    1200,
+    800
+  ],
+  "eid-al-fitr-background": [
+    1200,
+    800
+  ],
+  "eid-al-fitr-family-photo": [
+    1200,
+    800
+  ],
+  "eid-al-fitr-greeting-card": [
+    1200,
+    800
+  ],
+  "eid-al-fitr-portrait": [
+    1200,
+    800
+  ],
+  "ethiopian-new-year-background": [
+    1200,
+    800
+  ],
+  "ethiopian-new-year-family-photo": [
+    1200,
+    800
+  ],
+  "ethiopian-new-year-greeting-card": [
+    1200,
+    800
+  ],
+  "ethiopian-new-year-portrait": [
+    1200,
+    800
+  ],
+  "fourth-of-july-background": [
+    1200,
+    800
+  ],
+  "fourth-of-july-family-photo": [
+    1200,
+    800
+  ],
+  "fourth-of-july-greeting-card": [
+    1200,
+    800
+  ],
+  "fourth-of-july-portrait": [
+    1200,
+    800
+  ],
+  "ganesh-chaturthi-background": [
+    1200,
+    800
+  ],
+  "ganesh-chaturthi-family-photo": [
+    1200,
+    800
+  ],
+  "ganesh-chaturthi-greeting-card": [
+    1200,
+    800
+  ],
+  "ganesh-chaturthi-portrait": [
+    1200,
+    800
+  ],
+  "halloween-background": [
+    1200,
+    800
+  ],
+  "halloween-family-photo": [
+    1200,
+    800
+  ],
+  "halloween-greeting-card": [
+    1200,
+    800
+  ],
+  "halloween-portrait": [
+    1200,
+    800
+  ],
+  "hanami-background": [
+    1200,
+    800
+  ],
+  "hanami-couple-photo": [
+    1200,
+    800
+  ],
+  "hanami-greeting-card": [
+    1200,
+    800
+  ],
+  "hanami-portrait": [
+    1200,
+    800
+  ],
+  "hanukkah-background": [
+    1200,
+    800
+  ],
+  "hanukkah-family-photo": [
+    1200,
+    800
+  ],
+  "hanukkah-greeting-card": [
+    1200,
+    800
+  ],
+  "hanukkah-portrait": [
+    1200,
+    800
+  ],
+  "holi-background": [
+    1200,
+    800
+  ],
+  "holi-friends-photo": [
+    1200,
+    800
+  ],
+  "holi-greeting-card": [
+    1200,
+    800
+  ],
+  "holi-portrait": [
+    1200,
+    800
+  ],
+  "karva-chauth-background": [
+    1200,
+    800
+  ],
+  "karva-chauth-couple-photo": [
+    1200,
+    800
+  ],
+  "karva-chauth-greeting-card": [
+    1200,
+    800
+  ],
+  "karva-chauth-portrait": [
+    1200,
+    800
+  ],
+  "kwanzaa-background": [
+    1200,
+    800
+  ],
+  "kwanzaa-family-photo": [
+    1200,
+    800
+  ],
+  "kwanzaa-greeting-card": [
+    1200,
+    800
+  ],
+  "kwanzaa-portrait": [
+    1200,
+    800
+  ],
+  "loy-krathong-background": [
+    1200,
+    800
+  ],
+  "loy-krathong-couple-photo": [
+    1200,
+    800
+  ],
+  "loy-krathong-greeting-card": [
+    1200,
+    800
+  ],
+  "loy-krathong-portrait": [
+    1200,
+    800
+  ],
+  "lunar-new-year-background": [
+    1200,
+    800
+  ],
+  "lunar-new-year-family-photo": [
+    1200,
+    800
+  ],
+  "lunar-new-year-greeting-card": [
+    1200,
+    800
+  ],
+  "lunar-new-year-portrait": [
+    1200,
+    800
+  ],
+  "mardi-gras-background": [
+    1200,
+    800
+  ],
+  "mardi-gras-friends-photo": [
+    1200,
+    800
+  ],
+  "mardi-gras-greeting-card": [
+    1200,
+    800
+  ],
+  "mardi-gras-portrait": [
+    1200,
+    800
+  ],
+  "mid-autumn-background": [
+    1200,
+    800
+  ],
+  "mid-autumn-couple-photo": [
+    1200,
+    800
+  ],
+  "mid-autumn-greeting-card": [
+    1200,
+    800
+  ],
+  "mid-autumn-portrait": [
+    1200,
+    800
+  ],
+  "midsummer-background": [
+    1200,
+    800
+  ],
+  "midsummer-couple-photo": [
+    1200,
+    800
+  ],
+  "midsummer-greeting-card": [
+    1200,
+    800
+  ],
+  "midsummer-portrait": [
+    1200,
+    800
+  ],
+  "navratri-background": [
+    1200,
+    800
+  ],
+  "navratri-couple-photo": [
+    1200,
+    800
+  ],
+  "navratri-greeting-card": [
+    1200,
+    800
+  ],
+  "navratri-portrait": [
+    1200,
+    800
+  ],
+  "new-years-eve-background": [
+    1200,
+    800
+  ],
+  "new-years-eve-couple-photo": [
+    1200,
+    800
+  ],
+  "new-years-eve-greeting-card": [
+    1200,
+    800
+  ],
+  "new-years-eve-portrait": [
+    1200,
+    800
+  ],
+  "nowruz-background": [
+    1200,
+    800
+  ],
+  "nowruz-family-photo": [
+    1200,
+    800
+  ],
+  "nowruz-greeting-card": [
+    1200,
+    800
+  ],
+  "nowruz-portrait": [
+    1200,
+    800
+  ],
+  "oktoberfest-background": [
+    1200,
+    800
+  ],
+  "oktoberfest-friends-photo": [
+    1200,
+    800
+  ],
+  "oktoberfest-greeting-card": [
+    1200,
+    800
+  ],
+  "oktoberfest-portrait": [
+    1200,
+    800
+  ],
+  "onam-background": [
+    1200,
+    800
+  ],
+  "onam-family-photo": [
+    1200,
+    800
+  ],
+  "onam-greeting-card": [
+    1200,
+    800
+  ],
+  "onam-portrait": [
+    1200,
+    800
+  ],
+  "pongal-background": [
+    1200,
+    800
+  ],
+  "pongal-family-photo": [
+    1200,
+    800
+  ],
+  "pongal-greeting-card": [
+    1200,
+    800
+  ],
+  "pongal-portrait": [
+    1200,
+    800
+  ],
+  "raksha-bandhan-background": [
+    1200,
+    800
+  ],
+  "raksha-bandhan-family-photo": [
+    1200,
+    800
+  ],
+  "raksha-bandhan-greeting-card": [
+    1200,
+    800
+  ],
+  "raksha-bandhan-portrait": [
+    1200,
+    800
+  ],
+  "ramadan-background": [
+    1200,
+    800
+  ],
+  "ramadan-family-photo": [
+    1200,
+    800
+  ],
+  "ramadan-greeting-card": [
+    1200,
+    800
+  ],
+  "ramadan-portrait": [
+    1200,
+    800
+  ],
+  "rio-carnival-background": [
+    1200,
+    800
+  ],
+  "rio-carnival-friends-photo": [
+    1200,
+    800
+  ],
+  "rio-carnival-greeting-card": [
+    1200,
+    800
+  ],
+  "rio-carnival-portrait": [
+    1200,
+    800
+  ],
+  "rosh-hashanah-background": [
+    1200,
+    800
+  ],
+  "rosh-hashanah-family-photo": [
+    1200,
+    800
+  ],
+  "rosh-hashanah-greeting-card": [
+    1200,
+    800
+  ],
+  "rosh-hashanah-portrait": [
+    1200,
+    800
+  ],
+  "songkran-background": [
+    1200,
+    800
+  ],
+  "songkran-friends-photo": [
+    1200,
+    800
+  ],
+  "songkran-greeting-card": [
+    1200,
+    800
+  ],
+  "songkran-portrait": [
+    1200,
+    800
+  ],
+  "st-patricks-day-background": [
+    1200,
+    800
+  ],
+  "st-patricks-day-friends-photo": [
+    1200,
+    800
+  ],
+  "st-patricks-day-greeting-card": [
+    1200,
+    800
+  ],
+  "st-patricks-day-portrait": [
+    1200,
+    800
+  ],
+  "thanksgiving-background": [
+    1200,
+    800
+  ],
+  "thanksgiving-family-photo": [
+    1200,
+    800
+  ],
+  "thanksgiving-greeting-card": [
+    1200,
+    800
+  ],
+  "thanksgiving-photoshoot": [
+    1200,
+    800
+  ],
+  "valentines-day-background": [
+    1200,
+    800
+  ],
+  "valentines-day-couple-photo": [
+    1200,
+    800
+  ],
+  "valentines-day-greeting-card": [
+    1200,
+    800
+  ],
+  "valentines-day-portrait": [
+    1200,
+    800
+  ],
+  "venice-carnival-background": [
+    1200,
+    800
+  ],
+  "venice-carnival-couple-photo": [
+    1200,
+    800
+  ],
+  "venice-carnival-greeting-card": [
+    1200,
+    800
+  ],
+  "venice-carnival-portrait": [
+    1200,
+    800
+  ],
+  "vesak-background": [
+    1200,
+    800
+  ],
+  "vesak-family-photo": [
+    1200,
+    800
+  ],
+  "vesak-greeting-card": [
+    1200,
+    800
+  ],
+  "vesak-portrait": [
+    1200,
+    800
+  ]
+}

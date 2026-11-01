@@ -18,6 +18,7 @@ const AI_TOOLS = [
   { labelKey: "Object Remover",     href: "/object-remover" },
   { labelKey: "AI Image Generator", href: "/app/create" },
   { labelKey: "All AI Photo Apps",  href: "/creative" },
+  { labelKey: "Festival Photo Apps", href: "/festivals" },
 ];
 
 // The AI apps people search for most, linked from every page.

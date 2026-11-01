@@ -16,6 +16,7 @@
 import { editedPosts } from "@/lib/blog-edits.server";
 import { VARIANTS, PARENT_META, type ParentTool } from "@/lib/landing-variants";
 import { CREATIVE_APPS, CREATIVE_BASE } from "@/lib/creative-apps";
+import { FESTIVALS } from "@/lib/festivals";
 import { CONVERSIONS } from "@/lib/conversions";
 import { COMPRESSIONS } from "@/lib/compressions";
 import { CROPS } from "@/lib/crops";
@@ -25,7 +26,7 @@ import { ALL as DATASET_PROMPTS, MODELS as PROMPT_MODELS, allFacets } from "@/li
 import { PACKS } from "@/lib/prompts/packs";
 import { BLOG_TOPICS, topicHref, topicOf } from "@/lib/blog-topics";
 import LASTMOD from "@/lib/seo/lastmod.json";
-import { blogIndexable, creativeIndexable, facetIndexable, guideIndexable, imagePromptIndexable, videoPromptIndexable } from "@/lib/seo/index-policy";
+import { blogIndexable, creativeIndexable, festivalIndexable, facetIndexable, guideIndexable, imagePromptIndexable, videoPromptIndexable } from "@/lib/seo/index-policy";
 
 export const BASE = "https://www.sjpt.io";
 
@@ -195,6 +196,8 @@ export function creativeUrls(): SitemapUrl[] {
   return dated(dedupe([
     { url: `${BASE}${CREATIVE_BASE}` },
     ...CREATIVE_APPS.filter((a) => creativeIndexable(a.slug)).map((a) => ({ url: `${BASE}${CREATIVE_BASE}/${a.slug}` })),
+    { url: `${BASE}/festivals` },
+    ...FESTIVALS.filter(festivalIndexable).map((f) => ({ url: `${BASE}/festivals/${f.slug}` })),
   ]));
 }
 

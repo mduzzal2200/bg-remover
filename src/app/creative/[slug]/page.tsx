@@ -19,7 +19,11 @@ import { applyOverride, creativeKey, readOverrides } from "@/lib/overrides";
 import { creativeIndexable, NOINDEX } from "@/lib/seo/index-policy";
 import { APP_OFFERS } from "@/lib/seo/offers";
 import { appPage, withAppPage } from "@/lib/app-pages";
+import { festivalArticle } from "@/lib/festival-article";
 import AppArticle from "./AppArticle";
+import { festivalOfApp } from "@/lib/festivals";
+import { festivalCreative } from "@/lib/festival-creatives";
+import Image from "next/image";
 
 export const revalidate = 300;
 
@@ -41,7 +45,8 @@ async function generateMetadataBase({ params }: { params: Promise<{ slug: string
   const a = applyOverride(base, o.pages[creativeKey(slug)]);
   const url = `${BASE}${CREATIVE_BASE}/${slug}`;
   // A shared link shows the app's own before and after, else its result.
-  const image = o.pages[creativeKey(slug)]?.main ? uploadedCreative(slug, "main") : localAfter(slug) ?? previewUrl(slug);
+  const fc = festivalCreative(slug);
+  const image = o.pages[creativeKey(slug)]?.main ? uploadedCreative(slug, "main") : fc ? `${BASE}${fc.src}` : localAfter(slug) ?? previewUrl(slug);
   return {
     title: { absolute: brandedTitle(a.title) },
     description: a.metaDescription,
@@ -108,11 +113,30 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
   // current pictures rather than old previews or placeholder artwork.
   const mainOf = (s: string) => overrides.pages[creativeKey(s)]?.main;
   // Then apps search engines can reach: a link to a hidden page helps nobody find it.
-  const candidates = relatedApps(a, 24);
-  const rank = (r: { slug: string }) => (mainOf(r.slug) ? 0 : 2) + (creativeIndexable(r.slug) ? 0 : 1);
-  const related = [...candidates].sort((x, y) => rank(x) - rank(y)).slice(0, 6);
+  // A tile's real picture, when the app has one: an admin before/after or a
+  // festival creative. Generated previews and placeholder art don't count.
+  const pictureOf = (s: string) => {
+    const m = mainOf(s);
+    if (m) return { src: uploadedCreative(s, "main"), ratio: `${m.w} / ${m.h}` };
+    const f = festivalCreative(s);
+    return f ? { src: f.src, ratio: `${f.w} / ${f.h}` } : null;
+  };
+  const candidates = relatedApps(a, 60);
+  const rank = (r: { slug: string }) => (pictureOf(r.slug) ? 0 : 2) + (creativeIndexable(r.slug) ? 0 : 1);
+  const ranked = [...candidates].sort((x, y) => rank(x) - rank(y));
+  // Twelve, all with real pictures when there are enough of them; otherwise the
+  // best of the rest fill in after the ones that have pictures.
+  const withPicture = ranked.filter((r) => pictureOf(r.slug));
+  const related = (withPicture.length >= 6 ? withPicture : ranked).slice(0, 12);
   const cat = categoryOf(a);
   const catMeta = cat ? CAT_META[cat] : null;
+  // A festival app lives under its festival, and shows one generated example
+  // rather than a before and after: the festival pages promise a picture of
+  // the look, and the sample "before" adds nothing to that.
+  const festival = festivalOfApp(a.slug)?.festival;
+  const single = !!festival;
+  // The owner's before/after for this festival app, when one has been added.
+  const fc = festival && !mainImage ? festivalCreative(a.slug) : null;
 
   // Preset thumbnails and sample photos are resolved from Supabase at ISR time,
   // so they appear as soon as they're uploaded — no redeploy needed.
@@ -122,8 +146,10 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
   ]);
   const content = getCreativeContent(slug);
   const lc = longContentFor(a);
-  const faq = ap ? a.faq : lc.faq;
-  const steps = ap?.howTo ?? lc.howTo;
+  // Festival apps get copy written from their festival, not the portrait bank.
+  const fa = !ap && festival ? festivalArticle(a.slug) : undefined;
+  const faq = ap || fa ? a.faq : lc.faq;
+  const steps = ap?.howTo ?? fa?.howTo ?? lc.howTo;
 
   // Hand-written copy wins where it exists; the composed copy fills the rest of
   // the page. Tips are merged rather than replaced so the 42 hand-written apps
@@ -157,9 +183,17 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: BASE },
-      { "@type": "ListItem", position: 2, name: "Creative Apps", item: `${BASE}${CREATIVE_BASE}` },
-      // Not the category: its link is a #section of the hub, not a page of its own.
-      { "@type": "ListItem", position: 3, name: a.h1, item: url },
+      ...(festival
+        ? [
+            { "@type": "ListItem", position: 2, name: "Festivals", item: `${BASE}/festivals` },
+            { "@type": "ListItem", position: 3, name: festival.name, item: `${BASE}/festivals/${festival.slug}` },
+            { "@type": "ListItem", position: 4, name: a.h1, item: url },
+          ]
+        : [
+            { "@type": "ListItem", position: 2, name: "Creative Apps", item: `${BASE}${CREATIVE_BASE}` },
+            // Not the category: its link is a #section of the hub, not a page of its own.
+            { "@type": "ListItem", position: 3, name: a.h1, item: url },
+          ]),
     ],
   };
 
@@ -179,8 +213,16 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
             <nav aria-label="Breadcrumb" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginBottom: 22, fontSize: 12.5, fontWeight: 700 }}>
               <a href="/" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Home</a>
               <span aria-hidden style={{ color: "var(--text-faint)" }}>›</span>
+              {festival ? (
+                <>
+                  <a href="/festivals" style={{ color: "var(--text-muted)", textDecoration: "none" }}>Festivals</a>
+                  <span aria-hidden style={{ color: "var(--text-faint)" }}>›</span>
+                  <a href={`/festivals/${festival.slug}`} style={{ color: "var(--text-muted)", textDecoration: "none" }}>{festival.emoji} {festival.name}</a>
+                </>
+              ) : (
               <a href={CREATIVE_BASE} style={{ color: "var(--text-muted)", textDecoration: "none" }}>Creative Apps</a>
-              {catMeta && (
+              )}
+              {!festival && catMeta && (
                 <>
                   <span aria-hidden style={{ color: "var(--text-faint)" }}>›</span>
                   <a href={`${CREATIVE_BASE}#${categoryAnchor(cat!)}`} style={{ color: "var(--text-muted)", textDecoration: "none" }}>{catMeta.emoji} {catMeta.label}</a>
@@ -204,7 +246,7 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
         <section style={{ padding: "72px 24px", background: "linear-gradient(160deg,var(--surface-2) 0%,var(--accent-soft) 100%)" }}>
           <div style={{ maxWidth: 960, margin: "0 auto" }}>
             <div style={{ maxWidth: 820, margin: "0 auto 56px", textAlign: "center" }}>
-              <h2 style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 900, color: "var(--text)", margin: "0 0 28px", letterSpacing: "-0.02em" }}>See it in action — real before &amp; after</h2>
+              <h2 style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 900, color: "var(--text)", margin: "0 0 28px", letterSpacing: "-0.02em" }}>{fc ? "See the before and after" : single ? "See an example" : <>See it in action — real before &amp; after</>}</h2>
             {/*
               One frame, two flush halves — the layout the comparison actually
               wants. It used to be two separate cards with a gap between them,
@@ -262,6 +304,32 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
                     />
                   </div>
                 </div>
+              ) : fc ? (
+                /* The festival before/after, whole: it carries its own labels. */
+                <div style={{ position: "relative", width: "100%", aspectRatio: `${fc.w} / ${fc.h}`, borderRadius: 18, overflow: "hidden", border: "1px solid var(--border)", background: "var(--surface-2)", boxShadow: "var(--shadow-sm)" }}>
+                  <Image
+                    src={fc.src}
+                    alt={`${a.h1} — before and after`}
+                    fill
+                    sizes="(max-width: 1008px) 100vw, 960px"
+                    priority
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+              ) : single ? (
+                /* One generated example, shown whole: the look this app makes. */
+                <div style={{ position: "relative", aspectRatio: "4 / 5", width: "min(100%, 440px)", margin: "0 auto", borderRadius: 18, overflow: "hidden", border: "1px solid var(--border)", background: "var(--surface-2)", boxShadow: "var(--shadow-sm)" }}>
+                  <ExampleImage
+                    sources={creativeSources(a.slug, "after", previewUrl(a.slug))}
+                    alt={`An example made with ${a.h1}`}
+                    slug={a.slug}
+                    name={a.h1}
+                    emoji={a.emoji}
+                    gradient={[a.gradient[0], a.gradient[1]]}
+                    sizes="(max-width: 768px) 100vw, 440px"
+                    eager
+                  />
+                </div>
               ) : (
               <div
                 style={{
@@ -302,6 +370,10 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
               )}
               <figcaption style={{ fontSize: 12.5, color: "var(--text-faint)", marginTop: 12 }}>
                 {ap ? ap.exampleCaption
+                  : fc
+                  ? <>Made with {a.h1} — the same thing your upload goes through.</>
+                  : single
+                  ? <>Made with {a.h1} from a sample photo — the same thing your upload goes through.</>
                   : mainImage
                   ? <>Made with {a.h1} — the same thing your upload goes through.</>
                   : <>The right-hand image is this app&apos;s own prompt run over the photo on the left — the same thing your upload goes through.</>}
@@ -309,7 +381,7 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
             </figure>
             </div>
 
-            <h2 style={{ fontSize: "clamp(1.6rem,3vw,2.2rem)", fontWeight: 900, color: "var(--text)", textAlign: "center", margin: "0 0 48px", letterSpacing: "-0.02em" }}>{ap?.howToHeading ?? `How to use ${a.h1}`}</h2>
+            <h2 style={{ fontSize: "clamp(1.6rem,3vw,2.2rem)", fontWeight: 900, color: "var(--text)", textAlign: "center", margin: "0 0 48px", letterSpacing: "-0.02em" }}>{ap?.howToHeading ?? fa?.howToHeading ?? `How to use ${a.h1}`}</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 28 }}>
               {steps.map((step, i) => (
                 <div key={step.t} style={{ textAlign: "center" }}>
@@ -365,8 +437,8 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
           </section>
         )}
 
-        {ap ? (
-          <AppArticle sections={ap.sections} />
+        {ap || fa ? (
+          <AppArticle sections={(ap ?? fa)!.sections} />
         ) : (
         <>
         {/* Why use — composed per category, led by this app's own description */}
@@ -475,12 +547,12 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
           <div style={{ maxWidth: 1000, margin: "0 auto" }}>
             <h2 style={{ fontSize: "clamp(1.4rem,3vw,2rem)", fontWeight: 900, color: "var(--text)", textAlign: "center", margin: "0 0 32px", letterSpacing: "-0.02em" }}>More Creative Apps</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 14, alignItems: "start" }}>
-              {related.map((r) => { const main = mainOf(r.slug); return (
+              {related.map((r) => { const pic = pictureOf(r.slug); return (
                 <a key={r.slug} href={`${CREATIVE_BASE}/${r.slug}`} className="jpt-hover" style={{ textDecoration: "none", display: "block", borderRadius: 14, padding: 8 }}>
                   {/* position: relative — ExampleImage fills its container. */}
-                  <div style={{ position: "relative", aspectRatio: main ? `${main.w} / ${main.h}` : "16 / 10", borderRadius: 14, overflow: "hidden", marginBottom: 8, background: `linear-gradient(135deg, ${r.gradient[0]}, ${r.gradient[1]})` }}>
+                  <div style={{ position: "relative", aspectRatio: pic ? pic.ratio : "16 / 10", borderRadius: 14, overflow: "hidden", marginBottom: 8, background: `linear-gradient(135deg, ${r.gradient[0]}, ${r.gradient[1]})` }}>
                     <ExampleImage
-                      sources={main ? [uploadedCreative(r.slug, "main"), ...creativeSources(r.slug, "after", previewUrl(r.slug))] : creativeSources(r.slug, "after", previewUrl(r.slug))}
+                      sources={pic ? [pic.src, ...creativeSources(r.slug, "after", previewUrl(r.slug))] : creativeSources(r.slug, "after", previewUrl(r.slug))}
                       alt={`${r.h1} example`}
                       slug={r.slug}
                       name={r.h1}

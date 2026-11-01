@@ -12,6 +12,7 @@ export const PAID_FEATURES_ENABLED = true;
 // to "/"). Keep in sync with the nav/footer/landing conditionals.
 export const PAID_ROUTE_PREFIXES = [
   "/creative",
+  "/festivals",
   "/ai-editor",
   "/ai-headshot",
   "/headshot",

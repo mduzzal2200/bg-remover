@@ -9,7 +9,9 @@ export const metadata: Metadata = seoMeta({ title: "AI Apps", robots: { index: f
 export const revalidate = 300;
 
 export default async function AppsPage() {
-  const [all, placements] = await Promise.all([appCards(), readPlacements()]);
+  const [cards, placements] = await Promise.all([appCards(), readPlacements()]);
+  // Festival apps have their own tab (/app/festivals), grouped by festival.
+  const all = cards.filter((a) => a.category !== "festival");
   // Apps pinned in /admin/placements lead the gallery; the rest keep their order.
   const apps = curateApps("app.apps.top", placements, all, all, all.length + 60);
   const categories = APP_CATEGORIES

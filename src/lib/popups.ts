@@ -84,14 +84,15 @@ export const BUILTIN_POPUPS: PopupDef[] = [
   {
     id: "signup",
     name: "Sign-up popup",
-    where: "Signed-out visitors (including people who logged out) on every page, 5 s after they arrive. Closed, it comes back every 12 s until they sign up, and later pages show it after 12 s. Not on the app, admin, sign-in, pricing or payment pages.",
+    where: "Signed-out visitors (including people who logged out) on every page, 5 s after they arrive. Closed, it comes back on the same page only after 30 s there, until they sign up, and later pages show it after 12 s. Not on the app, admin, sign-in, pricing or payment pages.",
     canTurnOff: true,
     previewable: true,
     tokens: { credits: "the free credits a new account gets", generations: "how many AI generations they cover" },
     fields: [
       { key: "design", label: "Design", kind: "select", default: "split", group: SHOWING, options: POPUP_DESIGNS },
       { key: "delay", label: "Show after (seconds)", kind: "number", default: "5", group: SHOWING },
-      { key: "reshowSeconds", label: "After it's closed, show again after (seconds)", kind: "number", default: "12", group: SHOWING, help: "Also how long later pages wait once it has been closed." },
+      { key: "samePageSeconds", label: "After it's closed, show again on the same page after (seconds)", kind: "number", default: "30", group: SHOWING, help: "Only if they're still on that page." },
+      { key: "reshowSeconds", label: "Once it's been closed, other pages show it after (seconds)", kind: "number", default: "12", group: SHOWING },
       { key: "reshowTimes", label: "Times it comes back on the same page (0 = until they sign up)", kind: "number", default: "0", group: SHOWING },
       { key: "image", label: "Picture", kind: "image", default: creativeImage("outfit-generator"), group: PICTURE, help: "A before|after side-by-side picture wipes between the two halves." },
       { key: "caption", label: "Picture caption", kind: "text", default: "One selfie → an evening look", group: PICTURE },
