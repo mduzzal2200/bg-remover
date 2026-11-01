@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useState } from "react";
 import ExampleImage from "@/app/_components/ExampleImage";
 import type { FestivalSummary } from "@/lib/festival-summary";
 
@@ -8,6 +9,7 @@ import type { FestivalSummary } from "@/lib/festival-summary";
  * dashboard, with `href` set by the caller.
  */
 export default function FestivalCard({ f, href, eager = false }: { f: FestivalSummary; href: string; eager?: boolean }) {
+  const [hasBeforeAfter, setHasBeforeAfter] = useState(false);
   return (
     <Link
       href={href}
@@ -25,7 +27,9 @@ export default function FestivalCard({ f, href, eager = false }: { f: FestivalSu
         note=""
         sizes="(max-width: 640px) 50vw, 260px"
         eager={eager}
+        onSourceLoad={(src) => setHasBeforeAfter(src.includes("-main.webp"))}
       />
+      {hasBeforeAfter && <span style={{ position: "absolute", right: 10, top: 10, fontSize: 10, fontWeight: 900, letterSpacing: ".06em", color: "#fff", background: "rgba(8,8,10,.72)", border: "1px solid rgba(255,255,255,.25)", borderRadius: 999, padding: "5px 8px", backdropFilter: "blur(6px)" }}>BEFORE → AFTER</span>}
       <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 42%, rgba(8,8,10,.9) 100%)", pointerEvents: "none" }} />
       <span style={{ position: "absolute", top: 10, left: 10, fontSize: 11, fontWeight: 800, color: "#fff", background: "rgba(8,8,10,.62)", backdropFilter: "blur(6px)", borderRadius: 999, padding: "4px 9px", letterSpacing: ".02em" }}>
         {f.when}
