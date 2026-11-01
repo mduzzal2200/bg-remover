@@ -165,7 +165,7 @@ export function presetsFor(app: CreativeApp, tab: PresetTab): Preset[] {
  * style" and the answer needs to arrive while the model is still reading about
  * the thing it qualifies. See lib/app-options.ts.
  */
-import { stagingDirective, stagingModeFor, photorealDirective, stripOwnPhotoreal, outputDirective, outputFormFor, referenceDirective } from "@/lib/staging";
+import { stagingDirective, stagingModeFor, photorealDirective, stripOwnPhotoreal, outputDirective, outputFormFor, referenceDirective, straightenDirective } from "@/lib/staging";
 import { curatedCategory, isTextOnlyApp } from "@/lib/app-options";
 import { festivalOfApp } from "@/lib/festivals";
 
@@ -238,6 +238,13 @@ export function buildPrompt(
   // An app that draws from a description alone has no photograph to stage,
   // and "keep the person recognisable" would invent one.
   if (!isTextOnlyApp(app.slug)) parts.push(stagingDirective(mode, app.slug));
+  // A custom instruction runs in "minimal" mode, which keeps the pose. In an
+  // app that isn't a repair tool, a tilted face is still straightened toward
+  // the camera, as every other result from that app is.
+  if (mode === "minimal" && !isTextOnlyApp(app.slug)) {
+    const own = stagingModeFor(app, curatedCategory(app.slug));
+    if (own !== "minimal" && own !== "product" && own !== "space") parts.push(straightenDirective());
+  }
   parts.push(photorealDirective(app.slug));
   /*
     What shape the answer takes — one photograph, not a concept.

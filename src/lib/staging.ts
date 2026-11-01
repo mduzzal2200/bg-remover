@@ -48,16 +48,55 @@ import { festivalKindOf } from "@/lib/festivals";
 
 export type StagingMode = "restage" | "restyle" | "subject" | "scene" | "minimal" | "product" | "space";
 
+/*
+  The face match. The owner's ask (Nov 2026): results should look more like
+  the person who uploaded the photo. Every feature people check first is named
+  — a list the model can tick off holds better than "keep the face" — and the
+  rule for a conflict is stated, because a strong style brief otherwise wins.
+*/
 const IDENTITY =
-  "Preserve the same real person's identity as the reference photo. Keep their " +
-  "recognizable facial geometry: face shape, forehead, cheekbones, jaw and chin, " +
-  "eye shape and spacing, eyebrows, nose, lips, ears, natural asymmetry, skin tone, " +
-  "age appearance and distinctive features. Do not substitute a generic attractive " +
-  "face, beautify or idealize the person, enlarge their eyes, reshape their nose or " +
-  "jaw, or apply plastic skin smoothing. Keep natural skin texture and realistic " +
-  "pores wherever the output is photographic. Change only features that the app's " +
-  "requested transformation explicitly requires. Match the face's lighting, colour " +
-  "and sharpness to the new scene instead of making it look pasted on.";
+  "The face must be an exact likeness of the person in the reference photo — " +
+  "someone who knows them should recognise them at first glance. Keep their " +
+  "recognizable facial geometry: face shape and fullness, forehead and hairline, " +
+  "cheekbones, jaw and chin, eye shape, spacing and colour, eyebrows, nose, lips and " +
+  "teeth, ears, natural asymmetry, skin tone, age appearance and ethnicity, and " +
+  "every distinctive feature — moles, freckles, scars, birthmarks, facial hair and " +
+  "glasses if they wear them. Keep their build: do not slim or bulk the face or " +
+  "body. Do not substitute a generic attractive face, beautify or idealize the " +
+  "person, enlarge their eyes, reshape their nose or jaw, or apply plastic skin " +
+  "smoothing. Keep natural skin texture and realistic pores wherever the output is " +
+  "photographic. Where the face is shown from a different angle than in the photo, " +
+  "rebuild the unseen side from the visible one and invent no new features. If the " +
+  "style and the likeness pull in different directions, keep the likeness. Change " +
+  "only features that the app's requested transformation explicitly requires. Match " +
+  "the face's lighting, colour and sharpness to the new scene instead of making it " +
+  "look pasted on.";
+
+/*
+  Facing the camera. The owner's ask (Nov 2026): every result looks straight
+  at the camera with the head level, even when the selfie was tilted or taken
+  from the side. Kept out of IDENTITY on purpose: the artwork apps swap
+  IDENTITY for LIKENESS, and they still face the camera.
+*/
+const FACE_FORWARD =
+  "Show the person facing the camera: head upright and level — not tilted or " +
+  "leaning to one side — face turned toward the lens with both eyes visible, and " +
+  "the camera at eye level. Do this even if the uploaded photo is tilted, rotated, " +
+  "taken from a high or low phone angle, or shows them turned to the side: do not " +
+  "copy the tilt or angle of the original photo. With more than one person, each " +
+  "of them faces the camera. Use a profile or another angle only if the " +
+  "description above asks for one.";
+
+/*
+  For the modes that keep the pose (subject, scene, restyle) and the editor:
+  the one change to the pose they are allowed is straightening it.
+*/
+const STRAIGHTEN =
+  "If a person is in the photo and their head or the whole photo is tilted, " +
+  "rotated or turned away, straighten it so they face the camera: head upright and " +
+  "level, not leaning to one side, face toward the lens with both eyes visible, and " +
+  "the camera at eye level. Do not copy the tilt or angle of the original photo; with " +
+  "more than one person, each faces the camera. Keep everything else as described.";
 
 /*
   Only for the modes that rebuild the pose.
@@ -67,16 +106,16 @@ const IDENTITY =
   close-lens distortion, its office light — and grafts it onto a new body
   standing on a sunlit terrace. Every feature is right and it still reads as
   a face swap. Where the pose is kept (scene, subject, restyle) the head is
-  part of what is kept, so this is not said there.
+  part of what is kept, and only STRAIGHTEN applies.
 */
 const REPOSE =
   "Re-pose the head together with the body. In the new picture the head sits " +
-  "naturally on the neck, upright and turned to suit the new pose, seen from the " +
+  "naturally on the neck, upright, level and facing the camera, seen from the " +
   "new camera's height and distance — not with the tilt, the high or low phone " +
-  "angle, or the close wide-angle distortion of the original photo. Re-light the " +
-  "face with the new scene's light, so that face, neck and hands share one skin " +
-  "tone, one light direction, one colour grade and one level of sharpness, and keep " +
-  "the head in true proportion to the body.";
+  "angle, or the close wide-angle distortion of the original photo. " + FACE_FORWARD +
+  " Re-light the face with the new scene's light, so that face, neck and hands " +
+  "share one skin tone, one light direction, one colour grade and one level of " +
+  "sharpness, and keep the head in true proportion to the body.";
 
 /** IDENTITY for a drawing, a painting or a 3D character: recognisable, not photographic. */
 const LIKENESS =
@@ -163,20 +202,21 @@ const DIRECTIVE: Record<StagingMode, string> = {
     "expression, hair and body position, for an object the same shape, colour and " +
     "detail — cut out cleanly at the edges including individual strands of hair. " +
     "Change only the surroundings, as described above, and relight the subject so it " +
-    "sits believably in the new setting rather than looking pasted onto it. Where the " +
-    "subject is a person: " + IDENTITY,
+    "sits believably in the new setting rather than looking pasted onto it. " +
+    STRAIGHTEN + " Where the subject is a person: " + IDENTITY,
 
   scene:
     "Keep the setting exactly as photographed — the same background, framing, " +
     "camera angle, lighting and colour. Change only what the description above " +
-    "calls for, and leave everything else in the frame untouched. " + IDENTITY,
+    "calls for, and leave everything else in the frame untouched. " + STRAIGHTEN +
+    " " + IDENTITY,
 
   restyle:
     "Keep what is in the photograph: the same person in the same pose with the same " +
     "expression, wearing the same clothes, in the same framing and the same setting " +
     "with its main objects in place. Re-create all of it in the look described " +
     "above — every part of the picture takes on that look, not just the person — and " +
-    "change or add only what the description above names. " + IDENTITY,
+    "change or add only what the description above names. " + STRAIGHTEN + " " + IDENTITY,
 
   product:
     "Keep the product — or the dish, or whatever object the photo is of — exactly as " +
@@ -217,7 +257,7 @@ const ART_RESTAGE =
   "options. Carry the same person's recognizable face shape, eye spacing, nose, mouth, " +
   "skin tone, hairstyle and distinctive features into the art style, but render all " +
   "parts consistently in that medium rather than pasting a photo-real face onto it. " +
-  "Honor selected framing and transformation strength. " + LIKENESS;
+  "Honor selected framing and transformation strength. " + FACE_FORWARD + " " + LIKENESS;
 
 /*
   The restage directive for the designed objects. "The result is still one
@@ -511,6 +551,21 @@ export function stripOwnPhotoreal(prompt: string): string {
 export function editorDirective(instruction: string): string {
   return (
     `Apply this edit to the photograph: ${instruction.trim()}\n\n` +
-    DIRECTIVE.minimal + " " + PHOTOREAL + " " + OUTPUT_PHOTOGRAPH
+    DIRECTIVE.minimal + " " + EDITOR_STRAIGHTEN + " " + PHOTOREAL + " " + OUTPUT_PHOTOGRAPH
   );
+}
+
+/*
+  The editor and the studios straighten a tilted face too, except when the
+  edit is a repair: restoring a photo, removing something or sharpening it is
+  about the photo as it was taken, and redrawing the face would undo that.
+*/
+const EDITOR_STRAIGHTEN =
+  "Unless the edit above asks for a different angle, or is a repair — restoring, " +
+  "colourising, removing something, sharpening or upscaling, which keep the pose " +
+  "as it is: " + STRAIGHTEN;
+
+/** STRAIGHTEN on its own, for an app's custom instruction (see buildPrompt). */
+export function straightenDirective(): string {
+  return STRAIGHTEN;
 }

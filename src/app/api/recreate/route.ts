@@ -18,7 +18,8 @@ function buildPrompt(note: string): string {
   return [
     "You are given two images.",
     "IMAGE 1 is the REFERENCE: copy its composition, pose, framing, camera angle, outfit and styling, background and setting, lighting, colour grade and overall mood.",
-    "IMAGE 2 is the PERSON: the result must show this exact person — keep their face, facial features, skin tone, hair and identity exactly as in image 2. Do not use the face or identity of anyone in image 1.",
+    "IMAGE 2 is the PERSON: the result must show this exact person — an exact likeness someone who knows them would recognise at first glance. Keep their face shape and fullness, hairline, eye shape, spacing and colour, eyebrows, nose, lips and teeth, ears, skin tone, age, build and distinctive features (moles, freckles, scars, facial hair, glasses) exactly as in image 2. Do not beautify, slim or idealise them, and do not use the face or identity of anyone in image 1.",
+    "Take the pose and head angle from image 1, never from image 2: do not copy the tilt, rotation or high or low phone angle of image 2. Keep the head upright and level with the face toward the camera, unless image 1 clearly shows the person looking somewhere else.",
     "Recreate the reference photo as if this person had been photographed in it.",
     "The result must look like a real photograph: natural skin texture, realistic light and shadow, sharp photographic detail — not a painting, illustration or composite.",
     note ? `Additional instructions from the user: ${note}` : "",

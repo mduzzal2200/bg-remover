@@ -44,7 +44,7 @@ function promptFor(f: Festival, spec: FestivalAppSpec): string {
       base = `Turn this into the front of a ${f.name} greeting card: one finished card filling the frame. Show the person from the chest up, dressed in ${s.attire}, in whatever suits them, ${s.setting}, with ${s.decor}, in a palette of ${s.palette} and ${s.light}. Leave a calm, uncluttered area across the top or the bottom. Unless no text or other words are chosen below, letter "${s.greeting}" once in that area in elegant, perfectly legible type, spelled exactly like that. No other words, logos, borders or watermarks.`;
       break;
     case "scene":
-      base = `Keep the person exactly as they are in the photo: the same face, hair, clothes, pose, expression and framing. Replace only the background with a ${f.name} scene ${s.setting}, with ${s.decor}, in a palette of ${s.palette}. Match the light on the person to the new scene, ${s.light}, with a clean, natural edge between the person and the background.`;
+      base = `Keep the person as they are in the photo: the same face, hair, clothes and expression. If their head or the photo is tilted, straighten it so they face the camera with the head upright and level. Replace only the background with a ${f.name} scene ${s.setting}, with ${s.decor}, in a palette of ${s.palette}. Match the light on the person to the new scene, ${s.light}, with a clean, natural edge between the person and the background.`;
       break;
   }
   return [base, spec.detail, RESPECT, s.avoid, PHOTO_FINISH, KEEP_FACE, PHOTOREAL].filter(Boolean).join(" ");
