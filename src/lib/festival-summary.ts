@@ -1,5 +1,5 @@
 import { FESTIVALS, REGIONS, festivalAppSlug, monthsLabel, searchText, type Festival, type Region } from "@/lib/festivals";
-import { getCreativeApp, previewUrl } from "@/lib/creative-apps";
+import { previewUrl } from "@/lib/creative-apps";
 import { creativeSources, mainSources } from "@/lib/app-creatives";
 import { festivalCreative } from "@/lib/festival-creatives";
 
@@ -70,14 +70,4 @@ export function festivalAppCards(f: Festival): FestivalAppCardData[] {
     const own = festivalCreative(slug);
     return { slug, name: spec.name, blurb: spec.blurb, emoji: spec.emoji, gradient: f.gradient, sources: festivalSources(slug), ratio: own ? `${own.w} / ${own.h}` : "4 / 5" };
   });
-}
-
-/** Existing apps that suit the festival too, skipping any already among its four. */
-export function festivalRelatedCards(f: Festival): FestivalAppCardData[] {
-  const own = new Set(f.apps.map((s) => festivalAppSlug(f, s)));
-  return (f.related ?? [])
-    .filter((slug) => !own.has(slug))
-    .map((slug) => getCreativeApp(slug))
-    .filter((a): a is NonNullable<typeof a> => !!a)
-    .map((a) => ({ slug: a.slug, name: a.h1, blurb: a.intro, emoji: a.emoji, gradient: [a.gradient[0], a.gradient[1]] as [string, string], sources: creativeSources(a.slug, "after", previewUrl(a.slug)), ratio: "4 / 5" }));
 }

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FESTIVALS, getFestival } from "@/lib/festivals";
-import { festivalAppCards, festivalRelatedCards } from "@/lib/festival-summary";
+import { festivalAppCards } from "@/lib/festival-summary";
 import { CREDIT_COST } from "@/lib/plans";
 import FestivalAppCard from "@/app/festivals/_components/FestivalAppCard";
 
@@ -22,7 +22,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
 export default function DashboardFestivalPage({ params }: { params: { slug: string } }) {
   const f = getFestival(params.slug);
   if (!f) notFound();
-  const apps = [...festivalAppCards(f), ...festivalRelatedCards(f)];
+  const apps = festivalAppCards(f);
   return (
     <div style={{ padding: "22px 24px 60px" }}>
       <div style={{ maxWidth: 1600 }}>

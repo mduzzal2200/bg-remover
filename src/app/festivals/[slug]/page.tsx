@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CREDIT_COST } from "@/lib/plans";
 import { FESTIVALS, REGIONS, festivalAppSlug, getFestival, type Festival } from "@/lib/festivals";
-import { festivalAppCards, festivalRelatedCards, summarize } from "@/lib/festival-summary";
+import { festivalAppCards, summarize } from "@/lib/festival-summary";
 import { festivalIndexable, NOINDEX } from "@/lib/seo/index-policy";
 import { previewUrl } from "@/lib/creative-apps";
 import { festivalOgImage } from "@/lib/festival-creatives";
@@ -58,7 +58,6 @@ export default function FestivalPage({ params }: { params: { slug: string } }) {
 
   const url = `${BASE}/festivals/${f.slug}`;
   const apps = festivalAppCards(f);
-  const related = festivalRelatedCards(f);
   const regionLabels = f.regions.map((r) => REGIONS.find((x) => x.id === r)?.label ?? r);
   const others = FESTIVALS
     .filter((x) => x.slug !== f.slug)
@@ -136,14 +135,6 @@ export default function FestivalPage({ params }: { params: { slug: string } }) {
           <ul style={grid}>
             {apps.map((a, i) => <li key={a.slug} style={{ minWidth: 0 }}><FestivalAppCard a={a} eager={i < 2} /></li>)}
           </ul>
-          {related.length > 0 && (
-            <div style={{ marginTop: 34 }}>
-              <h3 style={{ fontSize: 17, fontWeight: 800, margin: "0 0 14px" }}>More for {f.name}</h3>
-              <ul style={grid}>
-                {related.map((a) => <li key={a.slug} style={{ minWidth: 0 }}><FestivalAppCard a={a} /></li>)}
-              </ul>
-            </div>
-          )}
         </div>
       </section>
 
