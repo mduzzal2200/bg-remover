@@ -32,6 +32,7 @@ export default function ExampleImage({
   note = "Example coming soon",
   sizes = "(max-width: 768px) 100vw, 420px",
   eager = false,
+  onSourceLoad,
 }: {
   src?: string;
   /**
@@ -57,6 +58,7 @@ export default function ExampleImage({
   note?: string;
   sizes?: string;
   eager?: boolean;
+  onSourceLoad?: (src: string) => void;
 }) {
   // isRenderable, not Boolean: a URL whose host next/image has not been
   // told about throws during render rather than firing onError, so it has to
@@ -104,7 +106,7 @@ export default function ExampleImage({
         sizes={sizes}
         priority={eager}
         loading={eager ? undefined : "lazy"}
-        onLoad={() => setLoaded(true)}
+        onLoad={() => { setLoaded(true); onSourceLoad?.(current); }}
         onError={() => setIndex((i) => i + 1)}
         style={{
           objectFit: "cover",
