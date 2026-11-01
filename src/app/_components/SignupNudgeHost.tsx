@@ -13,9 +13,10 @@ import SignInModal from "./SignInModal";
 
 /**
  * When the sign-up popup (SignupNudge) shows: to signed-out visitors on every
- * page they open, 5 s after they land. Closed, it comes back every 12 s on the
- * same page until they sign up, and once they've closed it, later pages in the
- * visit show it after 12 s rather than 5. Only the visitor's session decides:
+ * page they open, 5 s after they land. Closed, it stays away from that page
+ * unless they're still on it 30 s later (samePageSeconds), and comes back that
+ * way until they sign up; once they've closed it, other pages in the visit
+ * show it after 12 s (reshowSeconds) rather than 5. Only the visitor's session decides:
  * logged in, never; logged out, yes, even on a browser that has signed in
  * before, so a returning user is asked straight away. Never inside the app,
  * admin, sign-in or payment pages, and never on top of another pop-up. The
@@ -84,7 +85,7 @@ export default function SignupNudgeHost() {
       setOpen(true);
     };
     showLater.current = (seconds) => { stop(); timer.current = setTimeout(show, Math.max(0, seconds) * 1000); };
-    // 5 s on arrival; once they've closed it this visit, a new page waits as long as a comeback.
+    // 5 s on arrival; once they've closed it this visit, a new page waits reshowSeconds.
     const wait = force ? 1 : Number(p.t(closedThisVisit() ? "reshowSeconds" : "delay")) || 0;
     // On the page they landed on, count from when it started opening, not from when this code ran.
     const loading = firstPage ? performance.now() / 1000 : 0;
@@ -100,12 +101,13 @@ export default function SignupNudgeHost() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Closed without signing up: back again on this page after reshowSeconds, until they sign up.
+  // Closed without signing up: back on this page only if they're still here
+  // samePageSeconds later (leaving the page cancels it), until they sign up.
   const comeBack = () => {
     markClosed();
     if (comebacks.current <= 0) return;
     comebacks.current -= 1;
-    showLater.current(Number(p.t("reshowSeconds")) || 0);
+    showLater.current(Number(p.t("samePageSeconds")) || 30);
   };
 
   const close = () => {
