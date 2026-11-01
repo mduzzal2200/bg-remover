@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import ExampleImage from "@/app/_components/ExampleImage";
+import { isMainImage } from "@/lib/app-creatives";
 import { CREDIT_COST } from "@/lib/plans";
 import type { FestivalAppCardData } from "@/lib/festival-summary";
 
@@ -25,7 +26,8 @@ export default function FestivalAppCard({ a, eager = false }: { a: FestivalAppCa
           gradient={a.gradient}
           sizes="(max-width: 640px) 100vw, 280px"
           eager={eager}
-          onSourceLoad={(src) => setHasBeforeAfter(src.includes("-main.webp"))}
+          onSourceLoad={(src) => setHasBeforeAfter(isMainImage(src))}
+          fitFor={(src) => (isMainImage(src) ? "contain" : "cover")}
         />
         {hasBeforeAfter && <span style={{ position: "absolute", top: 10, left: 10, fontSize: 10, fontWeight: 900, letterSpacing: ".06em", color: "#fff", background: "rgba(8,8,10,.72)", border: "1px solid rgba(255,255,255,.25)", borderRadius: 999, padding: "5px 8px", backdropFilter: "blur(6px)" }}>BEFORE → AFTER</span>}
         <span style={{ position: "absolute", top: 10, right: 10, fontSize: 11, fontWeight: 800, color: "#fff", background: "rgba(8,8,10,.62)", backdropFilter: "blur(6px)", borderRadius: 999, padding: "4px 9px" }}>

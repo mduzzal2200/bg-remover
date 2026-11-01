@@ -94,3 +94,8 @@ export function creativeSources(slug: string, half: "before" | "after", legacy?:
 export function mainSources(slug: string): string[] {
   return [uploadedCreative(slug, "main")].filter(isRenderable);
 }
+
+/** True for a URL from mainSources(): one wide image, the before and after side by side. */
+export function isMainImage(src: string): boolean {
+  return /-main\.webp(\?|$)/.test(src);
+}

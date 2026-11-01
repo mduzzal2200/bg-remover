@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import ExampleImage from "@/app/_components/ExampleImage";
+import { isMainImage } from "@/lib/app-creatives";
 import type { FestivalSummary } from "@/lib/festival-summary";
 
 /**
@@ -29,13 +30,17 @@ export default function FestivalCard({ f, href, eager = false }: { f: FestivalSu
         note=""
         sizes="(max-width: 640px) 50vw, 260px"
         eager={eager}
-        onSourceLoad={(src) => setHasBeforeAfter(src.includes("-main.webp"))}
+        onSourceLoad={(src) => setHasBeforeAfter(isMainImage(src))}
+        fitFor={(src) => (isMainImage(src) ? "contain" : "cover")}
       />
-      {hasBeforeAfter && <span style={{ position: "absolute", right: 10, top: 10, fontSize: 10, fontWeight: 900, letterSpacing: ".06em", color: "#fff", background: "rgba(8,8,10,.72)", border: "1px solid rgba(255,255,255,.25)", borderRadius: 999, padding: "5px 8px", backdropFilter: "blur(6px)" }}>BEFORE → AFTER</span>}
       <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, transparent 42%, rgba(8,8,10,.9) 100%)", pointerEvents: "none" }} />
-      <span style={{ position: "absolute", top: 10, left: 10, fontSize: 11, fontWeight: 800, color: "#fff", background: "rgba(8,8,10,.62)", backdropFilter: "blur(6px)", borderRadius: 999, padding: "4px 9px", letterSpacing: ".02em" }}>
-        {f.when}
-      </span>
+      {/* One wrapping row, so a long date and the badge never overlap on a narrow card. */}
+      <div style={{ position: "absolute", top: 10, left: 10, right: 10, display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 6 }}>
+        <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", background: "rgba(8,8,10,.62)", backdropFilter: "blur(6px)", borderRadius: 999, padding: "4px 9px", letterSpacing: ".02em" }}>
+          {f.when}
+        </span>
+        {hasBeforeAfter && <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: ".06em", color: "#fff", background: "rgba(8,8,10,.72)", border: "1px solid rgba(255,255,255,.25)", borderRadius: 999, padding: "5px 8px", backdropFilter: "blur(6px)" }}>BEFORE → AFTER</span>}
+      </div>
       <div style={{ position: "absolute", left: 14, right: 14, bottom: 12, color: "#fff" }}>
         <div style={{ fontSize: 16, fontWeight: 900, lineHeight: 1.2, textShadow: "0 1px 8px rgba(0,0,0,.5)" }}>
           <span aria-hidden>{f.emoji}</span> {f.name}

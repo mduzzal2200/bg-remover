@@ -33,6 +33,7 @@ export default function ExampleImage({
   sizes = "(max-width: 768px) 100vw, 420px",
   eager = false,
   onSourceLoad,
+  fitFor,
 }: {
   src?: string;
   /**
@@ -59,6 +60,11 @@ export default function ExampleImage({
   sizes?: string;
   eager?: boolean;
   onSourceLoad?: (src: string) => void;
+  /**
+   * How to fit each candidate URL. Chosen per URL, so a wide side-by-side
+   * before/after can show whole in a tall box while a portrait still fills it.
+   */
+  fitFor?: (src: string) => "cover" | "contain";
 }) {
   // isRenderable, not Boolean: a URL whose host next/image has not been
   // told about throws during render rather than firing onError, so it has to
@@ -93,11 +99,12 @@ export default function ExampleImage({
     );
   }
 
+  const fit = fitFor?.(current) ?? "cover";
   return (
     <>
       {/* The gradient sits behind while the file decodes, so the pane is never
-          an empty grey box mid-load. */}
-      <div style={{ position: "absolute", inset: 0, background: bg, opacity: loaded ? 0 : 1, transition: "opacity .3s var(--ease)" }} />
+          an empty grey box mid-load. A contained image keeps it as the mat. */}
+      <div style={{ position: "absolute", inset: 0, background: bg, opacity: loaded && fit === "cover" ? 0 : 1, transition: "opacity .3s var(--ease)" }} />
       <Image
         key={current}
         src={current}
@@ -109,7 +116,7 @@ export default function ExampleImage({
         onLoad={() => { setLoaded(true); onSourceLoad?.(current); }}
         onError={() => setIndex((i) => i + 1)}
         style={{
-          objectFit: "cover",
+          objectFit: fit,
           opacity: loaded ? 1 : 0,
           transition: "opacity .3s var(--ease)",
         }}
