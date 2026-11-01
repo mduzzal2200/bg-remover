@@ -113,9 +113,21 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
   // current pictures rather than old previews or placeholder artwork.
   const mainOf = (s: string) => overrides.pages[creativeKey(s)]?.main;
   // Then apps search engines can reach: a link to a hidden page helps nobody find it.
-  const candidates = relatedApps(a, 24);
-  const rank = (r: { slug: string }) => (mainOf(r.slug) ? 0 : 2) + (creativeIndexable(r.slug) ? 0 : 1);
-  const related = [...candidates].sort((x, y) => rank(x) - rank(y)).slice(0, 6);
+  // A tile's real picture, when the app has one: an admin before/after or a
+  // festival creative. Generated previews and placeholder art don't count.
+  const pictureOf = (s: string) => {
+    const m = mainOf(s);
+    if (m) return { src: uploadedCreative(s, "main"), ratio: `${m.w} / ${m.h}` };
+    const f = festivalCreative(s);
+    return f ? { src: f.src, ratio: `${f.w} / ${f.h}` } : null;
+  };
+  const candidates = relatedApps(a, 60);
+  const rank = (r: { slug: string }) => (pictureOf(r.slug) ? 0 : 2) + (creativeIndexable(r.slug) ? 0 : 1);
+  const ranked = [...candidates].sort((x, y) => rank(x) - rank(y));
+  // Twelve, all with real pictures when there are enough of them; otherwise the
+  // best of the rest fill in after the ones that have pictures.
+  const withPicture = ranked.filter((r) => pictureOf(r.slug));
+  const related = (withPicture.length >= 6 ? withPicture : ranked).slice(0, 12);
   const cat = categoryOf(a);
   const catMeta = cat ? CAT_META[cat] : null;
   // A festival app lives under its festival, and shows one generated example
@@ -535,12 +547,12 @@ export default async function CreativeAppPage({ params }: { params: Promise<{ sl
           <div style={{ maxWidth: 1000, margin: "0 auto" }}>
             <h2 style={{ fontSize: "clamp(1.4rem,3vw,2rem)", fontWeight: 900, color: "var(--text)", textAlign: "center", margin: "0 0 32px", letterSpacing: "-0.02em" }}>More Creative Apps</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 14, alignItems: "start" }}>
-              {related.map((r) => { const main = mainOf(r.slug); return (
+              {related.map((r) => { const pic = pictureOf(r.slug); return (
                 <a key={r.slug} href={`${CREATIVE_BASE}/${r.slug}`} className="jpt-hover" style={{ textDecoration: "none", display: "block", borderRadius: 14, padding: 8 }}>
                   {/* position: relative — ExampleImage fills its container. */}
-                  <div style={{ position: "relative", aspectRatio: main ? `${main.w} / ${main.h}` : "16 / 10", borderRadius: 14, overflow: "hidden", marginBottom: 8, background: `linear-gradient(135deg, ${r.gradient[0]}, ${r.gradient[1]})` }}>
+                  <div style={{ position: "relative", aspectRatio: pic ? pic.ratio : "16 / 10", borderRadius: 14, overflow: "hidden", marginBottom: 8, background: `linear-gradient(135deg, ${r.gradient[0]}, ${r.gradient[1]})` }}>
                     <ExampleImage
-                      sources={main ? [uploadedCreative(r.slug, "main"), ...creativeSources(r.slug, "after", previewUrl(r.slug))] : creativeSources(r.slug, "after", previewUrl(r.slug))}
+                      sources={pic ? [pic.src, ...creativeSources(r.slug, "after", previewUrl(r.slug))] : creativeSources(r.slug, "after", previewUrl(r.slug))}
                       alt={`${r.h1} example`}
                       slug={r.slug}
                       name={r.h1}

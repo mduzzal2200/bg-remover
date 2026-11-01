@@ -75,12 +75,21 @@ export function relatedApps(app: CreativeApp, n = 6): CreativeApp[] {
       .map((s) => CREATIVE_APPS.find((x) => x.slug === s))
       .filter((x): x is CreativeApp => !!x);
     const seen = new Set(first.map((x) => x.slug).concat(app.slug));
-    const sameRegion = CREATIVE_APPS.filter((x) => {
-      if (seen.has(x.slug)) return false;
-      const other = festivalOfApp(x.slug);
-      return !!other && other.spec.kind === festivalOfApp(app.slug)!.spec.kind && other.festival.regions.some((r) => festival.regions.includes(r));
-    });
-    return [...first, ...sameRegion].slice(0, n);
+    // Then other festivals' apps: the same kind from the same part of the
+    // world first, then anything from there, then the same kind anywhere.
+    // "Worldwide" doesn't count as a shared region: it would pair Hanami
+    // with Diwali just because both are celebrated abroad.
+    const kind = festivalOfApp(app.slug)!.spec.kind;
+    const home = festival.regions.filter((r) => r !== "worldwide");
+    const score = (x: CreativeApp) => {
+      const o = festivalOfApp(x.slug)!;
+      const near = o.festival.regions.some((r) => r !== "worldwide" && home.includes(r));
+      const same = o.spec.kind === kind;
+      return near && same ? 0 : near ? 1 : same ? 2 : 3;
+    };
+    const others = CREATIVE_APPS.filter((x) => !seen.has(x.slug) && !!festivalOfApp(x.slug))
+      .sort((x, y) => score(x) - score(y));
+    return [...first, ...others].slice(0, n);
   }
   const cat = categoryOf(app);
   const sameCat = CREATIVE_APPS.filter((x) => x.slug !== app.slug && categoryOf(x) === cat);
