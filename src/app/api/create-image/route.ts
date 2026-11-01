@@ -17,13 +17,13 @@ const GENERATE_MODEL_IDS = new Set<string>(TEXT_TO_IMAGE_MODELS.map((m) => m.id)
 const RATIOS = new Set<string>(ASPECT_RATIOS);
 
 const REFERENCE_AND_SUBJECT_NOTE =
-  "You are given two images. IMAGE 1 is the REFERENCE: match its composition, pose, framing, camera angle, styling, setting, lighting and colour grade, following the prompt above. IMAGE 2 is the SUBJECT: the result must show this exact subject. If it is a person, keep their face, facial features, skin tone, hair and identity exactly the same. If it is a product or object, keep its shape, colours, materials, text and branding exactly the same. Do not reuse the person or product from image 1. The result must look like a real photograph.";
+  "You are given two images. IMAGE 1 is the REFERENCE: match its composition, pose, framing, camera angle, styling, setting, lighting and colour grade, following the prompt above. IMAGE 2 is the SUBJECT: the result must show this exact subject. If it is a person, keep their face, facial features, skin tone, hair and identity exactly the same — an exact likeness, not beautified or idealised — and take the pose and head angle from image 1, never the tilt or phone angle of image 2: head upright and level, face toward the camera unless the prompt or image 1 shows otherwise. If it is a product or object, keep its shape, colours, materials, text and branding exactly the same. Do not reuse the person or product from image 1. The result must look like a real photograph.";
 
 const REFERENCE_NOTE =
   "The provided image is a visual REFERENCE: match its composition, styling, lighting and mood while following the prompt above. Produce a new, realistic photograph.";
 
 const SUBJECT_NOTE =
-  "Use the subject of the provided photo as the subject of this image. If it is a person, keep their face, facial features, skin tone, hair and identity exactly the same. If it is a product or object, keep its shape, colours, materials, text and branding exactly the same. The result must look like a real photograph.";
+  "Use the subject of the provided photo as the subject of this image. If it is a person, keep their face, facial features, skin tone, hair and identity exactly the same — an exact likeness, not beautified or idealised — and show them facing the camera with the head upright and level, even if the photo is tilted, unless the prompt asks for another angle. If it is a product or object, keep its shape, colours, materials, text and branding exactly the same. The result must look like a real photograph.";
 
 /**
  * Create Image. Text-to-image by default; with the user's photo attached, the

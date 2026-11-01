@@ -49,11 +49,16 @@ export async function POST(req: NextRequest) {
   const framePrompt = (style: (typeof selectedStyles)[number]) =>
     `Photorealistic professional headshot of the exact person in the reference photo.\n\n` +
     `IDENTITY (most important): keep this person's real face — the same bone structure, ` +
-    `jawline, nose, eyes, eyebrows, lips, skin tone and skin texture, hairline and hair colour, ` +
-    `age, and any glasses, freckles, moles or facial hair. Do not beautify, slim, smooth, ` +
+    `face shape and fullness, jawline, nose, eye shape, spacing and colour, eyebrows, lips and ` +
+    `teeth, ears, skin tone and skin texture, hairline and hair colour, age, build, and any ` +
+    `glasses, freckles, moles, scars or facial hair. If the photo shows them at an angle, ` +
+    `rebuild the unseen side from the visible one and invent no new features. Do not beautify, slim, smooth, ` +
     `lighten or otherwise "improve" the face. A viewer who knows this person must recognise them ` +
     `immediately.\n\n` +
     `STYLING: ${style.prompt}\n\n` +
+    `POSE: facing the camera, head upright and level, both eyes to the lens, camera at eye ` +
+    `level — even if the reference photo is tilted, rotated or taken from a high or low ` +
+    `phone angle. Do not copy its tilt.\n\n` +
     `CAMERA: shot on a full-frame camera with an 85mm lens at f/2, natural skin texture with ` +
     `visible pores, catchlights in the eyes, realistic fabric detail, soft studio-quality light. ` +
     `Sharp focus on the eyes. Vertical portrait framing. ` +
