@@ -245,12 +245,12 @@ const LIGHTING = sel("lighting", "Lighting", [
 
 const SETTING = sel("setting", "Setting", [
   AUTO,
-  c("studio", "Studio", "Set it in a photographic studio against a clean backdrop."),
-  c("outdoor", "Outdoors", "Set it outdoors with a natural landscape behind, at a believable distance and depth."),
-  c("street", "City street", "Set it on a real city street with architecture and depth behind the subject."),
-  c("home", "Indoors", "Set it in a warm, tastefully furnished interior with natural window light."),
-  c("garden", "Garden", "Set it in a garden with greenery and dappled natural light."),
-  c("beach", "Beach", "Set it on a beach with soft sand, open sky and warm low light."),
+  c("studio", "Studio", "Set it in a professional photo studio: a clean, seamless backdrop in a soft tone that flatters the outfit, with smooth, even studio light — like a magazine studio shoot."),
+  c("outdoor", "Outdoors", "Set it outdoors in a beautiful, uncluttered spot that suits the outfit and the look described above — a garden terrace, a tree-lined path or a scenic view — with the background softly out of focus at a believable depth, like a professional outdoor photoshoot. Not a pool deck, a car park or a crowded snapshot spot."),
+  c("street", "City street", "Set it on an attractive city street — elegant architecture, shopfronts or a quiet boulevard — softly blurred behind them with real depth, like a fashion street shoot. No traffic or crowds in focus."),
+  c("home", "Indoors", "Set it in a beautiful, tastefully styled interior that suits the outfit — a boutique-hotel lounge or a designer living room — with soft window or lamp light and the background softly blurred. No clutter."),
+  c("garden", "Garden", "Set it in a lush, well-kept garden with flowers and greenery softly blurred behind them, in dappled natural light, like a professional garden photoshoot."),
+  c("beach", "Beach", "Set it on a beautiful beach with soft sand, calm water and open sky, in warm low light, with the background softly blurred, like a professional beach photoshoot."),
 ]);
 
 const ATTIRE = sel("attire", "Attire", [
