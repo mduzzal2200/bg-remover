@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CreativeApp } from "@/lib/creative-apps";
 import {
-  TABS, presetsFor, buildPrompt, ASPECT_RATIOS, IMAGE_EDIT_MODELS, TEXT_TO_IMAGE_MODELS, defaultRatioFor, defaultModelFor,
+  TABS, presetsFor, buildPrompt, ASPECT_RATIOS, IMAGE_EDIT_MODELS, TEXT_TO_IMAGE_MODELS, defaultRatioFor, defaultModelFor, hasFixedRatio, nearestRatio,
   type PresetTab, type Preset, type AspectRatio,
 } from "@/lib/app-presets";
 import { CREDIT_COST } from "@/lib/plans";
@@ -42,6 +42,8 @@ export default function AppWorkspace({ app, presetImages = {}, samples = [] }: P
   const [custom, setCustom] = useState("");
   const [model, setModel] = useState<string>(() => defaultModelFor(app));
   const [ratio, setRatio] = useState<AspectRatio>(() => defaultRatioFor(app.slug));
+  // Set once the visitor picks a ratio themselves; from then on it is theirs.
+  const ratioChosen = useRef(false);
 
   /*
     The app's own settings — the target age, the beard style, what to remove.
@@ -70,6 +72,22 @@ export default function AppWorkspace({ app, presetImages = {}, samples = [] }: P
   const missingPrimary = textOnly && !(optValues[primaryOpt?.id ?? ""] || "").trim();
 
   const [original, setOriginal] = useState<string | null>(null);
+
+  // The result takes the shape of the photo: a tall photo comes back tall.
+  // Not for the apps with a shape of their own (banners, covers, logos,
+  // profile pictures, cards), and never over a ratio the visitor picked.
+  useEffect(() => {
+    if (!original || ratioChosen.current || hasFixedRatio(app.slug)) return;
+    let live = true;
+    const img = new window.Image(); // `Image` here is next/image
+    img.onload = () => {
+      if (live && !ratioChosen.current && img.naturalWidth && img.naturalHeight) {
+        setRatio(nearestRatio(img.naturalWidth, img.naturalHeight));
+      }
+    };
+    img.src = original;
+    return () => { live = false; };
+  }, [original, app.slug]);
   const [result, setResult] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -635,7 +653,7 @@ export default function AppWorkspace({ app, presetImages = {}, samples = [] }: P
           </div>
           <div>
             <label style={ctlLabel} htmlFor="ratio">Ratio</label>
-            <select id="ratio" value={ratio} onChange={(e) => setRatio(e.target.value as AspectRatio)} style={select}>
+            <select id="ratio" value={ratio} onChange={(e) => { ratioChosen.current = true; setRatio(e.target.value as AspectRatio); }} style={select}>
               {ASPECT_RATIOS.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
           </div>

@@ -166,7 +166,7 @@ export function presetsFor(app: CreativeApp, tab: PresetTab): Preset[] {
  * the thing it qualifies. See lib/app-options.ts.
  */
 import { stagingDirective, stagingModeFor, photorealDirective, stripOwnPhotoreal, outputDirective, outputFormFor, referenceDirective, straightenDirective } from "@/lib/staging";
-import { curatedCategory, isTextOnlyApp } from "@/lib/app-options";
+import { curatedCategory, isRequestPhrase, isTextOnlyApp } from "@/lib/app-options";
 import { festivalOfApp } from "@/lib/festivals";
 
 export function buildPrompt(
@@ -209,7 +209,11 @@ export function buildPrompt(
   // Multi-parameter controls (for example attire + background, or setting +
   // lighting) each append their own scoped instruction. The combined prompt
   // must honour every selected parameter while preserving the main app brief.
+  // A typed request already says how it relates to the app's look, and may
+  // reach beyond its box ("…and give her a bottle"), so it is not told to
+  // touch only its own attribute.
   parts.push(...extras.map((phrase) =>
+    isRequestPhrase(phrase) ? phrase :
     "Apply this selected app option to its named attribute without changing " +
     "unrelated attributes or losing the app's defining preview style: " + phrase
   ));
@@ -296,6 +300,39 @@ export function defaultRatioFor(slug: string): AspectRatio {
   // Festival apps come out 4:5, the same shape as their example images.
   if (festivalOfApp(slug)) return "4:5";
   return DEFAULT_RATIO[slug] ?? "1:1";
+}
+
+/*
+  Apps whose output has a shape of its own — a banner, a cover, a logo, a
+  profile picture, a greeting card. Everything else takes the shape of the
+  photo that was uploaded (the owner's ask, Nov 2026): a tall photo comes back
+  tall, a wide one wide.
+*/
+const FIXED_RATIO = new Set([
+  "thumbnail-maker", "youtube-thumbnail-generator", "linkedin-banner", "linkedin-banner-maker",
+  "movie-poster-generator", "book-cover-generator", "comic-book-cover", "tarot-card-portrait",
+  "album-cover-generator", "logo-maker", "gaming-logo-maker", "icon-generator",
+  "image-to-emoji", "text-to-emoji",
+  "instagram-pfp-maker", "linkedin-pfp-maker", "discord-pfp-maker", "youtube-pfp-maker",
+  "facebook-pfp-maker", "roblox-pfp-maker",
+]);
+
+/** True when the app keeps its own shape instead of following the uploaded photo. */
+export function hasFixedRatio(slug: string): boolean {
+  return FIXED_RATIO.has(slug) || festivalOfApp(slug)?.spec.kind === "card";
+}
+
+/** The offered ratio closest to a photo's shape. */
+export function nearestRatio(width: number, height: number): AspectRatio {
+  const target = Math.log(width / height);
+  let best: AspectRatio = "1:1";
+  let bestGap = Infinity;
+  for (const r of ASPECT_RATIOS) {
+    const [w, h] = r.split(":").map(Number);
+    const gap = Math.abs(Math.log(w / h) - target);
+    if (gap < bestGap) { bestGap = gap; best = r; }
+  }
+  return best;
 }
 
 /**

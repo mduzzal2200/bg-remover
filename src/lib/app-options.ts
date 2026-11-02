@@ -50,8 +50,27 @@ export interface AppOption {
   choices?: AppChoice[];
   /** text only. */
   placeholder?: string;
-  /** text only: `{value}` is replaced with what was typed. */
+  /** text only: `{value}` is replaced with what was typed. For boxes whose text is used literally (lettering). */
   template?: string;
+  /**
+   * text only: a box people type requests into, not literal text.
+   *
+   * People don't keep to the box's topic. "Remove the flowers and give her a
+   * bottle" typed into "Describe the outfit" was sent as "Dress them in this
+   * specifically: remove the flowers…", so the model took that as the outfit,
+   * kept her own top, and the app's whole look was lost. A request box says
+   * what it is for, what to do when the text is about that, and what still
+   * happens when it isn't — so the app's transformation always survives, and
+   * anything else they asked for is done as well.
+   */
+  request?: {
+    /** What the box is about, as a noun phrase: "clothing". */
+    about: string;
+    /** What to do with text about it: "dress them in exactly that, …". */
+    use: string;
+    /** What still happens when the text says nothing about it. */
+    otherwise?: string;
+  };
   /** number only: the slider's range and starting point. */
   min?: number;
   max?: number;
@@ -122,6 +141,30 @@ function withDefault(o: AppOption, first: AppChoice | string): AppOption {
 
 function text(id: string, label: string, placeholder: string, template: string, hint?: string): AppOption {
   return { id, label, kind: "text", placeholder, template, hint };
+}
+
+/** A box people type a request into — see `AppOption.request`. */
+function ask(id: string, label: string, placeholder: string, request: NonNullable<AppOption["request"]>, hint?: string): AppOption {
+  return { id, label, kind: "text", placeholder, request, hint };
+}
+
+const REQUEST_START = "The person typed this into the";
+
+/** True for the sentence a request box adds (buildPrompt passes it through unwrapped). */
+export function isRequestPhrase(phrase: string): boolean {
+  return phrase.startsWith(REQUEST_START);
+}
+
+/** The sentence a request box adds: their words, read as a request, with the app's look kept. */
+function requestPhrase(o: AppOption, typed: string): string {
+  const r = o.request!;
+  return [
+    `${REQUEST_START} "${o.label}" box: "${typed}".`,
+    `Read it as their request. Where it describes ${r.about}, ${r.use}.`,
+    "Where it asks for anything else — adding, removing or changing an object, a prop, an accessory or a detail of the scene — do that as well.",
+    r.otherwise ? `If it says nothing about ${r.about}, ${r.otherwise}.` : "",
+    "Ignore stray letters, typos and words that are not an instruction, and never let this box cancel the app's main transformation described above.",
+  ].filter(Boolean).join(" ");
 }
 
 /** `num("age", "Age", { min: 1, max: 100, … })` — a slider. */
@@ -382,7 +425,9 @@ function agePhrase(n: number, keepPhoto = false): string {
 const AGE_SLIDER = num("age", "Age them to", {
   min: 1, max: 100, initial: 65,
   format: years,
-  phraseFor: agePhrase,
+  // In the photo as taken, as the apps' creatives show: same clothes, room and
+  // pose, only the person older. A child's age still gets a new photo.
+  phraseFor: (n) => agePhrase(n, true),
   hint: "Drag anywhere from 1 to 100 — below their current age it de-ages instead.",
 });
 
@@ -863,35 +908,49 @@ const PET_STYLE = sel("style", "Style", [
 ]);
 
 /** Free-text controls, for the apps whose subject only the user knows. */
-const WHAT_TO_REMOVE = text(
+const WHAT_TO_REMOVE = ask(
   "target", "What should go?",
   "e.g. the bin on the left, the person in the background",
-  "Remove this specifically: {value}. Reconstruct what was behind it and leave everything else in the photo untouched.",
+  {
+    about: "something to remove",
+    use: "remove exactly that, reconstruct what was behind it, and leave everything else in the photo untouched",
+    otherwise: "remove whatever looks most out of place",
+  },
   "Leave empty and the AI picks what looks out of place."
 );
 
 const RECOLOUR_TARGET: AppOption = {
-  ...text(
+  ...ask(
     "target", "What, and to what colour?",
     "e.g. the red car → matte black",
-    "Recolour this specifically: {value}. Keep the original shading, texture and material behaviour so it reads as though it was always that colour."
+    {
+      about: "something to recolour and the colour",
+      use: "recolour exactly that, keeping the original shading, texture and material behaviour so it reads as though it was always that colour",
+    }
   ),
   required: true,
 };
 
 const SPLASH_TARGET: AppOption = {
-  ...text(
+  ...ask(
     "target", "What keeps its colour?",
     "e.g. the red umbrella",
-    "Keep this in full colour: {value}. Everything else becomes neutral monochrome, with a clean precise boundary."
+    {
+      about: "what should keep its colour",
+      use: "keep exactly that in full colour and turn everything else neutral monochrome, with a clean precise boundary",
+    }
   ),
   required: true,
 };
 
-const OUTFIT_TEXT = text(
+const OUTFIT_TEXT = ask(
   "outfit", "Describe the outfit",
   "e.g. a cream linen suit, open collar",
-  "Dress them in this specifically: {value}. Match the drape, fit and fabric behaviour to their pose and to the light of the scene."
+  {
+    about: "clothing, shoes or jewellery",
+    use: "dress them in exactly that, matching the drape, fit and fabric behaviour to their pose and to the light of the scene",
+    otherwise: "still dress them in the new outfit described above — never leave them in the clothes from their photo",
+  }
 );
 
 const HEADLINE_TEXT = text(
@@ -908,10 +967,13 @@ const NAME_TEXT = text(
   "Spelling is more reliable on the GPT Image model."
 );
 
-const SUBJECT_TEXT = text(
+const SUBJECT_TEXT = ask(
   "subject", "Describe what you want",
   "e.g. a fox knight in bronze armour",
-  "The subject is: {value}."
+  {
+    about: "a subject",
+    use: "make exactly that the subject",
+  }
 );
 
 /**
@@ -963,8 +1025,8 @@ const BY_SLUG: Record<string, AppOption[]> = {
   // ── Body ────────────────────────────────────────────────────────────────
   "gym-transformation": [BUILD],
   "muscle-generator":   [BUILD],
-  "abs-filter":         [BUILD],
-  "smile-filter":       [SMILE],
+  "abs-filter":         [withDefault(BUILD, "athletic")],
+  "smile-filter":       [withDefault(SMILE, "broad")],
 
   // ── Collectibles ────────────────────────────────────────────────────────
   "3d-figurine":             [withDefault(FIGURE_PACKAGING, c("basebox", "Base & box", "Show the figure standing on a round clear display base on a desk, with its printed collector's box standing behind it, photographed as a product shot."))],
@@ -1179,8 +1241,11 @@ export function optionPhrases(options: AppOption[], values: OptionValues): strin
     const v = values[o.id];
     if (!v) continue;
     if (o.kind === "text") {
-      const clean = v.trim().slice(0, 200);
-      if (clean && o.template) out.push(o.template.replace("{value}", clean));
+      // Quotes would end the quoted request early; nothing typed needs them.
+      const clean = v.replace(/["“”]/g, "'").trim().slice(0, 200);
+      if (!clean) continue;
+      if (o.request) out.push(requestPhrase(o, clean));
+      else if (o.template) out.push(o.template.replace("{value}", clean));
       continue;
     }
     if (o.kind === "number") {

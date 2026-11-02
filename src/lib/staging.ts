@@ -79,13 +79,14 @@ const IDENTITY =
   IDENTITY for LIKENESS, and they still face the camera.
 */
 const FACE_FORWARD =
-  "Show the person facing the camera: head upright and level — not tilted or " +
-  "leaning to one side — face turned toward the lens with both eyes visible, and " +
-  "the camera at eye level. Do this even if the uploaded photo is tilted, rotated, " +
-  "taken from a high or low phone angle, or shows them turned to the side: do not " +
-  "copy the tilt or angle of the original photo. With more than one person, each " +
-  "of them faces the camera. Use a profile or another angle only if the " +
-  "description above asks for one.";
+  "Pose: unless the description above calls for another angle, show the person " +
+  "facing the camera with the camera at eye level — face toward the lens with both " +
+  "eyes visible and the head upright and level, never tilted or leaning to one " +
+  "side. A slight, natural turn of the head or shoulders is fine; a pose the " +
+  "description asks for, like a chin resting on a hand or a look over the shoulder, " +
+  "comes first. Do not copy the tilt, rotation or high or low phone angle of the " +
+  "uploaded photo. With more than one person, each of them faces the camera in " +
+  "the same way.";
 
 /*
   For the modes that keep the pose (subject, scene, restyle) and the editor:
@@ -95,8 +96,10 @@ const STRAIGHTEN =
   "If a person is in the photo and their head or the whole photo is tilted, " +
   "rotated or turned away, straighten it so they face the camera: head upright and " +
   "level, not leaning to one side, face toward the lens with both eyes visible, and " +
-  "the camera at eye level. Do not copy the tilt or angle of the original photo; with " +
-  "more than one person, each faces the camera. Keep everything else as described.";
+  "the camera at eye level — a slight, natural turn is fine. Do not copy the tilt or " +
+  "angle of the original photo; with more than one person, each faces the camera. " +
+  "Where the description above asks to keep the angle — a side profile, say — keep " +
+  "it. Keep everything else as described.";
 
 /*
   Only for the modes that rebuild the pose.
@@ -306,10 +309,10 @@ const BY_SLUG: Record<string, StagingMode> = {
   // different shirt is a rejected passport photo.
   "passport-photo": "scene",
   "visa-photo": "scene",
-  // A new photograph of them at that age: clothes, hairstyle, setting and pose
-  // suit the age, and the head is set upright and toward the camera.
-  "age-progression": "restage",
-  "age-progression-tool": "restage",
+  // Aged in the photo they took, as both apps' creatives show: the same
+  // clothes, room and pose, only the person older.
+  "age-progression": "scene",
+  "age-progression-tool": "scene",
   // One change, in the photo they took: the example keeps the room, the
   // clothes and the pose, and only the face and hair age — or the suit goes on.
   "old-filter": "scene",
