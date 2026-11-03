@@ -10,6 +10,9 @@ import {
 } from "@/lib/prompts/data";
 import { mediaResolver } from "@/lib/prompts/media";
 import { BRAND } from "@/lib/brand";
+import AppArticle from "@/app/creative/[slug]/AppArticle";
+import ListingMark from "@/app/_components/ListingMark";
+import { MODEL_FAQS, MODEL_GUIDES } from "@/lib/prompts/model-guides";
 
 /** Same size as the facet listing pages — one number, one place. */
 export const MODEL_PAGE_SIZE = 48;
@@ -115,6 +118,8 @@ export default async function ModelLanding({ slug, page = 1 }: { slug: string; p
       q: `What is ${model.name}?`,
       a: `${about.blurb} This page collects ${model.count} prompts written for it by ${authors} different people.`,
     },
+    // Each model has its own questions; the generic three are the fallback.
+    ...(MODEL_FAQS[slug] ?? [
     {
       q: "Where do these prompts come from?",
       a: "They are drawn from open, CC BY 4.0 licensed collections published on GitHub by YouMind OpenLab. Each prompt was originally posted by an individual creator, and every card and detail page here credits that person and links to their original post — that credit is the licence condition, not a courtesy.",
@@ -125,12 +130,13 @@ export default async function ModelLanding({ slug, page = 1 }: { slug: string; p
     },
     {
       q: "Are they free?",
-      a: "Copying is free and needs no account. Generating an image inside Pixel Shine uses credits; using the prompt in a tool you already pay for costs nothing here.",
+      a: "Copying is free and needs no account. Generating an image inside PixelShine uses credits; using the prompt in a tool you already pay for costs nothing here.",
     },
+    ]),
     ...(withVars
       ? [{
           q: "What are the editable fields?",
-          a: `${withVars} of these prompts contain placeholders like {argument name="subject" default="a red bicycle"}. Rather than making you find and replace them by hand, they are rendered as input boxes — change one and the prompt below updates, and Copy takes your version.`,
+          a: `${withVars} of the ${model.name} prompts here have fill-in fields, such as the subject or the text on a poster. They appear as input boxes on the prompt's page; change one and Copy gives you your version.`,
         }]
       : []),
   ];
@@ -169,6 +175,8 @@ export default async function ModelLanding({ slug, page = 1 }: { slug: string; p
 
           <GeneratorBar model={model.name} />
 
+          {/* TRENDING and ALL PROMPTS repeat each prompt's own title and text */}
+          <ListingMark at="start" />
           {/* TRENDING */}
           <section style={{ marginTop: 46 }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 16, flexWrap: "wrap", marginBottom: 14 }}>
@@ -189,6 +197,7 @@ export default async function ModelLanding({ slug, page = 1 }: { slug: string; p
             </h2>
             <PromptGrid cards={cards} filters={filters} page={page} pageSize={MODEL_PAGE_SIZE} basePath={`/${slug}-prompts`} />
           </section>
+          <ListingMark at="end" />
 
           {/* ABOUT */}
           <Band>
@@ -207,6 +216,13 @@ export default async function ModelLanding({ slug, page = 1 }: { slug: string; p
             </div>
           </Band>
 
+          {/* GUIDE: first page only, so later pages don't repeat it */}
+          {page === 1 && MODEL_GUIDES[slug] && (
+            <div style={{ margin: "40px -24px 0" }}>
+              <AppArticle sections={MODEL_GUIDES[slug]} />
+            </div>
+          )}
+
           {/* FAQ */}
           <section style={{ marginTop: 46, maxWidth: 800 }}>
             <h2 style={{ fontSize: 21, fontWeight: 900, letterSpacing: "-0.02em", margin: "0 0 16px" }}>Common questions</h2>
@@ -218,7 +234,8 @@ export default async function ModelLanding({ slug, page = 1 }: { slug: string; p
             ))}
           </section>
 
-          {/* CROSS-LINKS */}
+          {/* CROSS-LINKS: the same link lists on every model page */}
+          <ListingMark at="start" />
           <section style={{ marginTop: 50, paddingTop: 26, borderTop: "1px solid var(--border)" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))", gap: 26 }}>
               <div>
@@ -259,6 +276,7 @@ export default async function ModelLanding({ slug, page = 1 }: { slug: string; p
               <DatasetCredit />
             </div>
           </section>
+          <ListingMark at="end" />
         </div>
       </div>
     </>

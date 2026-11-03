@@ -47,6 +47,7 @@ const FAMILIES = [
   { id: "app", test: (p) => /^\/creative\/[^/]+$/.test(p), min: 1500 },
   { id: "blog", test: (p) => /^\/blog\/[^/]+$/.test(p), min: 1500 },
   { id: "prompt-category", test: (p) => /^\/prompts\/(image|video)\/[^/]+$/.test(p), min: 700 },
+  { id: "prompt-model", test: (p) => /^\/(nano-banana-pro|gpt-image-2|gpt-image-1-5|seedream-4-5|seedance-2-0|grok-imagine|gemini-3)-prompts$/.test(p), min: 600 },
   { id: "hub", test: (p) => /^\/(tools|guides|guides\/[^/]+|pricing|blog|creative|festivals|prompts)$/.test(p), min: 600 },
   { id: "other", test: () => true, min: 0 },
 ];

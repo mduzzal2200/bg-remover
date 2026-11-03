@@ -5,6 +5,9 @@ import { byFacet, facetList, findFacet, toCards } from "@/lib/prompts/data";
 import { mediaResolver } from "@/lib/prompts/media";
 import type { Media } from "@/lib/prompts/types";
 import { notFound } from "next/navigation";
+import HubArticle from "@/app/_components/HubArticle";
+import ListingMark from "@/app/_components/ListingMark";
+import { facetGuidePage } from "@/lib/prompts/facet-guides";
 
 /**
  * A single category listing: /prompts/image/watercolor and friends.
@@ -32,6 +35,8 @@ export default async function CategoryPage({ media, facetSlug, page = 1 }: { med
 
   const kindLabel = kind === "use-cases" ? "Use case" : kind === "styles" ? "Style" : "Subject";
   const siblings = facetList(media, kind).filter((f) => f.slug !== facet.slug);
+  // The written guide sits on the first page only, so later pages don't repeat it.
+  const guide = page === 1 ? facetGuidePage(media, facet.slug, facet.name) : null;
 
   return (
     <div style={{ background: "var(--bg)", color: "var(--text)" }}>
@@ -59,9 +64,17 @@ export default async function CategoryPage({ media, facetSlug, page = 1 }: { med
           </p>
         </div>
 
+        <ListingMark at="start" />
         <div style={{ marginTop: 28 }}>
           <PromptGrid cards={cards} page={page} pageSize={PAGE_SIZE} basePath={`/prompts/${media}/${facetSlug}`} showSort />
         </div>
+        <ListingMark at="end" />
+
+        {guide && (
+          <div style={{ margin: "40px -24px 0" }}>
+            <HubArticle page={guide} faqHeading={`${facet.name} prompt questions`} />
+          </div>
+        )}
 
         {siblings.length > 0 && (
           <section style={{ marginTop: 48 }}>
