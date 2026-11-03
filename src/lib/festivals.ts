@@ -462,7 +462,7 @@ export const FESTIVALS: Festival[] = [
     about: [
       "Eid al-Fitr marks the end of Ramadan, the month of fasting. It begins with special morning prayers and goes on for one to three days of visiting family and friends, giving gifts and money to children, and eating: sheer khurma in South Asia, ketupat in Indonesia and Malaysia, maamoul in the Arab world. Before the prayers, families give zakat al-fitr, a charity so that everyone can celebrate.",
       "It is a day for new clothes and family photos: elegant abayas, kaftans, anarkalis and shalwar kameez, and crisp kurtas and thobes, in soft pastels or rich jewel tones, with homes decorated with lanterns and fairy lights.",
-      "These apps make that picture from one selfie: an Eid portrait in elegant festive clothes, a family photo with everyone kept in the frame, an \"Eid Mubarak\" card, or your own photo in front of glowing lanterns. We never add a hijab or any head covering; if you wear one, it stays exactly as it is. Each costs 2 credits.",
+      "These apps make that picture from one selfie: an Eid portrait in elegant festive clothes, a family photo with everyone kept in the frame, an \"Eid Mubarak\" card, or your own photo in front of glowing lanterns. Each costs 2 credits.",
     ],
     gradient: ["#0F766E", "#B45309"],
     style: {
@@ -496,7 +496,7 @@ export const FESTIVALS: Festival[] = [
     about: [
       "Eid al-Adha is the larger of the two Eids. It comes at the end of the Hajj pilgrimage to Mecca and remembers the prophet Ibrahim's devotion. Families gather for morning prayers, visit relatives, share festive meals and give a large share of food to neighbours and to people in need. In many countries it is a public holiday of three or four days.",
       "Like Eid al-Fitr, it is a day for the best clothes of the year and for family photos at home: rich fabrics, embroidery, gold and soft lantern light.",
-      "These apps give you that picture from a selfie: a festive Eid portrait, a family photo with everyone kept in, an \"Eid Mubarak\" card, or your own photo in front of glowing lanterns. Our pictures keep to people, homes and lights. We never add a hijab or any head covering; if you wear one, it stays exactly as it is. Each costs 2 credits.",
+      "These apps give you that picture from a selfie: a festive Eid portrait, a family photo with everyone kept in, an \"Eid Mubarak\" card, or your own photo in front of glowing lanterns. Our pictures keep to people, homes and lights. Each costs 2 credits.",
     ],
     gradient: ["#065F46", "#CA8A04"],
     style: {
@@ -529,7 +529,7 @@ export const FESTIVALS: Festival[] = [
     about: [
       "Ramadan is the ninth month of the Islamic calendar, when Muslims fast from dawn until sunset. Each evening the fast is broken at iftar, often with a date and water first, and then a shared meal with family, friends and neighbours. Nights are for prayer, visits and late suhoor meals before dawn, and the month ends with Eid al-Fitr.",
       "Streets and homes glow through the month: the fanous lanterns of Egypt, strings of crescent-and-star lights, and long iftar tables set for many people at once.",
-      "These apps make that picture from one selfie: a calm, lantern-lit Ramadan portrait, an iftar family photo with everyone kept in, a \"Ramadan Kareem\" card, or your own photo in front of glowing fanous lanterns. We never add a hijab or any head covering; if you wear one, it stays as it is. Each costs 2 credits.",
+      "These apps make that picture from one selfie: a calm, lantern-lit Ramadan portrait, an iftar family photo with everyone kept in, a \"Ramadan Kareem\" card, or your own photo in front of glowing fanous lanterns. Each costs 2 credits.",
     ],
     gradient: ["#1E3A8A", "#B45309"],
     style: {
@@ -597,7 +597,7 @@ export const FESTIVALS: Festival[] = [
     about: [
       "Hanukkah remembers the rededication of the Temple in Jerusalem in the 2nd century BCE and the story of a small jar of oil that burned for eight days. Each night for eight nights, families light one more candle on the hanukkiah, the nine-branched menorah, place it in a window, and say blessings together.",
       "It is a warm, home-centred festival: latkes and sufganiyot fried in oil, games of dreidel for chocolate coins, gifts for children, and blue-and-white decorations.",
-      "These apps make that picture from one selfie: a cosy, candle-lit portrait, a family photo by the menorah with everyone kept in, a \"Happy Hanukkah\" card, or your own photo with a glowing menorah and festive lights behind you. We never add a kippah or any religious item to a person; if you wear one, it stays as it is. Each costs 2 credits.",
+      "These apps make that picture from one selfie: a cosy, candle-lit portrait, a family photo by the menorah with everyone kept in, a \"Happy Hanukkah\" card, or your own photo with a glowing menorah and festive lights behind you. Each costs 2 credits.",
     ],
     gradient: ["#1D4ED8", "#CBD5E1"],
     style: {
@@ -630,7 +630,7 @@ export const FESTIVALS: Festival[] = [
     about: [
       "Rosh Hashanah is the Jewish New Year, the start of the ten Days of Awe that lead to Yom Kippur. Families gather for festive meals, hear the shofar, a ram's horn, blown in synagogue, and wish each other \"Shana Tova\", a good year.",
       "The table carries the symbols of a sweet new year: apple slices dipped in honey, a round challah, pomegranates for plenty, and dates. Many people also walk to running water for tashlich, casting away the past year's mistakes.",
-      "These apps make that picture from one selfie: a smart festive portrait, a family photo at the holiday table with everyone kept in, a \"Shana Tova\" card, or your own photo in front of apples, honey and pomegranates in autumn light. We never add a kippah or any religious item to a person; if you wear one, it stays as it is. Each costs 2 credits.",
+      "These apps make that picture from one selfie: a smart festive portrait, a family photo at the holiday table with everyone kept in, a \"Shana Tova\" card, or your own photo in front of apples, honey and pomegranates in autumn light. Each costs 2 credits.",
     ],
     gradient: ["#B91C1C", "#CA8A04"],
     style: {

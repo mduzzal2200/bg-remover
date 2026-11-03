@@ -8,7 +8,7 @@ import type { AppSection } from "@/lib/app-pages/types";
  */
 
 /** **bold** and [words](/path) inside one line. */
-function inline(text: string): React.ReactNode[] {
+export function inline(text: string): React.ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)\s]+\))/g).map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return <strong key={i} style={{ color: "var(--text)", fontWeight: 750 }}>{part.slice(2, -2)}</strong>;
