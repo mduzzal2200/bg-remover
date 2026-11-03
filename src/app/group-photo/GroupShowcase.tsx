@@ -9,6 +9,7 @@ export interface ShowcaseExample {
   title: string;
   caption: string;
   scene: string;
+  /** The group photo's shape as "width / height", e.g. "1536 / 1024". */
   ratio: string;
   people: ShowcasePerson[];
   /** The group photo, or null to draw the illustrated stand-in. */
@@ -23,6 +24,9 @@ function slot(i: number, n: number) {
   return { x: 50 + rx * Math.cos(a), y: 53 + ry * Math.sin(a), r: (i % 2 ? 1 : -1) * (4 + ((i * 3) % 6)) };
 }
 const CENTER_Y = 53;
+/** At most this many cards fly in; a bigger group shows the first few and a "+N" card. */
+const MAX_CARDS = 6;
+const num = (ratio: string) => { const [w, h] = ratio.split("/").map((x) => parseFloat(x)); return w > 0 && h > 0 ? w / h : 1.5; };
 
 /**
  * The animated before → after at the top of /group-photo: the separate photos
@@ -38,6 +42,13 @@ export default function GroupShowcase({ examples }: { examples: ShowcaseExample[
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ex = examples[idx];
   const n = ex.people.length;
+  const cards: (ShowcasePerson & { more?: number })[] = n > MAX_CARDS
+    ? [...ex.people.slice(0, MAX_CARDS - 1), { ...ex.people[MAX_CARDS - 1], label: `+${n - MAX_CARDS + 1} more`, more: n - MAX_CARDS + 1 }]
+    : ex.people;
+  const k = cards.length;
+  // The group photo fills 86% of the width, or 74% of the height for a taller photo.
+  const r = num(ex.ratio);
+  const frameW = Math.min(86, 59.2 * r);
 
   useEffect(() => {
     try { setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches); } catch {}
@@ -46,7 +57,7 @@ export default function GroupShowcase({ examples }: { examples: ShowcaseExample[
   useEffect(() => {
     if (reduced || paused) return;
     const next: Record<Phase, [Phase, number]> = {
-      in: ["hold", n * 160 + 700],
+      in: ["hold", k * 160 + 700],
       hold: ["merge", 1300],
       merge: ["result", 950],
       result: ["in", 4200],
@@ -57,10 +68,9 @@ export default function GroupShowcase({ examples }: { examples: ShowcaseExample[
       else setPhase(to);
     }, ms);
     return () => { if (timer.current) clearTimeout(timer.current); };
-  }, [phase, paused, reduced, n, examples.length]);
+  }, [phase, paused, reduced, k, examples.length]);
 
   const pick = (i: number) => { setIdx(i); setPhase(reduced ? "result" : "in"); };
-  const before = phase === "in" || phase === "hold";
   const showResult = reduced || phase === "result";
 
   return (
@@ -82,9 +92,9 @@ export default function GroupShowcase({ examples }: { examples: ShowcaseExample[
         </span>
 
         {/* the separate photos */}
-        {!reduced && ex.people.map((p, i) => {
-          const s = slot(i, n);
-          const cw = n > 5 ? 19 : n > 4 ? 21 : 23;
+        {!reduced && cards.map((p, i) => {
+          const s = slot(i, k);
+          const cw = k > 5 ? 19 : k > 4 ? 21 : 23;
           // To the middle of the stage, in the card's own units (the stage is 5:4, a card 4:5).
           const dx = ((50 - s.x) * 100) / cw;
           const dy = ((CENTER_Y - s.y) * 100) / (cw * 1.5625);
@@ -106,8 +116,9 @@ export default function GroupShowcase({ examples }: { examples: ShowcaseExample[
               <div style={{ position: "relative", width: "100%", height: "100%", padding: "6% 6% 18%", background: "#F7F5F0", borderRadius: 10, boxShadow: "0 14px 34px rgba(0,0,0,.45)" }}>
                 <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: 4, overflow: "hidden", background: "#ddd" }}>
                   {p.src
-                    ? <Image src={p.src} alt={`${p.label}'s photo`} fill sizes="150px" style={{ objectFit: "cover" }} />
+                    ? <Image src={p.src} alt={p.more ? "" : `${p.label}'s photo`} fill sizes="160px" style={{ objectFit: "cover", filter: p.more ? "blur(3px) brightness(.55)" : undefined }} />
                     : <Avatar person={p} />}
+                  {p.more && <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: "clamp(16px, 3vw, 26px)" }}>+{p.more}</span>}
                 </div>
                 <span style={{ position: "absolute", left: 0, right: 0, bottom: "3%", textAlign: "center", fontSize: "clamp(9px, 1.6vw, 12px)", fontWeight: 800, color: "#2a2a2a", fontFamily: "var(--font)" }}>{p.label}</span>
               </div>
@@ -123,7 +134,7 @@ export default function GroupShowcase({ examples }: { examples: ShowcaseExample[
         {/* the group photo */}
         <div
           style={{
-            position: "absolute", left: "50%", top: reduced ? "50%" : "46%", width: "86%", aspectRatio: ex.ratio.replace(":", " / "), maxHeight: "74%", zIndex: 4,
+            position: "absolute", left: "50%", top: reduced ? "50%" : "46%", width: `${frameW}%`, aspectRatio: ex.ratio, zIndex: 4,
             transform: `translate(-50%,-50%) scale(${showResult ? 1 : 0.86})`,
             opacity: showResult ? 1 : 0,
             filter: showResult ? "none" : "blur(14px)",
@@ -131,15 +142,18 @@ export default function GroupShowcase({ examples }: { examples: ShowcaseExample[
             borderRadius: 16, overflow: "hidden", boxShadow: "0 24px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.08)",
           }}
         >
-          {ex.result
-            ? <Image src={ex.result} alt={`${ex.title} group photo made from ${n} separate photos`} fill sizes="(max-width: 700px) 90vw, 560px" style={{ objectFit: "cover" }} priority={idx === 0} />
-            : <GroupIllustration scene={ex.scene} people={ex.people} />}
+          <div key={`${ex.id}-${showResult ? "on" : "off"}`} style={{ position: "absolute", inset: 0, animation: showResult && !reduced ? "gpPush 5s ease-out both" : undefined }}>
+            {ex.result
+              ? <Image src={ex.result} alt={`${ex.title} group photo made from ${n} separate photos`} fill sizes="(max-width: 700px) 90vw, 600px" style={{ objectFit: "cover" }} priority={idx === 0} />
+              : <GroupIllustration scene={ex.scene} people={ex.people} />}
+          </div>
+          {showResult && !reduced && <span key={`sheen-${ex.id}`} aria-hidden style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: "40%", background: "linear-gradient(100deg, transparent 0%, rgba(255,255,255,.28) 50%, transparent 100%)", animation: "gpSheen 1.3s ease .35s both", pointerEvents: "none" }} />}
           {!ex.result && <span style={{ position: "absolute", right: 8, bottom: 8, fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,.85)", background: "rgba(0,0,0,.35)", borderRadius: 6, padding: "2px 6px" }}>Illustration</span>}
         </div>
 
         {/* who went in */}
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 14, zIndex: 5, display: "flex", justifyContent: "center", alignItems: "center", gap: 6, opacity: showResult ? 1 : 0, transform: showResult ? "none" : "translateY(8px)", transition: "opacity .5s ease .35s, transform .5s ease .35s" }}>
-          {ex.people.map((p, i) => (
+          {ex.people.slice(0, 8).map((p, i) => (
             <span key={i} title={p.label} style={{ position: "relative", width: 30, height: 30, borderRadius: "50%", overflow: "hidden", border: "2px solid var(--bg-elevated)", boxShadow: "0 0 0 1.5px var(--accent)", background: "#ddd", marginLeft: i ? -8 : 0 }}>
               {p.src ? <Image src={p.src} alt="" fill sizes="30px" style={{ objectFit: "cover" }} /> : <Avatar person={p} />}
             </span>
@@ -160,7 +174,7 @@ export default function GroupShowcase({ examples }: { examples: ShowcaseExample[
           >
             {e.title} · {e.people.length} photos
             {i === idx && !reduced && !paused && (
-              <span key={`${idx}-${phase === "in" ? "a" : "b"}`} aria-hidden style={{ position: "absolute", left: 0, bottom: 0, height: 2, background: "var(--accent)", animation: `gpProgress ${(n * 160 + 700 + 1300 + 950 + 4200) / 1000}s linear both`, animationPlayState: "running" }} />
+              <span key={`${idx}-${phase === "in" ? "a" : "b"}`} aria-hidden style={{ position: "absolute", left: 0, bottom: 0, height: 2, background: "var(--accent)", animation: `gpProgress ${(k * 160 + 700 + 1300 + 950 + 4200) / 1000}s linear both`, animationPlayState: "running" }} />
             )}
           </button>
         ))}
@@ -170,6 +184,8 @@ export default function GroupShowcase({ examples }: { examples: ShowcaseExample[
       <style>{`
         @keyframes gpCardIn { from { opacity: 0; transform: translate(-50%,-50%) translateY(40px) scale(.7) rotate(-14deg); } }
         @keyframes gpProgress { from { width: 0; } to { width: 100%; } }
+        @keyframes gpPush { from { transform: scale(1); } to { transform: scale(1.06); } }
+        @keyframes gpSheen { from { transform: translateX(-120%) skewX(-12deg); } to { transform: translateX(320%) skewX(-12deg); } }
       `}</style>
     </div>
   );
@@ -241,7 +257,7 @@ export function ExampleCard({ ex }: { ex: ShowcaseExample }) {
     <figure style={{ margin: 0, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))", gap: 18, alignItems: "center", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 20, padding: 18 }}>
       <div style={{ display: "grid", gap: 10 }}>
         <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: ".06em", textTransform: "uppercase", color: "var(--text-faint)" }}>Before · {n} separate photos</span>
-        <div style={{ display: "grid", gridTemplateColumns: `repeat(${n > 4 ? 3 : 2}, 1fr)`, gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: `repeat(${n > 9 ? 4 : n > 4 ? 3 : 2}, 1fr)`, gap: 8 }}>
           {ex.people.map((p, i) => (
             <div key={i} style={{ position: "relative", aspectRatio: "4 / 5", borderRadius: 10, overflow: "hidden", border: "1px solid var(--border)", background: "#ddd" }}>
               {p.src ? <Image src={p.src} alt={`${p.label}'s separate photo`} fill sizes="140px" style={{ objectFit: "cover" }} /> : <Avatar person={p} />}
@@ -252,7 +268,7 @@ export function ExampleCard({ ex }: { ex: ShowcaseExample }) {
       </div>
       <div style={{ display: "grid", gap: 10 }}>
         <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: ".06em", textTransform: "uppercase", color: "var(--accent-strong)" }}>After · 1 group photo</span>
-        <div style={{ position: "relative", aspectRatio: ex.ratio.replace(":", " / "), borderRadius: 14, overflow: "hidden", boxShadow: "var(--shadow-lg)", border: "1px solid var(--border)" }}>
+        <div style={{ position: "relative", aspectRatio: ex.ratio, borderRadius: 14, overflow: "hidden", boxShadow: "var(--shadow-lg)", border: "1px solid var(--border)" }}>
           {ex.result
             ? <Image src={ex.result} alt={`${ex.title} group photo made from ${n} separate photos: ${ex.people.map((p) => p.label).join(", ")}`} fill sizes="(max-width: 700px) 92vw, 520px" style={{ objectFit: "cover" }} />
             : <GroupIllustration scene={ex.scene} people={ex.people} />}

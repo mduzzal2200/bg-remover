@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, adminToken } from "@/lib/admin-token";
 import { createAdminSupabase } from "@/lib/auth";
 import { editImage, generateFromText } from "@/lib/ai-image";
-import { editWithImages } from "@/lib/multi-edit.server";
 import { falConfigured } from "@/lib/fal";
 import { jobsFor, jobCounts, type ImageJob } from "@/lib/image-jobs";
 
@@ -29,8 +28,6 @@ export const maxDuration = 300;
  *   ...&path=creative/ghibli-style.png    one specific slot
  *   ...&set=apps&only=festival             only the festival apps' images
  *   ...&set=apps&festival=diwali           only one festival's images
- *   ...&set=all&only=group&run=1&limit=4    the Group Photo examples: their 15
- *                                          single photos first, then the 3 group photos
  */
 
 /** bucket + path, joined for set membership. Buckets cannot contain "|". */
@@ -94,8 +91,6 @@ export async function GET(req: NextRequest) {
   let jobs = jobsFor(set);
   if (onePath) jobs = jobs.filter((j) => j.path === onePath);
   if (q.get("only") === "festival") jobs = jobs.filter((j) => j.festival);
-  // The Group Photo examples and the single photos they're made from, sources first.
-  if (q.get("only") === "group") jobs = jobs.filter((j) => j.set === "group" || j.path.startsWith("sources/solo-"));
   const festival = q.get("festival");
   if (festival) jobs = jobs.filter((j) => j.festival === festival);
   if (!jobs.length) {
@@ -142,9 +137,7 @@ export async function GET(req: NextRequest) {
     try {
       // strict: report fal's own error as-is, which names the real cause.
       const strict = true;
-      const dataUrl = job.editOfMany
-        ? (await editWithImages(job.editOfMany.map((p) => publicUrl(job.bucket, p)), job.prompt, model ?? "nano-banana", job.aspect)).dataUrl
-        : job.editOf
+      const dataUrl = job.editOf
         ? await editImage(publicUrl(job.bucket, job.editOf), job.prompt, model, job.aspect, {
             strict, raw: true, budgetMs: 120_000,
           })

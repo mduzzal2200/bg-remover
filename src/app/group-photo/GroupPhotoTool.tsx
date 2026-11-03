@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Icon from "@/app/app/_components/Icon";
 import { Dropdown, GenerateButton, PreviewPanel, SessionStrip, ErrorNote, toSendable, acceptImageFile, labelStyle, type StudioResult } from "@/app/app/_components/studio";
 import SignInModal from "@/app/_components/SignInModal";
-import { ASPECT_RATIOS, MULTI_PHOTO_MODELS, maxImagesFor, type AspectRatio } from "@/lib/app-presets";
-import { GROUP_SCENES, GROUP_POSES, GROUP_OUTFITS, GROUP_DEFAULTS, MAX_GROUP_PHOTOS, MIN_GROUP_PHOTOS, BEST_GROUP_SIZE, ratioForCount } from "@/lib/group-photo";
+import { ASPECT_RATIOS, maxImagesFor, type AspectRatio } from "@/lib/app-presets";
+import { GROUP_SCENES, GROUP_FRAMINGS, GROUP_POSES, GROUP_OUTFITS, GROUP_DEFAULTS, GROUP_MODELS, GROUP_DEFAULT_MODEL, MAX_GROUP_PHOTOS, MIN_GROUP_PHOTOS, BEST_GROUP_SIZE, ratioForCount } from "@/lib/group-photo";
 import { CREDIT_COST } from "@/lib/plans";
 import { publishCredits } from "@/lib/credits";
 import { openPricing } from "@/lib/pricing-modal";
@@ -33,11 +33,12 @@ const choices = (list: { id: string; label: string }[]) => list.map((c) => ({ va
 export default function GroupPhotoTool() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [scene, setScene] = useState<string>(GROUP_DEFAULTS.scene);
+  const [framing, setFraming] = useState<string>(GROUP_DEFAULTS.framing);
   const [pose, setPose] = useState<string>(GROUP_DEFAULTS.pose);
   const [outfit, setOutfit] = useState<string>(GROUP_DEFAULTS.outfit);
   const [details, setDetails] = useState("");
   const [ratio, setRatio] = useState<AspectRatio>(ratioForCount(MIN_GROUP_PHOTOS));
-  const [model, setModel] = useState<string>(MULTI_PHOTO_MODELS[0].id);
+  const [model, setModel] = useState<string>(GROUP_DEFAULT_MODEL);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -58,10 +59,11 @@ export default function GroupPhotoTool() {
       setPhotos(ctx.images.slice(0, MAX_GROUP_PHOTOS));
       const o = ctx.options ?? {};
       if (o.scene) setScene(o.scene);
+      if (o.framing) setFraming(o.framing);
       if (o.pose) setPose(o.pose);
       if (o.outfit) setOutfit(o.outfit);
       if (o.details) setDetails(o.details.slice(0, MAX_DETAILS));
-      if (o.model && MULTI_PHOTO_MODELS.some((m) => m.id === o.model)) setModel(o.model);
+      if (o.model && GROUP_MODELS.some((m) => m.id === o.model)) setModel(o.model);
       if (o.ratio && (ASPECT_RATIOS as readonly string[]).includes(o.ratio)) { ratioChosen.current = true; setRatio(o.ratio as AspectRatio); }
       setNotice("Your photos are back. Press Generate to make your group photo.");
     });
@@ -74,10 +76,10 @@ export default function GroupPhotoTool() {
     w.__jptPersistContext = () => savePendingContext({
       tool: TOOL,
       images: photos.map((p) => uploaded.current.get(p) ?? p),
-      options: { scene, pose, outfit, details, model, ratio: ratioChosen.current ? ratio : "" },
+      options: { scene, framing, pose, outfit, details, model, ratio: ratioChosen.current ? ratio : "" },
     });
     return () => { delete w.__jptPersistContext; };
-  }, [photos, scene, pose, outfit, details, model, ratio]);
+  }, [photos, scene, framing, pose, outfit, details, model, ratio]);
 
   // The shape follows the group's size until the person picks one.
   useEffect(() => {
@@ -85,9 +87,9 @@ export default function GroupPhotoTool() {
   }, [photos.length]);
 
   // Only the models that take this many photos.
-  const models = MULTI_PHOTO_MODELS.filter((m) => maxImagesFor(m.id) >= photos.length);
+  const models = GROUP_MODELS.filter((m) => maxImagesFor(m.id) >= photos.length);
   useEffect(() => {
-    if (!models.some((m) => m.id === model)) setModel(models[0]?.id ?? MULTI_PHOTO_MODELS[0].id);
+    if (!models.some((m) => m.id === model)) setModel(models[0]?.id ?? GROUP_DEFAULT_MODEL);
   }, [models, model]);
 
   const addFiles = async (files: File[]) => {
@@ -125,7 +127,7 @@ export default function GroupPhotoTool() {
     setBusy(true);
     setErr(null);
     setNotice(null);
-    trackEvent("group_photo_run", { photos: photos.length, scene, model });
+    trackEvent("group_photo_run", { photos: photos.length, scene, framing, model });
     let images: string[];
     try {
       images = await Promise.all(photos.map(async (p) => {
@@ -150,7 +152,7 @@ export default function GroupPhotoTool() {
       const res = await fetch("/api/group-photo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ images, scene, pose, outfit, details: details.trim(), model, aspectRatio: ratio }),
+        body: JSON.stringify({ images, scene, framing, pose, outfit, details: details.trim(), model, aspectRatio: ratio }),
       });
       type Body = { dataUrl?: string; resultUrl?: string; error?: string; credits?: number; upgradeRequired?: boolean };
       let data: Body = {};
@@ -229,10 +231,13 @@ export default function GroupPhotoTool() {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <Dropdown label="Scene" value={scene} onChange={setScene} options={choices(GROUP_SCENES)} />
-        <Dropdown label="Pose" value={pose} onChange={setPose} options={choices(GROUP_POSES)} />
+        <Dropdown label="Background" value={scene} onChange={setScene} options={choices(GROUP_SCENES)} />
+        <Dropdown label="Framing" value={framing} onChange={setFraming} options={choices(GROUP_FRAMINGS)} />
       </div>
-      <Dropdown label="Outfits" value={outfit} onChange={setOutfit} options={choices(GROUP_OUTFITS)} />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <Dropdown label="Pose" value={pose} onChange={setPose} options={choices(GROUP_POSES)} />
+        <Dropdown label="Outfits" value={outfit} onChange={setOutfit} options={choices(GROUP_OUTFITS)} />
+      </div>
 
       <div>
         <label htmlFor="group-details" style={labelStyle}>Add details (optional)</label>

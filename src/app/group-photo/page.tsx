@@ -7,8 +7,9 @@ import { TrialPill } from "@/app/_components/TrialOffer";
 import GroupPhotoTool from "./GroupPhotoTool";
 import GroupShowcase, { ExampleCard, type ShowcaseExample } from "./GroupShowcase";
 import Icon, { type IconName } from "@/app/app/_components/Icon";
-import { GROUP_SCENES, GROUP_POSES, GROUP_OUTFITS, MAX_GROUP_PHOTOS, MIN_GROUP_PHOTOS, BEST_GROUP_SIZE } from "@/lib/group-photo";
-import { GROUP_EXAMPLES, groupExamplePath, groupExampleRatio, landingUrl } from "@/lib/group-photo-examples";
+import { GROUP_SCENES, GROUP_POSES, GROUP_OUTFITS, GROUP_FRAMINGS, MAX_GROUP_PHOTOS, MIN_GROUP_PHOTOS, BEST_GROUP_SIZE } from "@/lib/group-photo";
+import { ILLUSTRATED_EXAMPLES } from "@/lib/group-photo-examples";
+import { loadGroupCreatives } from "@/lib/group-photo-creatives.server";
 
 const BASE = "https://www.sjpt.io";
 const URL = `${BASE}/group-photo`;
@@ -31,34 +32,34 @@ export const metadata: Metadata = seoMeta({
   robots: { index: true, follow: true },
 });
 
-/** Re-checked hourly, so example photos made after a deploy appear without another one. */
+/** Re-read hourly, so examples added to the "Group Photo" bucket appear without a deploy. */
 export const revalidate = 3600;
 
-async function exists(url: string): Promise<boolean> {
-  try {
-    const r = await fetch(url, { method: "HEAD", next: { revalidate: 3600 } });
-    return r.ok;
-  } catch {
-    return false;
-  }
-}
+/** A drawn person's colours, only seen when there is no photo. */
+const NO_LOOK = { hue: 30, skin: "#C98E64", hair: "#2B1D14", long: false };
 
-/** The examples with their real photos where all of them exist, otherwise drawn. */
+/** The owner's own examples from the bucket; the drawn ones only if it can't be read. */
 async function showcaseExamples(): Promise<ShowcaseExample[]> {
-  return Promise.all(GROUP_EXAMPLES.map(async (ex) => {
-    const result = landingUrl(groupExamplePath(ex.id));
-    const singles = ex.people.map((p) => landingUrl(`sources/${p.source}.png`));
-    const found = await Promise.all([result, ...singles].map(exists));
-    const real = found.every(Boolean);
-    return {
-      id: ex.id,
-      title: ex.title,
-      caption: ex.caption,
-      scene: ex.scene,
-      ratio: groupExampleRatio(ex),
-      people: ex.people.map((p, i) => ({ label: p.label, src: real ? singles[i] : null, hue: ex.hues[i], ...p.look })),
-      result: real ? result : null,
-    };
+  const real = await loadGroupCreatives();
+  if (real.length) {
+    return real.map((c) => ({
+      id: c.id,
+      title: c.title,
+      caption: c.caption,
+      scene: "park",
+      ratio: c.ratio ?? "3 / 2",
+      people: c.singles.map((p) => ({ label: p.label, src: p.src, ...NO_LOOK })),
+      result: c.result,
+    }));
+  }
+  return ILLUSTRATED_EXAMPLES.map((ex) => ({
+    id: ex.id,
+    title: ex.title,
+    caption: ex.caption,
+    scene: ex.scene,
+    ratio: "3 / 2",
+    people: ex.people.map((p) => ({ ...p, src: null })),
+    result: null,
   }));
 }
 
@@ -66,13 +67,13 @@ const FEATURES: { icon: IconName; t: string; d: string }[] = [
   { icon: "group", t: `Up to ${MAX_GROUP_PHOTOS} people`, d: "One photo each, from anywhere, taken any time." },
   { icon: "sparkle", t: "Every face kept", d: "Each person looks like their own photo, never blended." },
   { icon: "image", t: "One scene, one light", d: "Everyone lit the same way, so nobody looks pasted in." },
-  { icon: "wand", t: "8 scenes, 4 poses", d: "Park, beach, studio, wedding, office and more." },
+  { icon: "wand", t: "Full or half portrait", d: "Head to toe or waist up, with 8 backgrounds." },
   { icon: "download", t: "Full size, no watermark", d: `${CREDIT_COST} credits a photo, saved to My Creations.` },
 ];
 
 const STEPS = [
   { n: "1", t: `Add ${MIN_GROUP_PHOTOS} to ${MAX_GROUP_PHOTOS} photos`, d: "One person in each, face clearly visible. Choose several at once, drop them in or paste them. Each photo gets a number, and you can remove any of them." },
-  { n: "2", t: "Pick a scene, pose and outfits", d: "Studio, park, beach, party, wedding, office or living room. Everyone keeps their own clothes, or you dress the group to match. Add details in your own words if you like." },
+  { n: "2", t: "Pick a background, framing, pose and outfits", d: "Auto, or studio, park, beach, party, wedding, office or living room; a full or half group portrait. Everyone keeps their own clothes, or you dress the group to match. Add details in your own words if you like." },
   { n: "3", t: "Generate and download", d: "About a minute later everyone is in one photo, in the same light, at full resolution with no watermark. Not quite right? Press Regenerate for a new take." },
 ];
 
@@ -81,7 +82,7 @@ const USES = [
   { t: "Friends and reunions", d: "The old group from school or university, scattered across time zones. One photo each, a scene you all like, and the reunion picture exists before the reunion does." },
   { t: "Team and company photos", d: "Remote teams rarely stand in one room. Use everyone's photo, pick Office and Matching smart outfits, and you have a team photo for the About page or a farewell card." },
   { t: "Add someone who missed the photo", d: "Upload the group photo and a photo of the person who wasn't there. Everyone in every photo is included, so they join the group instead of being pasted on the edge." },
-  { t: "Weddings, birthdays and celebrations", d: "Bring both families into one wedding picture, or put the whole birthday crowd around one table, with the Wedding or Celebration scene." },
+  { t: "Weddings, birthdays and celebrations", d: "Bring both families into one wedding picture, or put the whole birthday crowd around one table, with the Wedding or Celebration background." },
   { t: "Couples and best friends", d: "Two photos are enough. Taken years or miles apart, they come back as one photo of the two of you together." },
 ];
 
@@ -94,12 +95,12 @@ const TIPS = [
 ];
 
 const FAQS = [
-  { q: "How do I make a group photo from individual photos?", a: `Upload ${MIN_GROUP_PHOTOS} to ${MAX_GROUP_PHOTOS} photos, one person in each, pick a scene, a pose and outfits, and press Generate. The AI puts everyone into one photo with the same light and camera, so it looks like a real group photo rather than a collage.` },
+  { q: "How do I make a group photo from individual photos?", a: `Upload ${MIN_GROUP_PHOTOS} to ${MAX_GROUP_PHOTOS} photos, one person in each, pick a background, framing, pose and outfits (or leave them on Auto), and press Generate. The AI puts everyone into one photo with the same light and camera, so it looks like a real group photo rather than a collage.` },
   { q: "How many photos can I upload?", a: `Up to ${MAX_GROUP_PHOTOS}, and at least ${MIN_GROUP_PHOTOS}. If you pick more, the first ${MAX_GROUP_PHOTOS} are kept and the page tells you how many were left out.` },
   { q: "How many people look best?", a: `Faces stay closest to each person in groups of up to about ${BEST_GROUP_SIZE}. The image models keep a likeness most reliably for a handful of people at a time, so in a group of 10 or more, check each face before you share the result.` },
   { q: "Will everyone still look like themselves?", a: "The AI is told to keep each person's face, features, skin tone, hair, glasses and build exactly as in their own photo, and never to blend or swap faces. It usually does. It's a generated picture, so look at each face, and regenerate if one has drifted." },
   { q: "Can I add a person to an existing group photo?", a: "Yes. Upload the group photo and a photo of the person you want to add. Everyone in every photo is included, and they're arranged together in one scene. Expect a new picture of the group, not an edit of your original." },
-  { q: "Can I make a family photo from separate photos?", a: "Yes, that's what it's for. Add a photo of each family member, choose a scene such as Living room or Park, and the AI puts the whole family together. Children and adults keep their own heights, so the picture looks natural." },
+  { q: "Can I make a family photo from separate photos?", a: "Yes, that's what it's for. Add a photo of each family member, choose a background such as Living room or Park, and the AI puts the whole family together. Children and adults keep their own heights, so the picture looks natural." },
   { q: "How much does it cost?", a: `Each group photo uses ${CREDIT_COST} credits, the same as any AI image here, however many photos you add. Adding photos and changing options is free, and a generation that fails isn't charged. Credits come with a monthly plan or a one-time pack, and pack credits never expire.` },
   { q: "Are my photos private?", a: "Your photos are sent to our AI partner to make the picture and saved to your account, so you can find the result in My Creations. They aren't used to train AI models and aren't sold. See our privacy policy for details." },
   { q: "Do I need an account?", a: "Yes, because each group photo uses credits. You can add your photos first; when you press Generate you sign in with Google or email, and your photos and choices are still there when you come back." },
@@ -138,7 +139,8 @@ export default async function GroupPhotoPage() {
   const link: React.CSSProperties = { color: "var(--accent-strong)", fontWeight: 700 };
   const chip: React.CSSProperties = { fontSize: 14, fontWeight: 700, padding: "8px 14px", borderRadius: 999, background: "var(--bg)", border: "1px solid var(--border)" };
   const optionGroups = [
-    { t: "Scenes", items: GROUP_SCENES.filter((c) => c.id !== "auto").map((c) => c.label), d: "Or leave it on Auto for a bright setting that suits a group." },
+    { t: "Backgrounds", items: GROUP_SCENES.filter((c) => c.id !== "auto").map((c) => c.label), d: "Auto is selected to start with: a bright setting that suits the people and the occasion." },
+    { t: "Framing", items: GROUP_FRAMINGS.filter((c) => c.id !== "auto").map((c) => c.label), d: "Full shows everyone head to toe; half shows everyone from the waist up, with bigger faces. Auto picks for you." },
     { t: "Poses", items: GROUP_POSES.filter((c) => c.id !== "auto").map((c) => c.label), d: "Auto arranges one row for a small group and two or three for a bigger one." },
     { t: "Outfits", items: GROUP_OUTFITS.map((c) => c.label), d: "Or describe the clothes yourself in Add details." },
   ];
@@ -163,7 +165,7 @@ export default async function GroupPhotoPage() {
               Make a group photo from individual photos. Upload up to {MAX_GROUP_PHOTOS} separate photos, one person in each, and AI puts everyone together in one natural group photo: same scene, same light, every face kept.
             </p>
             <ul style={{ listStyle: "none", margin: "0 0 24px", padding: 0, display: "grid", gap: 8 }}>
-              {["Family far away, friends in other cities, a remote team", "Pick the scene, the pose and the outfits", "Signed out? Add your photos first, they wait for you"].map((t) => (
+              {["Family far away, friends in other cities, a remote team", "Pick the background, full or half portrait, the pose and outfits", "Signed out? Add your photos first, they wait for you"].map((t) => (
                 <li key={t} style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 15, color: "var(--text)" }}>
                   <span aria-hidden style={{ flex: "0 0 auto", width: 20, height: 20, marginTop: 1, borderRadius: "50%", background: "var(--accent-soft)", color: "var(--accent-strong)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900 }}>✓</span>
                   {t}
@@ -203,7 +205,7 @@ export default async function GroupPhotoPage() {
       <section id="tool" style={{ padding: "40px 16px 48px", scrollMarginTop: 70 }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <h2 style={{ ...h2, marginBottom: 6 }}>Make your group photo</h2>
-          <p style={{ ...intro, marginBottom: 22 }}>Add {MIN_GROUP_PHOTOS} to {MAX_GROUP_PHOTOS} photos, pick a scene and press Generate.</p>
+          <p style={{ ...intro, marginBottom: 22 }}>Add {MIN_GROUP_PHOTOS} to {MAX_GROUP_PHOTOS} photos, pick a background and framing, and press Generate.</p>
           <GroupPhotoTool />
         </div>
       </section>
@@ -213,8 +215,8 @@ export default async function GroupPhotoPage() {
           <h2 style={h2}>Before and after: separate photos, one group photo</h2>
           <p style={intro}>
             {examples.every((e) => e.result)
-              ? "Each example was made with this tool, from exactly the separate photos shown."
-              : "Drawn to show the idea: each set of separate photos becomes one group photo in the scene named under it."}
+              ? "Each example shows the separate photos on one side and the one group photo made from them on the other."
+              : "Drawn to show the idea: each set of separate photos becomes one group photo."}
           </p>
           <div style={{ display: "grid", gap: 20 }}>
             {examples.map((ex) => <ExampleCard key={ex.id} ex={ex} />)}
@@ -255,7 +257,7 @@ export default async function GroupPhotoPage() {
 
       <section style={{ padding: "56px 16px" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-          <h2 style={h2}>Scenes, poses and outfits</h2>
+          <h2 style={h2}>Backgrounds, framing, poses and outfits</h2>
           <p style={intro}>Pick where the group stands, how they&apos;re arranged and what they wear. Everyone faces the camera most of the time, in one light, so nobody looks pasted in.</p>
           <div style={{ display: "grid", gap: 16 }}>
             {optionGroups.map((g) => (

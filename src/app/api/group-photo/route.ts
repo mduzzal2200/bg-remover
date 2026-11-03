@@ -5,14 +5,14 @@ import { recordGeneration } from "@/lib/ledger";
 import { storeImage } from "@/lib/store-image";
 import { CREDIT_COST } from "@/lib/plans";
 import { userMessage } from "@/lib/user-message";
-import { ASPECT_RATIOS, MULTI_PHOTO_MODELS, maxImagesFor } from "@/lib/app-presets";
-import { buildGroupPrompt, ratioForCount, GROUP_SCENES, MAX_GROUP_PHOTOS, MIN_GROUP_PHOTOS } from "@/lib/group-photo";
+import { ASPECT_RATIOS, maxImagesFor } from "@/lib/app-presets";
+import { buildGroupPrompt, ratioForCount, GROUP_SCENES, GROUP_FRAMINGS, GROUP_MODELS, GROUP_DEFAULT_MODEL, MAX_GROUP_PHOTOS, MIN_GROUP_PHOTOS } from "@/lib/group-photo";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
 const RATIOS = new Set<string>(ASPECT_RATIOS);
-const MODEL_IDS = new Set<string>(MULTI_PHOTO_MODELS.map((m) => m.id));
+const MODEL_IDS = new Set<string>(GROUP_MODELS.map((m) => m.id));
 
 /**
  * Group Photo: up to 14 photos of single people in, one group photo out.
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   const { session, error } = await checkAuth(req);
   if (error) return error;
 
-  let body: { images?: unknown; scene?: unknown; pose?: unknown; outfit?: unknown; details?: unknown; model?: unknown; aspectRatio?: unknown };
+  let body: { images?: unknown; scene?: unknown; framing?: unknown; pose?: unknown; outfit?: unknown; details?: unknown; model?: unknown; aspectRatio?: unknown };
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Something went wrong sending your request. Please try again." }, { status: 400 }); }
 
   const isImage = (v: unknown): v is string => typeof v === "string" && (/^https:\/\//.test(v) || /^data:image\/(png|jpeg|webp);base64,/.test(v));
@@ -32,14 +32,15 @@ export async function POST(req: NextRequest) {
   if (!images.every(isImage)) return NextResponse.json({ error: "One of your photos couldn't be read. Remove it and add it again." }, { status: 400 });
   const photos = images as string[];
 
-  // A model that can't take this many photos falls back to Nano Banana Pro.
-  const picked = typeof body.model === "string" && MODEL_IDS.has(body.model) ? body.model : MULTI_PHOTO_MODELS[0].id;
-  const model = maxImagesFor(picked) >= photos.length ? picked : MULTI_PHOTO_MODELS[0].id;
+  // GPT Image 2.5 Sunburst unless another model was picked; one that can't take this many photos falls back to it.
+  const picked = typeof body.model === "string" && MODEL_IDS.has(body.model) ? body.model : GROUP_DEFAULT_MODEL;
+  const model = maxImagesFor(picked) >= photos.length ? picked : GROUP_DEFAULT_MODEL;
   const aspectRatio = typeof body.aspectRatio === "string" && RATIOS.has(body.aspectRatio) ? body.aspectRatio : ratioForCount(photos.length);
-  const prompt = buildGroupPrompt(photos.length, { scene: body.scene, pose: body.pose, outfit: body.outfit, details: body.details });
+  const prompt = buildGroupPrompt(photos.length, { scene: body.scene, framing: body.framing, pose: body.pose, outfit: body.outfit, details: body.details });
   const sceneLabel = (GROUP_SCENES.find((s) => s.id === body.scene) ?? GROUP_SCENES[0]).label;
+  const framingLabel = (GROUP_FRAMINGS.find((f) => f.id === body.framing) ?? GROUP_FRAMINGS[0]).label;
   const label = `Group photo · ${photos.length} people`;
-  const preset = `${photos.length} photos · ${sceneLabel}`;
+  const preset = `${photos.length} photos · Background: ${sceneLabel} · Framing: ${framingLabel}`;
 
   const blocked = await checkEntitlement(session!, "ai", "group-photo");
   if (blocked) return blocked;
