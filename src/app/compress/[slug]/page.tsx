@@ -3,6 +3,9 @@ import { brandedTitle } from "@/lib/seo/title";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import AppArticle from "@/app/creative/[slug]/AppArticle";
+import FormatUpload from "@/app/_components/FormatUpload";
+import { formatPage } from "@/lib/tool-pages/formats";
 import { COMPRESSIONS, getCompression, buildCompressContent } from "@/lib/compressions";
 import { blogCreative } from "@/lib/creative-images";
 import SafeImage from "@/app/_components/SafeImage";
@@ -19,14 +22,16 @@ async function generateMetadataBase({ params }: { params: Promise<{ slug: string
   const c = getCompression(slug);
   if (!c) return {};
   const ct = buildCompressContent(c);
+  const tp = formatPage("compress", slug);
+  const faqs = tp?.faq ?? ct.faqs;
   const url = `${BASE}/compress/${slug}`;
   return {
-    title: { absolute: brandedTitle(ct.title) },
-    description: ct.metaDescription,
-    keywords: ct.keywords,
+    title: { absolute: brandedTitle((tp?.title ?? ct.title)) },
+    description: (tp?.metaDescription ?? ct.metaDescription),
+    keywords: (tp?.keywords ?? ct.keywords),
     alternates: { canonical: url },
-    openGraph: { title: ct.title, description: ct.metaDescription, url, type: "website", siteName: "Pixel Shine" },
-    twitter: { card: "summary_large_image", title: `${ct.h1} | Pixel Shine`, description: ct.metaDescription },
+    openGraph: { title: (tp?.title ?? ct.title), description: (tp?.metaDescription ?? ct.metaDescription), url, type: "website", siteName: "Pixel Shine" },
+    twitter: { card: "summary_large_image", title: `${ct.h1} | Pixel Shine`, description: (tp?.metaDescription ?? ct.metaDescription) },
   };
 }
 
@@ -35,12 +40,14 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const c = getCompression(slug);
   if (!c) notFound();
   const ct = buildCompressContent(c);
+  const tp = formatPage("compress", slug);
+  const faqs = tp?.faq ?? ct.faqs;
   const url = `${BASE}/compress/${slug}`;
   const toolHref = `/editor?tool=compress&target=${c.kb}`;
   const related = COMPRESSIONS.filter((x) => x.slug !== slug);
 
   const appLd = { "@context": "https://schema.org", "@type": "SoftwareApplication", name: ct.h1, applicationCategory: "MultimediaApplication", operatingSystem: "Web", offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }, url };
-  const faqLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: ct.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) };
+  const faqLd = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) };
   const breadcrumbLd = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: BASE },
     { "@type": "ListItem", position: 2, name: "Image Compressor", item: `${BASE}/compress-image` },
@@ -68,8 +75,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               Compress Image to <span style={{ background: GRAD, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent", color: "transparent" }}>{ct.label}</span>
             </h1>
             <p style={{ fontSize: "clamp(1rem,2vw,1.12rem)", color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 580, margin: "0 auto 30px" }}>
-              Free online compressor — reduce any JPG or PNG to {ct.label} or less in seconds. No watermark, no sign-up.
+              {tp ? tp.subtitle : <>Free online compressor — reduce any JPG or PNG to {ct.label} or less in seconds. No watermark, no sign-up.</>}
             </p>
+            <div style={{ marginBottom: 16 }}><FormatUpload tool="compress" href={toolHref} label="Drop a photo to compress" hint="JPG, PNG or WebP · opens the compressor with this size set" /></div>
             <Link href={toolHref} className="jpt-hover" style={{ display: "inline-block", background: GRAD, color: "#fff", borderRadius: 12, padding: "15px 34px", fontSize: 16, fontWeight: 800, textDecoration: "none", boxShadow: "0 8px 24px rgba(14,165,233,0.35)" }}>
               Compress to {ct.label} →
             </Link>
@@ -81,6 +89,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             />
           </div>
         </section>
+
+        {tp ? <AppArticle sections={tp.sections} /> : (<>
 
         <section style={{ padding: "56px 24px", background: "var(--surface)" }}>
           <div style={{ maxWidth: 760, margin: "0 auto" }}>
@@ -108,10 +118,12 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
           </div>
         </section>
 
+        </>)}
+
         <section style={{ padding: "48px 24px", background: "var(--surface-2)" }}>
           <div style={{ maxWidth: 720, margin: "0 auto" }}>
             <h2 style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 800, color: "var(--text)", margin: "0 0 28px", letterSpacing: "-0.02em", textAlign: "center" }}>Frequently asked questions</h2>
-            {ct.faqs.map((f) => (
+            {faqs.map((f) => (
               <details key={f.q} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "14px 18px", marginBottom: 10 }}>
                 <summary style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", cursor: "pointer" }}>{f.q}</summary>
                 <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.7, margin: "10px 0 0" }}>{f.a}</p>

@@ -77,7 +77,7 @@ text, so they are kept out of search rather than redirected.
 | Upscaler | /upscale | image upscaler (free) | upscale image, increase image resolution, enhance photo quality, unblur image | how to unblur an image; how to increase resolution without losing quality | own article (Nov 2026) |
 | 4K | /upscale/4k | 4k image upscaler | upscale to 4k free | — | live |
 | AI photo editor | /ai-editor | ai photo editor (free online) | edit photo with ai, ai image editor | how to edit a photo with AI (text prompts) | own article (Nov 2026) |
-| Object removal | /ai-editor/remove-object | remove object from photo (free) | remove people from photo, magic eraser | how to remove an object from a photo | live, PR 3 |
+| Object removal | /object-remover | remove object from photo (free) | remove people from photo, magic eraser | how to remove an object from a photo | own page; /ai-editor/remove-object 301s here (Nov 2026) |
 | AI image generator | /ai-image-generator | ai image generator (free) | text to image, ai art generator, free ai image generator no sign up, nano banana | how to write a good image prompt | live, own page (Nov 2026) |
 | Resize / compress | /resize-image, /compress-image, /compress/* | resize image, compress image, image to 100kb | reduce image size, passport photo size | how to compress an image to 100 KB | own articles (Nov 2026); size pages next |
 | Prompts | /prompts, /nano-banana-pro-prompts | nano banana prompts, ai photo prompts | gemini photo prompts, chatgpt image prompts | how to write Nano Banana prompts | live; review with Search Console data |
@@ -99,7 +99,7 @@ text, so they are kept out of search rather than redirected.
 | /answers/make-instagram-profile-picture | /creative/instagram-pfp-maker |
 | /answers/make-professional-headshot-from-selfie | /creative/professional-headshot |
 | /answers/make-youtube-thumbnail-from-photo | /creative/youtube-thumbnail-generator |
-| /answers/remove-object-from-photo | /ai-editor/remove-object |
+| /answers/remove-object-from-photo | /object-remover |
 | /answers/restore-old-photo | /creative/restore-old-photos |
 | /answers (hub) | /guides |
 

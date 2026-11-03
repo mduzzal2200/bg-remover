@@ -201,21 +201,7 @@ export const VARIANTS: LandingVariant[] = [
       { q: "Is the AI background changer free?", a: "Each generation uses credits, with no watermark, and new accounts in selected countries get a free AI generation to try it." },
     ],
   },
-  {
-    parent: "ai-editor",
-    slug: "remove-object",
-    title: "Free AI Object Remover — Erase Objects & People from Photos Online | Pixel Shine",
-    metaDescription: "Remove unwanted objects, people or text from photos free with AI. Describe what to erase and AI fills the gap naturally — no Photoshop, no watermark.",
-    keywords: "ai object remover free, remove object from photo online free, erase people from photo ai, remove unwanted object free",
-    h1: "Free AI Object Remover",
-    subtitle: "Erase unwanted objects, people, or text from any photo by describing what to remove. AI fills the gap naturally — free, no Photoshop needed.",
-    cta_text: "Remove Object Free",
-    faq: [
-      { q: "How do I remove an object from a photo for free?", a: "Upload your photo and describe the object to remove — like 'remove the person on the left'. The AI erases it and reconstructs the background." },
-      { q: "Can it remove photobombers and unwanted people?", a: "Yes. Describe the person or area to remove and the AI fills the space with a natural-looking background." },
-      { q: "Is it free?", a: "Each generation uses credits, with no watermark, and new accounts in selected countries get a free AI generation to try it." },
-    ],
-  },
+  // "remove-object" moved to /object-remover (the brush tool owns that search); see next.config.mjs.
 ];
 
 /** Build a full PageSEO config for a variant by extending its parent's defaults. */

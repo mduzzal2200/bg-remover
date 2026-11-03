@@ -113,6 +113,34 @@ for (const name of readdirSync(TOOL_PAGES_DIR)) {
   if (dates.length) result[route] = dates[dates.length - 1];
 }
 
+/* Use-case pages under a tool: src/lib/tool-pages/variants/<parent>/<slug>.ts → /<parent>/<slug>. */
+const VARIANTS_DIR = join(TOOL_PAGES_DIR, "variants");
+for (const parent of readdirSync(VARIANTS_DIR)) {
+  const dir = join(VARIANTS_DIR, parent);
+  if (!statSync(dir).isDirectory()) continue;
+  for (const name of readdirSync(dir)) {
+    if (!name.endsWith(".ts")) continue;
+    const route = `/${parent}/${name.slice(0, -3)}`;
+    const files = [`src/lib/tool-pages/variants/${parent}/${name}`, "src/lib/landing-variants.ts", "src/app/creative/[slug]/AppArticle.tsx"];
+    const dates = files.map(changed).filter(Boolean).sort();
+    if (dates.length) result[route] = dates[dates.length - 1];
+  }
+}
+
+/* Crop / convert / compress size pages: src/lib/tool-pages/formats/<family>/<slug>.ts → /<family>/<slug>. */
+const FORMATS_DIR = join(TOOL_PAGES_DIR, "formats");
+for (const family of readdirSync(FORMATS_DIR)) {
+  const dir = join(FORMATS_DIR, family);
+  if (!statSync(dir).isDirectory()) continue;
+  for (const name of readdirSync(dir)) {
+    if (!name.endsWith(".ts")) continue;
+    const route = `/${family}/${name.slice(0, -3)}`;
+    const files = [`src/lib/tool-pages/formats/${family}/${name}`, `src/app/${family}/[slug]/page.tsx`, "src/app/creative/[slug]/AppArticle.tsx"];
+    const dates = files.map(changed).filter(Boolean).sort();
+    if (dates.length) result[route] = dates[dates.length - 1];
+  }
+}
+
 const sorted = Object.fromEntries(Object.entries(result).sort(([a], [b]) => a.localeCompare(b)));
 const json = JSON.stringify(sorted, null, 1) + "\n";
 

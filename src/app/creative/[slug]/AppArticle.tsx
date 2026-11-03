@@ -49,6 +49,13 @@ export default function AppArticle({ sections }: { sections: AppSection[] }) {
         {sections.map((s, i) => (
           <section key={s.heading} style={{ marginTop: i ? 56 : 0 }}>
             <h2 id={anchor(s.heading)} style={h2}>{s.heading}</h2>
+            {s.figure && (
+              <figure style={{ margin: "0 0 20px" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={s.figure.src} alt={s.figure.alt} width={s.figure.width} height={s.figure.height} loading="lazy" decoding="async" style={{ display: "block", width: "100%", height: "auto", borderRadius: 16, border: "1px solid var(--border)", background: "var(--surface-2)" }} />
+                <figcaption style={{ fontSize: 14, color: "var(--text-faint)", marginTop: 8, lineHeight: 1.5 }}>{inline(s.figure.caption)}</figcaption>
+              </figure>
+            )}
             {s.paragraphs?.map((text, j) => <p key={j} style={p}>{inline(text)}</p>)}
             {s.items?.map((item) => (
               <div key={item.t}>

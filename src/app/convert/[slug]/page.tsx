@@ -3,6 +3,9 @@ import { brandedTitle } from "@/lib/seo/title";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import AppArticle from "@/app/creative/[slug]/AppArticle";
+import FormatUpload from "@/app/_components/FormatUpload";
+import { formatPage } from "@/lib/tool-pages/formats";
 import { CONVERSIONS, getConversion, buildContent } from "@/lib/conversions";
 import { blogCreative } from "@/lib/creative-images";
 import SafeImage from "@/app/_components/SafeImage";
@@ -19,14 +22,16 @@ async function generateMetadataBase({ params }: { params: Promise<{ slug: string
   const c = getConversion(slug);
   if (!c) return {};
   const ct = buildContent(c);
+  const tp = formatPage("convert", slug);
+  const faqs = tp?.faq ?? ct.faqs;
   const url = `${BASE}/convert/${slug}`;
   return {
-    title: { absolute: brandedTitle(ct.title) },
-    description: ct.metaDescription,
-    keywords: ct.keywords,
+    title: { absolute: brandedTitle((tp?.title ?? ct.title)) },
+    description: (tp?.metaDescription ?? ct.metaDescription),
+    keywords: (tp?.keywords ?? ct.keywords),
     alternates: { canonical: url },
-    openGraph: { title: ct.title, description: ct.metaDescription, url, type: "website", siteName: "Pixel Shine" },
-    twitter: { card: "summary_large_image", title: `${ct.fromLabel} to ${ct.toLabel} Converter | Pixel Shine`, description: ct.metaDescription },
+    openGraph: { title: (tp?.title ?? ct.title), description: (tp?.metaDescription ?? ct.metaDescription), url, type: "website", siteName: "Pixel Shine" },
+    twitter: { card: "summary_large_image", title: `${ct.fromLabel} to ${ct.toLabel} Converter | Pixel Shine`, description: (tp?.metaDescription ?? ct.metaDescription) },
   };
 }
 
@@ -35,6 +40,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   const c = getConversion(slug);
   if (!c) notFound();
   const ct = buildContent(c);
+  const tp = formatPage("convert", slug);
+  const faqs = tp?.faq ?? ct.faqs;
   const url = `${BASE}/convert/${slug}`;
   const toolHref = `/editor?tool=convert&to=${ct.toParam}`;
 
@@ -47,7 +54,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   };
   const faqLd = {
     "@context": "https://schema.org", "@type": "FAQPage",
-    mainEntity: ct.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+    mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
   };
   const breadcrumbLd = {
     "@context": "https://schema.org", "@type": "BreadcrumbList",
@@ -82,8 +89,9 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
               Convert {ct.fromLabel} to <span style={{ background: GRAD, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent", color: "transparent" }}>{ct.toLabel}</span>
             </h1>
             <p style={{ fontSize: "clamp(1rem,2vw,1.12rem)", color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 580, margin: "0 auto 30px" }}>
-              Free online {ct.fromLabel}-to-{ct.toLabel} converter — no watermark, no sign-up, no software. Convert in seconds, privately.
+              {tp ? tp.subtitle : <>Free online {ct.fromLabel}-to-{ct.toLabel} converter — no watermark, no sign-up, no software. Convert in seconds, privately.</>}
             </p>
+            <div style={{ marginBottom: 16 }}><FormatUpload tool="convert" href={toolHref} label="Drop an image to convert" hint="JPG, PNG, WebP, GIF, BMP, SVG or AVIF · opens the converter" /></div>
             <Link href={toolHref} className="jpt-hover" style={{ display: "inline-block", background: GRAD, color: "#fff", borderRadius: 12, padding: "15px 34px", fontSize: 16, fontWeight: 800, textDecoration: "none", boxShadow: "0 8px 24px rgba(255,106,26,0.40)" }}>
               Convert {ct.fromLabel} to {ct.toLabel} →
             </Link>
@@ -97,6 +105,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         </section>
 
         {/* INTRO + WHY */}
+        {tp ? <AppArticle sections={tp.sections} /> : (<>
         <section style={{ padding: "56px 24px", background: "var(--surface)" }}>
           <div style={{ maxWidth: 760, margin: "0 auto" }}>
             <p style={{ fontSize: 16.5, color: "var(--text-muted)", lineHeight: 1.8, margin: "0 0 32px" }}>{ct.intro}</p>
@@ -127,12 +136,13 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             </div>
           </div>
         </section>
+        </>)}
 
         {/* FAQ */}
         <section style={{ padding: "48px 24px", background: "var(--surface-2)" }}>
           <div style={{ maxWidth: 720, margin: "0 auto" }}>
             <h2 style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 800, color: "var(--text)", margin: "0 0 28px", letterSpacing: "-0.02em", textAlign: "center" }}>Frequently asked questions</h2>
-            {ct.faqs.map((f) => (
+            {faqs.map((f) => (
               <details key={f.q} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "14px 18px", marginBottom: 10 }}>
                 <summary style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", cursor: "pointer" }}>{f.q}</summary>
                 <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.7, margin: "10px 0 0" }}>{f.a}</p>

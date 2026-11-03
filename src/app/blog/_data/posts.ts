@@ -6871,7 +6871,7 @@ Ready to reinvent your photos' backgrounds? Head to Pixel Shine, upload your ima
     readTime: "11 min read",
     category: "Tutorial",
     keywords: ["remove object from photo free", "ai object remover", "erase people from photo", "remove unwanted object online free"],
-    toolHref: "/ai-editor/remove-object",
+    toolHref: "/object-remover",
     toolLabel: "Remove Object Free →",
         sections: [
       {
@@ -14457,7 +14457,7 @@ const LIVE_TOOL_PREFIXES = [
   // Browser tools that had no blog coverage at all until now.
   "/resize-image", "/qr-code-generator", "/blur-image",
   // The AI apps. Live since paid features were switched on.
-  "/creative", "/ai-editor", "/ai-headshot", "/remove-bg", "/editor",
+  "/creative", "/ai-editor", "/ai-headshot", "/remove-bg", "/editor", "/object-remover",
 ];
 
 

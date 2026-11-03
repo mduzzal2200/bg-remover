@@ -23,6 +23,11 @@ export interface AppSection {
   items?: AppItem[];
   /** Bullets: tips, limits. */
   list?: string[];
+  /**
+   * An image shown under the heading: an existing before-and-after creative,
+   * never a new one. The caption names the app that made it.
+   */
+  figure?: { src: string; alt: string; caption: string; width: number; height: number };
   /** A small table: a comparison, sizes, formats. Cells take **bold** and links too. */
   table?: { head: string[]; rows: string[][] };
   /** Paragraphs after the items, list or table. */
