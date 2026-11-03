@@ -80,6 +80,15 @@ const page: AppPage = {
       after: ["Love retro? The [90s yearbook photo](/creative/90s-yearbook-photo) and the [Y2K aesthetic](/creative/y2k-aesthetic) are made for the same feed."],
     },
     {
+      heading: "How to make your instant print look even more real",
+      list: [
+        "**Pick an evening or indoor photo.** Flash-lit moments are what instant film was made for.",
+        "**Keep it simple.** One or two people and a few objects read best in a small square print.",
+        "**Post several together.** A row of three or four prints looks like a real stack of instant photos.",
+        "**Add a handwritten note.** Choose Classic white, then write in the bottom border with the [free photo editor](/editor) in a handwriting-style font.",
+      ],
+    },
+    {
       heading: "What happens to your photo?",
       paragraphs: [
         "It's sent to our image-model partner, fal.ai, to make the print, and to no one else. It's not used to train AI models and never sold, and both the photo and the print are yours.",

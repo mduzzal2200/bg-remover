@@ -90,7 +90,8 @@ function checks(html) {
   if (title.length > 60) issues.push(`title ${title.length} chars`);
   if (!desc) issues.push("no meta description");
   else if (desc.length > 155) issues.push(`meta ${desc.length} chars`);
-  const visible = decode(html.replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ");
+  // Structured data spells the name "PixelShine" (lib/seo/brand) while older copy says "Pixel Shine"; that alone isn't a hidden answer.
+  const visible = decode(html.replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").replace(/Pixel Shine/g, "PixelShine");
   for (const block of html.match(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g) || []) {
     try {
       const j = JSON.parse(block.replace(/^<script[^>]*>|<\/script>$/g, ""));

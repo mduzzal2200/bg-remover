@@ -95,22 +95,22 @@ const page: AppPage = {
     {
       heading: "What happens to your photo?",
       paragraphs: [
-        "It's sent to our image-model partner, fal.ai, to make the portrait, and to no one else. It isn't used to train AI models and is never sold, and you own both the photo and the portrait.",
-        "Your portraits are saved in My Creations, so you can download them again. Delete any of them at any time, or ask us to delete your account and everything in it. Please make sure your partner is happy for their photo to be used.",
+        "The photo of you both is processed by fal.ai, our image-model provider, purely to create the shoot; nobody else receives it. It's never used to train AI and never sold, and the photo and the portraits belong to the two of you.",
+        "Every portrait lands in My Creations. Download them again for an invite or a frame, delete any you'd rather not keep, or ask us to delete the account with everything in it.",
       ],
     },
   ],
 
   faq: [
     { q: "How do I make an AI couple photoshoot?", a: "Upload one photo of the two of you with both faces clear, choose a setting and light (or leave Auto for the palace look) and press Generate." },
-    { q: "Is it free?", a: `Creating an account is free and needs no card. Each portrait uses ${COST}; one-time credit packs start at ${PACK_FROM} and never expire. Where a free trial is running, the box above the upload says so and your first portrait is free.` },
+    { q: "Is it free?", a: `There's no charge to sign up. A couple portrait is ${COST}, only once it's made, and credit packs from ${PACK_FROM} have no expiry date. If you're somewhere with a trial running, your first portrait is free, as the box above the upload says.` },
     { q: "Will both of us still look like ourselves?", a: "Yes. The app is told to keep both faces and identities exactly the same. A photo where both faces are clear and similar in size gives the best likeness." },
     { q: "Do we need to be in the same photo?", a: "Yes. Upload one photo with both of you in it. A quick selfie together works well." },
     { q: "Can we choose our outfits?", a: "Not here: it chooses coordinated wedding outfits. To describe exactly what you want, use the AI photo editor." },
     { q: "Is it only for Indian weddings?", a: "The default look is an Indian pre-wedding shoot. With Setting on Beach, Garden or Studio, the scene changes; for Western wedding clothes, describe them in the AI photo editor." },
     { q: "Does it work for same-sex couples?", a: "Yes. It's told to choose coordinated outfits that suit both of you. If the first result gets the outfits wrong, run it again, or describe exactly what you want in the AI photo editor." },
     { q: "Can I use it on our wedding invitation?", a: "Yes, the portrait is yours to use. Add names and dates afterwards in the free photo editor." },
-    { q: "Is there a watermark?", a: "No. The full-size portrait downloads without a watermark." },
+    { q: "Is there a watermark?", a: "No. You both get the portrait at full size, unmarked, ready for cards, invites or the wall." },
   ],
 };
 

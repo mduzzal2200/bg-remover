@@ -79,6 +79,15 @@ const page: AppPage = {
       ],
     },
     {
+      heading: "Making the most of your glow-up",
+      list: [
+        "**Start with a photo you already like.** The glow-up polishes what's there; it doesn't replace the moment.",
+        "**Keep the before.** Before-and-after posts are what people share; both are saved in My Creations.",
+        "**Use it for profile refreshes.** A glowed-up photo makes a natural, flattering profile picture once cropped square.",
+        "**Don't overdo it.** One glow-up per photo looks natural; running a result through again can start to look edited.",
+      ],
+    },
+    {
       heading: "What happens to your selfie?",
       paragraphs: [
         "It's sent to our image-model partner, fal.ai, to make the retouched version, and nowhere else. It isn't used to train AI models, is never sold, and both the original and the result belong to you.",
