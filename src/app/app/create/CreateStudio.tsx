@@ -5,7 +5,7 @@ import Icon from "../_components/Icon";
 import { useDashboardUser } from "../_components/DashboardUser";
 import { takeCreatePrompt, takeCreatePhoto } from "../_components/handoff";
 import { StudioPage, Dropdown, GenerateButton, PreviewPanel, SessionStrip, ErrorNote, runGeneration, toSendable, acceptImageFile, labelStyle, actionBtn, type StudioResult } from "../_components/studio";
-import { ASPECT_RATIOS, MODELS, IMAGE_EDIT_MODELS, TEXT_TO_IMAGE_MODELS, type AspectRatio } from "@/lib/app-presets";
+import { ASPECT_RATIOS, MODELS, IMAGE_EDIT_MODELS, TEXT_TO_IMAGE_MODELS, MAX_PHOTOS, maxImagesFor, type AspectRatio } from "@/lib/app-presets";
 import { CREDIT_COST } from "@/lib/plans";
 import { onCreditsChanged } from "@/lib/credits";
 import { openPricing } from "@/lib/pricing-modal";
@@ -29,7 +29,8 @@ export default function CreateStudio({ inspirations }: { inspirations: FeedItem[
   const [results, setResults] = useState<StudioResult[]>([]);
   const [current, setCurrent] = useState<StudioResult | null>(null);
   const [copied, setCopied] = useState(false);
-  const [photo, setPhoto] = useState<string | null>(null);
+  // Your image: one photo, or several (up to 14) to put everyone in one picture.
+  const [photos, setPhotos] = useState<string[]>([]);
   const [reference, setReference] = useState<string | null>(null);
   const [needsPhoto, setNeedsPhoto] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -48,14 +49,25 @@ export default function CreateStudio({ inspirations }: { inspirations: FeedItem[
       if (h.model && MODELS.some((m) => m.id === h.model)) { wantedModel.current = h.model; setModel(h.model); }
       if (h.ratio && (ASPECT_RATIOS as readonly string[]).includes(h.ratio)) setRatio(h.ratio as AspectRatio);
     }
-    void takeCreatePhoto().then((img) => { if (img) setPhoto(img); });
+    void takeCreatePhoto().then((img) => { if (img) setPhotos([img]); });
     textRef.current?.focus();
   }, []);
 
-  const takePhoto = async (f: File | undefined) => {
+  // Room for photos: 14 in all, counting the reference.
+  const photoLimit = MAX_PHOTOS - (reference ? 1 : 0);
+
+  const takePhotos = async (files: File[]) => {
     setErr(null);
-    if (!f) return;
-    try { setPhoto(await acceptImageFile(f)); } catch (e) { setErr((e as Error).message); }
+    const picked = files.filter((f) => f.type.startsWith("image/"));
+    if (!picked.length) return;
+    const room = photoLimit - photos.length;
+    if (room <= 0) { setErr(`You can add up to ${photoLimit} photos.`); return; }
+    const added: string[] = [];
+    for (const f of picked.slice(0, room)) {
+      try { added.push(await acceptImageFile(f)); } catch (e) { setErr((e as Error).message); }
+    }
+    if (added.length) setPhotos((prev) => [...prev, ...added].slice(0, photoLimit));
+    if (picked.length > room) setErr(`Up to ${photoLimit} photos — the rest weren't added.`);
   };
 
   const takeReference = async (f: File | undefined) => {
@@ -83,21 +95,22 @@ export default function CreateStudio({ inspirations }: { inspirations: FeedItem[
   const generate = async () => {
     const text = prompt.trim();
     if (!text || busy) return;
-    if (needsPhoto && !photo) { setErr("This prompt is made for your own photo — add Your image first."); return; }
+    if (needsPhoto && !photos.length) { setErr("This prompt is made for your own photo — add Your image first."); return; }
+    if (photos.length + (reference ? 1 : 0) > MAX_PHOTOS) { setErr(`Up to ${MAX_PHOTOS} images in all, counting the reference — remove a photo or the reference.`); return; }
     if (credits < CREDIT_COST) { openPricing("Create Image"); return; }
     setBusy(true);
     setErr(null);
-    let image: string | undefined;
+    let images: string[] = [];
     let ref: string | undefined;
     try {
-      if (photo) { const s = await toSendable(photo); image = s.imageUrl || s.dataUrl; }
+      images = (await Promise.all(photos.map(toSendable))).map((s) => (s.imageUrl || s.dataUrl)!);
       if (reference) { const s = await toSendable(reference); ref = s.imageUrl || s.dataUrl; }
     } catch {
       setBusy(false);
       setErr("An image couldn't be prepared. Try adding it again.");
       return;
     }
-    const out = await runGeneration("/api/create-image", { prompt: text, model, aspectRatio: ratio, image, reference: ref }, { returnTo: "/app/create", reason: "Create Image", onCredits: setCredits });
+    const out = await runGeneration("/api/create-image", { prompt: text, model, aspectRatio: ratio, images: images.length ? images : undefined, reference: ref }, { returnTo: "/app/create", reason: "Create Image", onCredits: setCredits });
     setBusy(false);
     if (out.error) { setErr(out.error); return; }
     if (!out.image) return;
@@ -111,7 +124,11 @@ export default function CreateStudio({ inspirations }: { inspirations: FeedItem[
     try { await navigator.clipboard.writeText(current.prompt); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch {}
   };
 
-  const availableModels = photo || reference ? IMAGE_EDIT_MODELS : TEXT_TO_IMAGE_MODELS;
+  // With more than two images in all, only the models that take that many.
+  const totalImages = photos.length + (reference ? 1 : 0);
+  const availableModels = totalImages > 2
+    ? IMAGE_EDIT_MODELS.filter((m) => maxImagesFor(m.id) >= totalImages).map((m) => ({ ...m, hint: `Up to ${maxImagesFor(m.id)} photos` }))
+    : totalImages ? IMAGE_EDIT_MODELS : TEXT_TO_IMAGE_MODELS;
   useEffect(() => {
     const wanted = wantedModel.current;
     if (wanted && availableModels.some((m) => m.id === wanted)) {
@@ -135,45 +152,52 @@ export default function CreateStudio({ inspirations }: { inspirations: FeedItem[
           className="jpt-fieldbox"
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
-          onDrop={(e) => { e.preventDefault(); setDragOver(false); void takePhoto(e.dataTransfer.files?.[0]); }}
+          onDrop={(e) => { e.preventDefault(); setDragOver(false); void takePhotos(Array.from(e.dataTransfer.files ?? [])); }}
           style={{ position: "relative", borderRadius: 14, border: `1px solid ${dragOver ? "var(--accent)" : "var(--border)"}`, background: dragOver ? "var(--accent-soft)" : "var(--surface)", padding: "10px 10px 0" }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
             {reference
               ? <Thumb src={reference} tag="Reference" onRemove={() => setReference(null)} />
               : <EmptyThumb tag="Reference" hint="optional" onClick={() => refInput.current?.click()} />}
             <Icon name="arrowRight" size={15} style={{ color: "var(--text-faint)" }} />
-            {photo
-              ? <Thumb src={photo} tag="Your image" onRemove={() => setPhoto(null)} />
-              : <EmptyThumb tag="Your image" accent onClick={() => photoInput.current?.click()} />}
+            {photos.map((src, i) => (
+              <Thumb key={`${i}-${src.slice(-24)}`} src={src} tag={photos.length === 1 ? "Your image" : `Photo ${i + 1}`} onRemove={() => setPhotos((prev) => prev.filter((_, j) => j !== i))} />
+            ))}
+            {photos.length < photoLimit && (
+              photos.length
+                ? <EmptyThumb tag="Add more" hint={`${photos.length} of ${photoLimit}`} accent onClick={() => photoInput.current?.click()} />
+                : <EmptyThumb tag="Your image" hint={`up to ${photoLimit}`} accent onClick={() => photoInput.current?.click()} />
+            )}
           </div>
           <textarea
             ref={textRef}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value.slice(0, MAX_PROMPT))}
-            onPaste={(e) => { const f = Array.from(e.clipboardData.files).find((x) => x.type.startsWith("image/")); if (f) { e.preventDefault(); void takePhoto(f); } }}
+            onPaste={(e) => { const fs = Array.from(e.clipboardData.files).filter((x) => x.type.startsWith("image/")); if (fs.length) { e.preventDefault(); void takePhotos(fs); } }}
             onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); void generate(); } }}
             rows={6}
-            placeholder={photo ? "Describe the scene to put your image in…" : "A cozy Kyoto café at golden hour, rain on the window, soft film grain, 35mm photo…"}
+            placeholder={photos.length > 1 ? "Describe the picture to put everyone in — a beach group photo at sunset, a team photo in the office…" : photos.length ? "Describe the scene to put your image in…" : "A cozy Kyoto café at golden hour, rain on the window, soft film grain, 35mm photo…"}
             style={{ width: "100%", resize: "vertical", minHeight: 130, padding: "10px 4px 28px", borderRadius: 14, background: "transparent", border: "none", color: "var(--text)", fontSize: 14.5, lineHeight: 1.55, fontFamily: "inherit", outline: "none" }}
           />
           <span style={{ position: "absolute", right: 12, bottom: 10, fontSize: 11, color: "var(--text-faint)" }}>{prompt.length}/{MAX_PROMPT}</span>
         </div>
-        <input ref={photoInput} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => { void takePhoto(e.target.files?.[0]); e.target.value = ""; }} />
+        <input ref={photoInput} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={(e) => { void takePhotos(Array.from(e.target.files ?? [])); e.target.value = ""; }} />
         <input ref={refInput} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => { void takeReference(e.target.files?.[0]); e.target.value = ""; }} />
-        {!photo ? (
+        {!photos.length ? (
           <button onClick={() => photoInput.current?.click()} className="jpt-lift" style={{ marginTop: 8, width: "100%", display: "flex", alignItems: "center", gap: 9, padding: "11px 12px", borderRadius: 11, border: "1px solid var(--accent-border)", background: "var(--accent-soft)", color: "var(--accent)", fontSize: 13, fontWeight: 800, fontFamily: "inherit", cursor: "pointer", textAlign: "left" }}>
             <Icon name="upload" size={16} />
             <span style={{ flex: 1 }}>
-              Upload your image
+              Upload your images · up to {photoLimit}
               <span style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--accent-strong)", opacity: 0.85, marginTop: 1 }}>
-                {needsPhoto ? "This prompt is made for your own photo." : reference ? "Your model or product, recreated like the reference." : "Put yourself or your product in the picture."}
+                {needsPhoto ? "This prompt is made for your own photo." : reference ? "Your model or product, recreated like the reference." : "Put yourself, your friends or your product in the picture."}
               </span>
             </span>
           </button>
         ) : (
           <div style={{ fontSize: 11.5, color: "var(--text-faint)", marginTop: 6 }}>
-            {reference ? "Recreating the reference with your image as the subject." : "Your image will be the subject — a person keeps their face, a product keeps its look."}
+            {photos.length > 1
+              ? `Everyone in your ${photos.length} photos will be in one picture, each keeping their own face.${reference ? " Styled like the reference." : ""}`
+              : reference ? "Recreating the reference with your image as the subject." : "Your image will be the subject — a person keeps their face, a product keeps its look."}
           </div>
         )}
       </div>

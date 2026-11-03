@@ -40,6 +40,7 @@ const ALL_TOOLS = [
       { icon: "🪄", label: "Remove BG (AI)",  desc: "AI-powered, higher quality",            href: "/remove-bg", free: false },
       { icon: "🎯", label: "AI Headshot",    desc: "Professional headshots from any photo", href: "/ai-headshot", free: false },
       { icon: "🧽", label: "Object Remover", desc: "Brush over anything to remove it",     href: "/object-remover", free: false },
+      { icon: "👥", label: "AI Group Photo", desc: "Up to 14 photos into one group photo", href: "/group-photo", free: false },
       { icon: "✍️", label: "AI Photo Editor", desc: "Edit images with text prompts",       href: "/app/editor", free: false },
       { icon: "🎨", label: "AI Image Generator", desc: "Generate an image from a prompt",  href: "/app/create", free: false },
     ],

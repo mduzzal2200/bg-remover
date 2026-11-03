@@ -16,6 +16,7 @@ const AI_TOOLS = [
   { labelKey: "Remove Background",  href: "/remove-bg" },
   { labelKey: "Image Upscaler",     href: "/upscale" },
   { labelKey: "Object Remover",     href: "/object-remover" },
+  { labelKey: "AI Group Photo",     href: "/group-photo" },
   { labelKey: "AI Image Generator", href: "/app/create" },
   { labelKey: "All AI Photo Apps",  href: "/creative" },
   { labelKey: "Festival Photo Apps", href: "/festivals" },

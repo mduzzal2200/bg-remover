@@ -765,23 +765,29 @@ export async function falEditImage(
   return urlToDataUrl(firstImageUrl(result));
 }
 
-/** Edits using several reference images at once (e.g. identity + style refs). */
+/**
+ * Edits using several input images at once (a reference plus a subject, or
+ * several people for one group photo). With no ratio the model keeps its own
+ * framing; with one, the output is that shape.
+ */
 export async function falEditImages(
   srcs: string[],
   prompt: string,
   model: FalModel = DEFAULT_MODEL,
-  budgetMs?: number
+  budgetMs?: number,
+  aspectRatio?: string
 ): Promise<string> {
   if (!srcs.length) throw new Error("At least one image is required");
+  assertAspectRatio(aspectRatio);
   const imageUrls = await Promise.all(srcs.map(toFalImageUrl));
   const endpoint = falEndpoint(model, "edit");
 
   const input =
     falModelSpec(model).family === "nano"
-      ? { prompt, image_urls: imageUrls, num_images: 1, output_format: "png", resolution: NANO_RESOLUTION }
+      ? { prompt, image_urls: imageUrls, num_images: 1, output_format: "png", resolution: NANO_RESOLUTION, ...(aspectRatio ? { aspect_ratio: aspectRatio } : {}) }
       : falModelSpec(model).family === "seedream"
       ? { prompt, image_urls: await Promise.all(imageUrls.map(uploadImageToFalStorage)), enable_safety_checker: FAL_ENABLE_SAFETY_CHECKER }
-      : { prompt, image_urls: imageUrls, num_images: 1, image_size: "auto", quality: "high" };
+      : { prompt, image_urls: imageUrls, num_images: 1, image_size: imageSizeFor(falModelSpec(model).sizeStyle, aspectRatio), quality: "high" };
 
   const result = await runQueued(endpoint, input, budgetMs, {
     minimalInput: falModelSpec(model).family === "seedream"
