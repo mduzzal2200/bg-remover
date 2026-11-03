@@ -10,6 +10,7 @@
     "start": "next start",
     "creative": "node scripts/add-creative.mjs",
     "festival:creatives": "npx --yes tsx scripts/festival-creatives.ts",
+    "group:creatives": "npx --yes tsx scripts/group-photo-creatives.ts",
     "seo-audit": "node scripts/seo-audit.mjs",
     "seo:lastmod": "node scripts/seo-lastmod.mjs",
     "seo:check": "node scripts/seo-check.mjs"

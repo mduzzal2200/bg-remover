@@ -4,7 +4,6 @@ import { CREDIT_COST } from "@/lib/plans";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { TrialPill } from "@/app/_components/TrialOffer";
-import GroupPhotoTool from "./GroupPhotoTool";
 import GroupShowcase, { ExampleCard, type ShowcaseExample } from "./GroupShowcase";
 import Icon, { type IconName } from "@/app/app/_components/Icon";
 import { GROUP_SCENES, GROUP_POSES, GROUP_OUTFITS, GROUP_FRAMINGS, MAX_GROUP_PHOTOS, MIN_GROUP_PHOTOS, BEST_GROUP_SIZE } from "@/lib/group-photo";
@@ -61,6 +60,56 @@ async function showcaseExamples(): Promise<ShowcaseExample[]> {
     people: ex.people.map((p) => ({ ...p, src: null })),
     result: null,
   }));
+}
+
+/** The tool itself lives on its own page, so this one stays an article. */
+const CREATE = "/group-photo/create";
+
+const ctaStyle: React.CSSProperties = { display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 22px", borderRadius: 14, background: "var(--grad-strong)", color: "#fff", fontWeight: 800, fontSize: 15.5, textDecoration: "none", boxShadow: "var(--glow)" };
+
+/** "Grandma, Dad, Mum and Daughter", or "the 4 people" when the photos only have numbers. */
+function names(ex: ShowcaseExample): string {
+  const l = ex.people.map((p) => p.label);
+  if (l.some((x) => /^Photo \d+$/.test(x))) return `the ${l.length} people`;
+  return l.length > 1 ? `${l.slice(0, -1).join(", ")} and ${l[l.length - 1]}` : l[0];
+}
+
+/** The words above each example: what it is, and what it's for. */
+function exampleInfo(ex: ShowcaseExample): { h: string; p: string[] } {
+  const n = ex.people.length;
+  const who = names(ex);
+  const Who = who.charAt(0).toUpperCase() + who.slice(1);
+  switch (ex.id) {
+    case "family":
+      return {
+        h: "AI family photo from separate photos",
+        p: [
+          `Getting the whole family into one picture is hard when everyone lives somewhere else. ${Who} each sent an ordinary photo taken at home, and the AI combined them into one family photo: everyone together, in the same light, each face kept as it was.`,
+          "It's the simplest way to make a family photo from individual photos, for a birthday, an anniversary or a frame on the wall. Add a grandparent who couldn't travel or a child who was away, and the whole family is in the picture.",
+        ],
+      };
+    case "friends":
+      return {
+        h: "Friends group photo from individual photos",
+        p: [
+          `${Who} live in different places, so there was never a photo of all of them together. ${n} everyday selfies went in, and one natural group photo of the friends came out, as if they had all met up on the same evening.`,
+          "Use it for a reunion invite, a birthday post or a throwback to the old group. Pick a background such as Beach, Park or Celebration, or leave it on Auto.",
+        ],
+      };
+    case "team":
+      return {
+        h: "AI team photo from individual headshots",
+        p: [
+          `Remote teams rarely stand in one room. ${Who} each sent an everyday photo from wherever they work, and the AI turned them into one team photo, dressed to match, in a bright office.`,
+          "Put it on your About page, in a LinkedIn post or on a welcome slide for new starters. Choose Office as the background and Matching smart outfits for a polished, consistent look.",
+        ],
+      };
+    default:
+      return {
+        h: `${ex.title} group photo from ${n} separate photos`,
+        p: [`${Who} were photographed separately. The AI put them together in one group photo, with the same light on everyone and each face kept as it was.`],
+      };
+  }
 }
 
 const FEATURES: { icon: IconName; t: string; d: string }[] = [
@@ -173,9 +222,9 @@ export default async function GroupPhotoPage() {
               ))}
             </ul>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", marginBottom: 14 }}>
-              <a href="#tool" className="jpt-sheen" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 22px", borderRadius: 14, background: "var(--grad-strong)", color: "#fff", fontWeight: 800, fontSize: 15.5, textDecoration: "none", boxShadow: "var(--glow)" }}>
+              <Link href={CREATE} className="jpt-sheen" style={ctaStyle}>
                 <Icon name="group" size={18} /> Make your group photo
-              </a>
+              </Link>
               <a href="#examples" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "13px 18px", borderRadius: 14, border: "1px solid var(--border-strong)", color: "var(--text)", fontWeight: 700, fontSize: 15, textDecoration: "none", background: "var(--surface)" }}>
                 See examples
               </a>
@@ -202,14 +251,6 @@ export default async function GroupPhotoPage() {
         </div>
       </section>
 
-      <section id="tool" style={{ padding: "40px 16px 48px", scrollMarginTop: 70 }}>
-        <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-          <h2 style={{ ...h2, marginBottom: 6 }}>Make your group photo</h2>
-          <p style={{ ...intro, marginBottom: 22 }}>Add {MIN_GROUP_PHOTOS} to {MAX_GROUP_PHOTOS} photos, pick a background and framing, and press Generate.</p>
-          <GroupPhotoTool />
-        </div>
-      </section>
-
       <section id="examples" style={{ padding: "56px 16px", background: "var(--surface-2)", scrollMarginTop: 70 }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <h2 style={h2}>Before and after: separate photos, one group photo</h2>
@@ -218,8 +259,25 @@ export default async function GroupPhotoPage() {
               ? "Each example shows the separate photos on one side and the one group photo made from them on the other."
               : "Drawn to show the idea: each set of separate photos becomes one group photo."}
           </p>
-          <div style={{ display: "grid", gap: 20 }}>
-            {examples.map((ex) => <ExampleCard key={ex.id} ex={ex} />)}
+          <div style={{ display: "grid", gap: 44 }}>
+            {examples.map((ex) => {
+              const info = exampleInfo(ex);
+              return (
+                <article key={ex.id} style={{ display: "grid", gap: 16 }}>
+                  <div style={{ maxWidth: 820 }}>
+                    <span style={{ display: "inline-block", fontSize: 12, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", color: "var(--accent-strong)", marginBottom: 6 }}>{ex.title} · {ex.people.length} photos → 1 group photo</span>
+                    <h3 style={{ fontSize: "clamp(1.25rem,2.6vw,1.6rem)", fontWeight: 900, letterSpacing: "-0.02em", margin: "0 0 10px", textWrap: "balance" }}>{info.h}</h3>
+                    {info.p.map((t) => <p key={t} style={{ ...body, marginBottom: 10 }}>{t}</p>)}
+                  </div>
+                  <ExampleCard ex={ex} />
+                </article>
+              );
+            })}
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", marginTop: 36 }}>
+            <Link href={CREATE} className="jpt-sheen" style={ctaStyle}>
+              <Icon name="group" size={18} /> Make your group photo
+            </Link>
           </div>
         </div>
       </section>

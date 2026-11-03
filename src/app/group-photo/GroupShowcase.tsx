@@ -257,7 +257,7 @@ export function ExampleCard({ ex }: { ex: ShowcaseExample }) {
     <figure style={{ margin: 0, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))", gap: 18, alignItems: "center", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 20, padding: 18 }}>
       <div style={{ display: "grid", gap: 10 }}>
         <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: ".06em", textTransform: "uppercase", color: "var(--text-faint)" }}>Before · {n} separate photos</span>
-        <div style={{ display: "grid", gridTemplateColumns: `repeat(${n > 9 ? 4 : n > 4 ? 3 : 2}, 1fr)`, gap: 8 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(104px, 30%), 1fr))", gap: 8 }}>
           {ex.people.map((p, i) => (
             <div key={i} style={{ position: "relative", aspectRatio: "4 / 5", borderRadius: 10, overflow: "hidden", border: "1px solid var(--border)", background: "#ddd" }}>
               {p.src ? <Image src={p.src} alt={`${p.label}'s separate photo`} fill sizes="140px" style={{ objectFit: "cover" }} /> : <Avatar person={p} />}

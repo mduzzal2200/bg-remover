@@ -49,6 +49,7 @@
  "/gpt-image-2-prompts": "2026-10-15",
  "/grok-imagine-prompts": "2026-10-15",
  "/group-photo": "2026-11-03",
+ "/group-photo/create": "2026-11-03",
  "/guides": "2026-10-26",
  "/guides/[topic]": "2026-10-26",
  "/headshot": "2026-10-14",

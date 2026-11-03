@@ -6,13 +6,19 @@
  * the group photo has "group" or "after" in its file name; every other image
  * is one of the separate photos it was made from.
  *
- * The page reads the bucket when it renders (it revalidates hourly), so a
- * new or replaced example shows up without a code change. Listing needs the
- * service role key, which the deployments have; anywhere it doesn't work,
- * this returns nothing and the page falls back to its drawn illustrations.
+ * Every file that `npm run group:creatives` has copied is served from the
+ * site as a small WebP (public/group-photo/examples, sizes in
+ * group-photo-creatives.json): about 40 KB a photo instead of 3 MB.
+ *
+ * The page also reads the bucket when it renders (hourly), so a folder or
+ * file added later still shows up, straight from the bucket, until the
+ * script is run again. Listing needs the service role key, which the
+ * deployments have. With neither, the page falls back to its drawn
+ * illustrations.
  */
 
 import { createAdminSupabase } from "@/lib/auth";
+import COPIES from "./group-photo-creatives.json";
 
 export const CREATIVES_BUCKET = "Group Photo";
 const ORDER = ["family", "friends", "team"];
@@ -30,6 +36,14 @@ export interface GroupCreative {
   ratio: string | null;
 }
 
+const SIZES: Record<string, number[]> = COPIES;
+
+/** The site's small copy of a bucket file, if the script has made one. */
+function copyOf(folder: string, name: string): { src: string; w: number; h: number } | null {
+  const size = SIZES[`${folder}/${name}`];
+  return size ? { src: `/group-photo/examples/${folder}/${name.replace(IMAGE, ".webp")}`, w: size[0], h: size[1] } : null;
+}
+
 function publicUrl(folder: string, name: string): string {
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://lwworujvfttxkrjfrgav.supabase.co";
   return `${base}/storage/v1/object/public/${encodeURIComponent(CREATIVES_BUCKET)}/${encodeURIComponent(folder)}/${encodeURIComponent(name)}`;
@@ -37,9 +51,11 @@ function publicUrl(folder: string, name: string): string {
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-/** "dad.jpg" → "Dad"; numbers and camera names ("IMG_2041", "before-2", "3") → "Photo n". */
-export function labelFor(name: string, index: number): string {
-  const base = name.replace(IMAGE, "").replace(/[_-]+/g, " ").trim();
+/** "family-1-grandma.png" → "Grandma", "dad.jpg" → "Dad"; numbers and camera names ("IMG_2041", "before-2", "3") → "Photo n". */
+export function labelFor(name: string, index: number, folder = ""): string {
+  let base = name.replace(IMAGE, "").replace(/[_-]+/g, " ").trim();
+  if (folder) base = base.replace(new RegExp(`^${folder.replace(/[^a-z0-9]/gi, ".")}\\s*`, "i"), "");
+  base = base.replace(/^\d+\s+(?=\D)/, "");
   const generic = !base || /\d{3,}/.test(base) || /^(img|image|photo|pic|picture|before|single|person|input|dsc|pxl|whatsapp|screenshot|chatgpt|gemini)\b/i.test(base) || /^\d+$/.test(base);
   if (generic || base.length > 16) return `Photo ${index + 1}`;
   return base.split(/\s+/).map(cap).join(" ");
@@ -97,36 +113,55 @@ function captionFor(id: string, n: number): string {
   return `${n} separate photos, one group photo.`;
 }
 
-/** Every example folder in the bucket that has a group photo and at least two separate photos. */
-export async function loadGroupCreatives(): Promise<GroupCreative[]> {
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) return [];
+/** File names per folder, as the bucket lists them; null when it can't be read here. */
+async function listBucket(): Promise<Map<string, string[]> | null> {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
   try {
     const storage = createAdminSupabase().storage.from(CREATIVES_BUCKET);
     const { data: root, error } = await storage.list("", { limit: 100 });
-    if (error || !root) return [];
+    if (error || !root) return null;
     // Folders come back without an id.
     const folders = root.filter((e) => !e.id && !e.name.startsWith(".")).map((e) => e.name);
-    folders.sort((a, b) => {
-      const ia = ORDER.indexOf(a.toLowerCase()), ib = ORDER.indexOf(b.toLowerCase());
-      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
-    });
-    const out = await Promise.all(folders.map(async (folder): Promise<GroupCreative | null> => {
+    const out = new Map<string, string[]>();
+    await Promise.all(folders.map(async (folder) => {
       const { data } = await storage.list(folder, { limit: 100 });
-      const split = splitFolder((data ?? []).filter((e) => e.id).map((e) => e.name));
-      if (!split) return null;
-      const result = publicUrl(folder, split.result);
-      return {
-        id: folder.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-        title: folder.split(/[\s_-]+/).map(cap).join(" "),
-        caption: captionFor(folder.toLowerCase(), split.singles.length),
-        singles: split.singles.map((name, i) => ({ label: labelFor(name, i), src: publicUrl(folder, name) })),
-        result,
-        ratio: await ratioOf(result),
-      };
+      out.set(folder, (data ?? []).filter((e) => e.id).map((e) => e.name));
     }));
-    return out.filter((c): c is GroupCreative => !!c);
+    return out;
   } catch (e) {
     console.error("[group-photo] couldn't read the creatives bucket", e);
-    return [];
+    return null;
   }
+}
+
+/** Every example folder that has a group photo and at least two separate photos, small copies first. */
+export async function loadGroupCreatives(): Promise<GroupCreative[]> {
+  const listed = await listBucket();
+  // Without the bucket listing, the copies on the site are all there is.
+  const folders = new Map<string, string[]>(listed ?? []);
+  if (!listed) {
+    for (const key of Object.keys(SIZES)) {
+      const [folder, name] = key.split("/");
+      folders.set(folder, [...(folders.get(folder) ?? []), name]);
+    }
+  }
+  const order = Array.from(folders.keys()).sort((a, b) => {
+    const ia = ORDER.indexOf(a.toLowerCase()), ib = ORDER.indexOf(b.toLowerCase());
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
+  });
+  const out = await Promise.all(order.map(async (folder): Promise<GroupCreative | null> => {
+    const split = splitFolder(folders.get(folder) ?? []);
+    if (!split) return null;
+    const src = (name: string) => copyOf(folder, name)?.src ?? publicUrl(folder, name);
+    const copy = copyOf(folder, split.result);
+    return {
+      id: folder.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      title: folder.split(/[\s_-]+/).map(cap).join(" "),
+      caption: captionFor(folder.toLowerCase(), split.singles.length),
+      singles: split.singles.map((name, i) => ({ label: labelFor(name, i, folder), src: src(name) })),
+      result: src(split.result),
+      ratio: copy ? `${copy.w} / ${copy.h}` : await ratioOf(publicUrl(folder, split.result)),
+    };
+  }));
+  return out.filter((c): c is GroupCreative => !!c);
 }
