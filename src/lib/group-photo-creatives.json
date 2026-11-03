@@ -15,6 +15,10 @@
     480,
     640
   ],
+  "family/family/family-group.png": [
+    1400,
+    933
+  ],
   "friends/friends-1-maya.png": [
     480,
     640
@@ -34,6 +38,10 @@
   "friends/friends-5-yuki.png": [
     480,
     640
+  ],
+  "friends/friends/friends-group.png": [
+    1400,
+    933
   ],
   "team/team-1-emma.png": [
     480,
@@ -58,5 +66,9 @@
   "team/team-6-sofia.png": [
     480,
     640
+  ],
+  "team/team/team-group.png": [
+    1400,
+    933
   ]
 }

@@ -10,10 +10,12 @@
  * them from the site's CDN instead of pulling multi-megabyte files from the
  * bucket.
  *
- * Supabase won't list a folder without a key, so the files are named here.
- * In each folder the group photo is "<folder>-group.png"; the rest are the
- * separate photos, "<folder>-<n>-<name>.png". Add new names to FILES and run
- * it again. A file that isn't in the bucket yet is skipped and reported.
+ * Supabase won't list a folder without a key, so the files are named here,
+ * as paths inside each example's folder. The group photo is
+ * "<folder>/<folder>-group.png" (it sits in a subfolder of the same name);
+ * the rest are the separate photos, "<folder>-<n>-<name>.png". Add new names
+ * to FILES and run it again. A file that isn't in the bucket is skipped and
+ * reported.
  */
 
 import fs from "node:fs";
@@ -27,9 +29,9 @@ const OUT = path.join(ROOT, "public/group-photo/examples");
 const MANIFEST = path.join(ROOT, "src/lib/group-photo-creatives.json");
 
 const FILES: Record<string, string[]> = {
-  family: ["family-group.png", "family-1-grandma.png", "family-2-dad.png", "family-3-mum.png", "family-4-daughter.png"],
-  friends: ["friends-group.png", "friends-1-maya.png", "friends-2-kofi.png", "friends-3-lena.png", "friends-4-mateo.png", "friends-5-yuki.png"],
-  team: ["team-group.png", "team-1-emma.png", "team-2-daniel.png", "team-3-amara.png", "team-4-wei.png", "team-5-omar.png", "team-6-sofia.png"],
+  family: ["family/family-group.png", "family-1-grandma.png", "family-2-dad.png", "family-3-mum.png", "family-4-daughter.png"],
+  friends: ["friends/friends-group.png", "friends-1-maya.png", "friends-2-kofi.png", "friends-3-lena.png", "friends-4-mateo.png", "friends-5-yuki.png"],
+  team: ["team/team-group.png", "team-1-emma.png", "team-2-daniel.png", "team-3-amara.png", "team-4-wei.png", "team-5-omar.png", "team-6-sofia.png"],
 };
 
 /** Separate photos are shown small; the group photo is the big one. */
@@ -37,7 +39,7 @@ const SINGLE_WIDTH = 480;
 const GROUP_WIDTH = 1400;
 
 const objectUrl = (folder: string, name: string) =>
-  `${SUPABASE}/storage/v1/object/public/${encodeURIComponent(BUCKET)}/${encodeURIComponent(folder)}/${encodeURIComponent(name)}`;
+  `${SUPABASE}/storage/v1/object/public/${[BUCKET, folder, ...name.split("/")].map(encodeURIComponent).join("/")}`;
 
 async function main() {
   const manifest: Record<string, [number, number]> = {};
@@ -50,7 +52,7 @@ async function main() {
       if (!res.ok) { missing.push(`${folder}/${name}`); continue; }
       const buf = Buffer.from(await res.arrayBuffer());
       const group = /group|after/i.test(name);
-      const out = path.join(OUT, folder, name.replace(/\.(png|jpe?g|webp)$/i, ".webp"));
+      const out = path.join(OUT, folder, path.basename(name).replace(/\.(png|jpe?g|webp)$/i, ".webp"));
       const info = await sharp(buf).rotate()
         .resize({ width: group ? GROUP_WIDTH : SINGLE_WIDTH, withoutEnlargement: true })
         .webp({ quality: group ? 78 : 74, effort: 6 })

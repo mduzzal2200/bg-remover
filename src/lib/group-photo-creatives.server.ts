@@ -41,19 +41,19 @@ const SIZES: Record<string, number[]> = COPIES;
 /** The site's small copy of a bucket file, if the script has made one. */
 function copyOf(folder: string, name: string): { src: string; w: number; h: number } | null {
   const size = SIZES[`${folder}/${name}`];
-  return size ? { src: `/group-photo/examples/${folder}/${name.replace(IMAGE, ".webp")}`, w: size[0], h: size[1] } : null;
+  return size ? { src: `/group-photo/examples/${folder}/${name.split("/").pop()!.replace(IMAGE, ".webp")}`, w: size[0], h: size[1] } : null;
 }
 
 function publicUrl(folder: string, name: string): string {
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://lwworujvfttxkrjfrgav.supabase.co";
-  return `${base}/storage/v1/object/public/${encodeURIComponent(CREATIVES_BUCKET)}/${encodeURIComponent(folder)}/${encodeURIComponent(name)}`;
+  return `${base}/storage/v1/object/public/${[CREATIVES_BUCKET, folder, ...name.split("/")].map(encodeURIComponent).join("/")}`;
 }
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /** "family-1-grandma.png" → "Grandma", "dad.jpg" → "Dad"; numbers and camera names ("IMG_2041", "before-2", "3") → "Photo n". */
 export function labelFor(name: string, index: number, folder = ""): string {
-  let base = name.replace(IMAGE, "").replace(/[_-]+/g, " ").trim();
+  let base = name.split("/").pop()!.replace(IMAGE, "").replace(/[_-]+/g, " ").trim();
   if (folder) base = base.replace(new RegExp(`^${folder.replace(/[^a-z0-9]/gi, ".")}\\s*`, "i"), "");
   base = base.replace(/^\d+\s+(?=\D)/, "");
   const generic = !base || /\d{3,}/.test(base) || /^(img|image|photo|pic|picture|before|single|person|input|dsc|pxl|whatsapp|screenshot|chatgpt|gemini)\b/i.test(base) || /^\d+$/.test(base);
@@ -63,7 +63,7 @@ export function labelFor(name: string, index: number, folder = ""): string {
 
 /** Splits one folder's file names into the group photo and the separate photos. */
 export function splitFolder(names: string[]): { result: string; singles: string[] } | null {
-  const images = names.filter((n) => IMAGE.test(n) && !n.startsWith("."));
+  const images = names.filter((n) => IMAGE.test(n) && !n.split("/").pop()!.startsWith("."));
   const result = images.find((n) => RESULT.test(n));
   if (!result) return null;
   const singles = images.filter((n) => n !== result && !RESULT.test(n)).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
@@ -125,7 +125,15 @@ async function listBucket(): Promise<Map<string, string[]> | null> {
     const out = new Map<string, string[]>();
     await Promise.all(folders.map(async (folder) => {
       const { data } = await storage.list(folder, { limit: 100 });
-      out.set(folder, (data ?? []).filter((e) => e.id).map((e) => e.name));
+      const names = (data ?? []).filter((e) => e.id).map((e) => e.name);
+      // One level down too: renaming a file to "family/x.png" inside the family
+      // folder puts it in family/family/, which is where the group photos are.
+      const subs = (data ?? []).filter((e) => !e.id && !e.name.startsWith("."));
+      await Promise.all(subs.map(async (sub) => {
+        const { data: inner } = await storage.list(`${folder}/${sub.name}`, { limit: 100 });
+        for (const e of inner ?? []) if (e.id) names.push(`${sub.name}/${e.name}`);
+      }));
+      out.set(folder, names);
     }));
     return out;
   } catch (e) {
@@ -141,8 +149,8 @@ export async function loadGroupCreatives(): Promise<GroupCreative[]> {
   const folders = new Map<string, string[]>(listed ?? []);
   if (!listed) {
     for (const key of Object.keys(SIZES)) {
-      const [folder, name] = key.split("/");
-      folders.set(folder, [...(folders.get(folder) ?? []), name]);
+      const [folder, ...rest] = key.split("/");
+      folders.set(folder, [...(folders.get(folder) ?? []), rest.join("/")]);
     }
   }
   const order = Array.from(folders.keys()).sort((a, b) => {

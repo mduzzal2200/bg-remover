@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Icon from "@/app/app/_components/Icon";
-import { Dropdown, GenerateButton, PreviewPanel, SessionStrip, ErrorNote, toSendable, acceptImageFile, labelStyle, type StudioResult } from "@/app/app/_components/studio";
+import { Dropdown, GenerateButton, PreviewPanel, SessionStrip, ErrorNote, acceptImageFile, labelStyle, type StudioResult } from "@/app/app/_components/studio";
 import SignInModal from "@/app/_components/SignInModal";
 import { ASPECT_RATIOS, maxImagesFor, type AspectRatio } from "@/lib/app-presets";
 import { GROUP_SCENES, GROUP_FRAMINGS, GROUP_POSES, GROUP_OUTFITS, GROUP_DEFAULTS, GROUP_MODELS, GROUP_DEFAULT_MODEL, MAX_GROUP_PHOTOS, MIN_GROUP_PHOTOS, BEST_GROUP_SIZE, ratioForCount } from "@/lib/group-photo";
@@ -18,6 +18,38 @@ const TOOL = "group-photo";
 const MAX_DETAILS = 500;
 /** Request bodies over ~4.5 MB never reach the server; photos that failed to upload travel inline. */
 const MAX_INLINE_BYTES = 4_000_000;
+/**
+ * Each photo is made this size when it's added. A face in a group photo
+ * never needs more, and it keeps 14 photos small enough to send inside the
+ * request (about 200 KB each) when the upload to storage fails.
+ */
+const PHOTO_EDGE = 1280;
+const PHOTO_QUALITY = 0.86;
+
+/** Redraws a photo as a JPEG no larger than `edge` on its long side. */
+function shrink(src: string, edge: number, quality: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.onload = () => {
+      const scale = Math.min(1, edge / Math.max(img.naturalWidth, img.naturalHeight));
+      const w = Math.max(1, Math.round(img.naturalWidth * scale));
+      const h = Math.max(1, Math.round(img.naturalHeight * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { resolve(src); return; }
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+    img.onerror = () => reject(new Error("That file could not be read as an image."));
+    img.src = src;
+  });
+}
+
+const inlineBytes = (list: string[]) => list.filter((s) => s.startsWith("data:")).reduce((n, s) => n + s.length, 0);
 const STAGES = ["Reading every face…", "Arranging the group…", "Matching the light across everyone…", "Adding the finishing touches…"];
 const RATIO_LABEL: Record<AspectRatio, string> = {
   "1:1": "1:1 · Square", "4:5": "4:5 · Portrait", "3:4": "3:4 · Portrait", "16:9": "16:9 · Wide", "9:16": "9:16 · Story", "3:2": "3:2 · Photo",
@@ -101,7 +133,7 @@ export default function GroupPhotoTool() {
     if (room <= 0) { setErr(`You can add up to ${MAX_GROUP_PHOTOS} photos.`); return; }
     const added: string[] = [];
     for (const f of picked.slice(0, room)) {
-      try { added.push(await acceptImageFile(f)); } catch (e) { setErr((e as Error).message); }
+      try { added.push(await shrink(await acceptImageFile(f), PHOTO_EDGE, PHOTO_QUALITY)); } catch (e) { setErr((e as Error).message); }
     }
     if (added.length) setPhotos((prev) => [...prev, ...added].slice(0, MAX_GROUP_PHOTOS));
     if (picked.length > room) setErr(`Up to ${MAX_GROUP_PHOTOS} photos — ${picked.length - room} weren't added.`);
@@ -130,22 +162,35 @@ export default function GroupPhotoTool() {
     trackEvent("group_photo_run", { photos: photos.length, scene, framing, model });
     let images: string[];
     try {
+      const { uploadDataUrlToSupabase } = await import("@/lib/supabase-upload");
       images = await Promise.all(photos.map(async (p) => {
         if (p.startsWith("http")) return p;
         const cached = uploaded.current.get(p);
         if (cached) return cached;
-        const s = await toSendable(p);
-        if (s.imageUrl) { uploaded.current.set(p, s.imageUrl); return s.imageUrl; }
-        return s.dataUrl!;
+        // Photos kept from before this change may still be full size.
+        const small = p.length > 600_000 ? await shrink(p, PHOTO_EDGE, PHOTO_QUALITY) : p;
+        try {
+          const url = await uploadDataUrlToSupabase(small);
+          uploaded.current.set(p, url);
+          return url;
+        } catch {
+          return small; // sent inside the request instead
+        }
       }));
+      // If storage refused the uploads and the photos are still too big to
+      // send together, make the inline ones smaller until they fit.
+      for (const [edge, q] of [[1024, 0.82], [800, 0.78], [640, 0.75]] as const) {
+        if (inlineBytes(images) <= MAX_INLINE_BYTES) break;
+        images = await Promise.all(images.map((s) => (s.startsWith("data:") ? shrink(s, edge, q) : s)));
+      }
     } catch {
       setBusy(false);
       setErr("A photo couldn't be prepared. Remove it and add it again.");
       return;
     }
-    if (images.filter((s) => s.startsWith("data:")).reduce((n, s) => n + s.length, 0) > MAX_INLINE_BYTES) {
+    if (inlineBytes(images) > MAX_INLINE_BYTES) {
       setBusy(false);
-      setErr("Some photos couldn't be uploaded. Check your connection and try again.");
+      setErr("Your photos are too large to send together. Try fewer photos.");
       return;
     }
     try {
