@@ -17,8 +17,10 @@ import { CONVERSIONS, buildContent } from "@/lib/conversions";
 import { FAL_ASPECT_RATIOS } from "@/lib/fal";
 import { COMPRESSIONS } from "@/lib/compressions";
 import { CROPS } from "@/lib/crops";
+import { GROUP_EXAMPLES, groupExamplePath, groupExampleRatio } from "@/lib/group-photo-examples";
+import { buildGroupPrompt } from "@/lib/group-photo";
 
-export type JobSet = "sources" | "home" | "tools" | "apps" | "presets" | "samples" | "programmatic" | "social";
+export type JobSet = "sources" | "home" | "tools" | "apps" | "presets" | "samples" | "programmatic" | "social" | "group";
 
 export interface ImageJob {
   /** Which batch this belongs to. */
@@ -53,6 +55,12 @@ export interface ImageJob {
   editOfFallback?: string;
   /** The festival an app image belongs to, so its images can be made on their own (?only=festival). */
   festival?: string;
+  /**
+   * Several sources at once (paths in the `landing` bucket), for a picture
+   * made from many photos: the Group Photo examples. `prompt` is sent as
+   * written, with every source attached in this order.
+   */
+  editOfMany?: string[];
 }
 
 const LANDING = "landing";
@@ -202,12 +210,29 @@ export function sourceImageUrl(name: string): string {
   return `${base}/storage/v1/object/public/landing/sources/${name}.png`;
 }
 
-const SOURCES: ImageJob[] = Object.entries(SOURCE_SUBJECTS).map(([name, prompt]) => ({
+const SOURCES: ImageJob[] = [
+  ...Object.entries(SOURCE_SUBJECTS),
+  // The single-person photos the Group Photo examples are made from.
+  ...GROUP_EXAMPLES.flatMap((ex) => ex.people.map((p) => [p.source, p.prompt] as const)),
+].map(([name, prompt]) => ({
   set: "sources" as const,
   bucket: LANDING,
   path: `sources/${name}.png`,
   aspect: "4:5",
   prompt: `${prompt} No text, letters or numbers anywhere in the image. ${STYLE}`,
+}));
+
+/**
+ * The Group Photo examples: the tool's own prompt over its single photos, so
+ * /group-photo shows exactly what a visitor would get. Run after "sources".
+ */
+const GROUP: ImageJob[] = GROUP_EXAMPLES.map((ex) => ({
+  set: "group" as const,
+  bucket: LANDING,
+  path: groupExamplePath(ex.id),
+  aspect: groupExampleRatio(ex),
+  prompt: buildGroupPrompt(ex.people.length, { scene: ex.scene, pose: ex.pose, outfit: ex.outfit, details: ex.details }),
+  editOfMany: ex.people.map((p) => `sources/${p.source}.png`),
 }));
 
 /**
@@ -609,7 +634,7 @@ const SOCIAL: ImageJob[] = [
 // Sources first: every app card is an edit of one of them, so they have to
 // exist before the apps set can run.
 export const IMAGE_JOBS: ImageJob[] = assertRatios([
-  ...SOURCES, ...HOME, ...TOOLS, ...APPS, ...PRESETS, ...SAMPLES, ...PROGRAMMATIC, ...SOCIAL,
+  ...SOURCES, ...HOME, ...TOOLS, ...APPS, ...PRESETS, ...SAMPLES, ...PROGRAMMATIC, ...SOCIAL, ...GROUP,
 ]);
 
 /**

@@ -5,7 +5,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { TrialPill } from "@/app/_components/TrialOffer";
 import GroupPhotoTool from "./GroupPhotoTool";
+import GroupShowcase, { ExampleCard, type ShowcaseExample } from "./GroupShowcase";
+import Icon, { type IconName } from "@/app/app/_components/Icon";
 import { GROUP_SCENES, GROUP_POSES, GROUP_OUTFITS, MAX_GROUP_PHOTOS, MIN_GROUP_PHOTOS, BEST_GROUP_SIZE } from "@/lib/group-photo";
+import { GROUP_EXAMPLES, groupExamplePath, groupExampleRatio, landingUrl } from "@/lib/group-photo-examples";
 
 const BASE = "https://www.sjpt.io";
 const URL = `${BASE}/group-photo`;
@@ -27,6 +30,45 @@ export const metadata: Metadata = seoMeta({
   twitter: { card: "summary_large_image", images: [OG_IMAGE] },
   robots: { index: true, follow: true },
 });
+
+/** Re-checked hourly, so example photos made after a deploy appear without another one. */
+export const revalidate = 3600;
+
+async function exists(url: string): Promise<boolean> {
+  try {
+    const r = await fetch(url, { method: "HEAD", next: { revalidate: 3600 } });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** The examples with their real photos where all of them exist, otherwise drawn. */
+async function showcaseExamples(): Promise<ShowcaseExample[]> {
+  return Promise.all(GROUP_EXAMPLES.map(async (ex) => {
+    const result = landingUrl(groupExamplePath(ex.id));
+    const singles = ex.people.map((p) => landingUrl(`sources/${p.source}.png`));
+    const found = await Promise.all([result, ...singles].map(exists));
+    const real = found.every(Boolean);
+    return {
+      id: ex.id,
+      title: ex.title,
+      caption: ex.caption,
+      scene: ex.scene,
+      ratio: groupExampleRatio(ex),
+      people: ex.people.map((p, i) => ({ label: p.label, src: real ? singles[i] : null, hue: ex.hues[i], ...p.look })),
+      result: real ? result : null,
+    };
+  }));
+}
+
+const FEATURES: { icon: IconName; t: string; d: string }[] = [
+  { icon: "group", t: `Up to ${MAX_GROUP_PHOTOS} people`, d: "One photo each, from anywhere, taken any time." },
+  { icon: "sparkle", t: "Every face kept", d: "Each person looks like their own photo, never blended." },
+  { icon: "image", t: "One scene, one light", d: "Everyone lit the same way, so nobody looks pasted in." },
+  { icon: "wand", t: "8 scenes, 4 poses", d: "Park, beach, studio, wedding, office and more." },
+  { icon: "download", t: "Full size, no watermark", d: `${CREDIT_COST} credits a photo, saved to My Creations.` },
+];
 
 const STEPS = [
   { n: "1", t: `Add ${MIN_GROUP_PHOTOS} to ${MAX_GROUP_PHOTOS} photos`, d: "One person in each, face clearly visible. Choose several at once, drop them in or paste them. Each photo gets a number, and you can remove any of them." },
@@ -70,7 +112,8 @@ const RELATED = [
   { href: "/creative", t: "All AI photo apps", d: "200+ one-tap looks for your photos." },
 ];
 
-export default function GroupPhotoPage() {
+export default async function GroupPhotoPage() {
+  const examples = await showcaseExamples();
   const appLd = {
     "@context": "https://schema.org", "@type": "SoftwareApplication",
     name: "AI Group Photo Maker", applicationCategory: "MultimediaApplication", operatingSystem: "Web", url: URL,
@@ -106,27 +149,80 @@ export default function GroupPhotoPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: seoJson(faqLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: seoJson(breadcrumbLd) }} />
 
-      <section style={{ background: "linear-gradient(160deg,var(--surface-2) 0%,var(--surface) 60%)", padding: "40px 16px 48px" }}>
-        <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 24 }}>
+      <section style={{ position: "relative", overflow: "hidden", background: "linear-gradient(160deg,var(--surface-2) 0%,var(--bg) 70%)", padding: "48px 16px 40px" }}>
+        <div aria-hidden style={{ position: "absolute", width: 720, height: 720, right: -200, top: -260, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,122,47,.16) 0%, transparent 65%)", pointerEvents: "none" }} />
+        <div style={{ position: "relative", maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(440px, 100%), 1fr))", gap: 40, alignItems: "center" }}>
+          <div style={{ minWidth: 0 }}>
             <span style={{ display: "inline-block", fontSize: 12, fontWeight: 800, letterSpacing: ".08em", textTransform: "uppercase", color: "var(--accent-strong)", background: "var(--accent-soft)", border: "1px solid var(--accent-border)", borderRadius: 999, padding: "5px 12px" }}>
-              AI tool · {CREDIT_COST} credits per group photo
+              New · AI tool · {CREDIT_COST} credits per group photo
             </span>
-            <h1 style={{ fontSize: "clamp(2rem,5vw,3rem)", fontWeight: 900, lineHeight: 1.12, letterSpacing: "-0.03em", margin: "16px 0 12px", textWrap: "balance" }}>
-              AI Group Photo Maker
+            <h1 style={{ fontSize: "clamp(2.2rem,5.4vw,3.6rem)", fontWeight: 900, lineHeight: 1.05, letterSpacing: "-0.035em", margin: "16px 0 14px", textWrap: "balance" }}>
+              AI <span style={{ background: "var(--grad-strong)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>Group Photo</span> Maker
             </h1>
-            <p style={{ fontSize: 17, color: "var(--text-muted)", lineHeight: 1.6, maxWidth: 680, margin: "0 auto 14px" }}>
+            <p style={{ fontSize: 18, color: "var(--text-muted)", lineHeight: 1.6, margin: "0 0 18px", maxWidth: 560 }}>
               Make a group photo from individual photos. Upload up to {MAX_GROUP_PHOTOS} separate photos, one person in each, and AI puts everyone together in one natural group photo: same scene, same light, every face kept.
             </p>
-            <TrialPill source="group-photo" />
+            <ul style={{ listStyle: "none", margin: "0 0 24px", padding: 0, display: "grid", gap: 8 }}>
+              {["Family far away, friends in other cities, a remote team", "Pick the scene, the pose and the outfits", "Signed out? Add your photos first, they wait for you"].map((t) => (
+                <li key={t} style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 15, color: "var(--text)" }}>
+                  <span aria-hidden style={{ flex: "0 0 auto", width: 20, height: 20, marginTop: 1, borderRadius: "50%", background: "var(--accent-soft)", color: "var(--accent-strong)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900 }}>✓</span>
+                  {t}
+                </li>
+              ))}
+            </ul>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", marginBottom: 14 }}>
+              <a href="#tool" className="jpt-sheen" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 22px", borderRadius: 14, background: "var(--grad-strong)", color: "#fff", fontWeight: 800, fontSize: 15.5, textDecoration: "none", boxShadow: "var(--glow)" }}>
+                <Icon name="group" size={18} /> Make your group photo
+              </a>
+              <a href="#examples" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "13px 18px", borderRadius: 14, border: "1px solid var(--border-strong)", color: "var(--text)", fontWeight: 700, fontSize: 15, textDecoration: "none", background: "var(--surface)" }}>
+                See examples
+              </a>
+            </div>
+            <TrialPill align="start" source="group-photo" />
           </div>
-          <div id="tool" style={{ scrollMarginTop: 80 }}>
-            <GroupPhotoTool />
+          <div style={{ minWidth: 0 }}>
+            <GroupShowcase examples={examples} />
           </div>
         </div>
       </section>
 
-      <section style={{ padding: "56px 16px" }}>
+      <section style={{ padding: "8px 16px 8px" }}>
+        <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))", gap: 12 }}>
+          {FEATURES.map((f) => (
+            <div key={f.t} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: 16, borderRadius: 16, background: "var(--surface)", border: "1px solid var(--border)" }}>
+              <span style={{ flex: "0 0 auto", width: 38, height: 38, borderRadius: 11, background: "var(--accent-soft)", color: "var(--accent-strong)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}><Icon name={f.icon} size={19} /></span>
+              <span style={{ minWidth: 0 }}>
+                <strong style={{ display: "block", fontSize: 14.5, marginBottom: 2 }}>{f.t}</strong>
+                <span style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.5 }}>{f.d}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="tool" style={{ padding: "40px 16px 48px", scrollMarginTop: 70 }}>
+        <div style={{ maxWidth: 1240, margin: "0 auto" }}>
+          <h2 style={{ ...h2, marginBottom: 6 }}>Make your group photo</h2>
+          <p style={{ ...intro, marginBottom: 22 }}>Add {MIN_GROUP_PHOTOS} to {MAX_GROUP_PHOTOS} photos, pick a scene and press Generate.</p>
+          <GroupPhotoTool />
+        </div>
+      </section>
+
+      <section id="examples" style={{ padding: "56px 16px", background: "var(--surface-2)", scrollMarginTop: 70 }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          <h2 style={h2}>Before and after: separate photos, one group photo</h2>
+          <p style={intro}>
+            {examples.every((e) => e.result)
+              ? "Each example was made with this tool, from exactly the separate photos shown."
+              : "Drawn to show the idea: each set of separate photos becomes one group photo in the scene named under it."}
+          </p>
+          <div style={{ display: "grid", gap: 20 }}>
+            {examples.map((ex) => <ExampleCard key={ex.id} ex={ex} />)}
+          </div>
+        </div>
+      </section>
+
+      <section id="how" style={{ padding: "56px 16px" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <h2 style={h2}>How do you make a group photo from individual photos?</h2>
           <p style={intro}>Three steps. You don&apos;t need the people in the same place, the same light or even the same year.</p>
