@@ -151,3 +151,46 @@ list, served from the site rather than from the bucket.
 
 To replace one image, upload the new file to the bucket under the same name
 and run the script again.
+
+---
+
+## Group Photo examples: the "Group Photo" bucket
+
+The examples on `/group-photo` (the separate photos flying together into one
+group photo) are the owner's own images, in the public Supabase bucket
+**Group Photo**. One folder per example:
+
+```
+family/
+  family-1-grandma.png         one person per photo, numbered in the order
+  family-2-dad.png             they should appear; the word after the number
+  ...                          is the name shown on the card ("Grandma")
+  family/family-group.png      the group photo made from them
+```
+
+- The group photo is the file with **group** or **after** in its name. It
+  can sit in the folder itself or in a subfolder of the same name (renaming a
+  file to `family/x.png` in Supabase puts it in `family/family/`).
+- A folder needs a group photo and at least 2 separate photos, otherwise it
+  is skipped. Names without a real word (`IMG_2041`, `3`, `before-2`) show as
+  "Photo 1", "Photo 2"…
+- Family, Friends and Team come first; any other folder follows in
+  alphabetical order, with a plain caption.
+
+To make them load fast, add the new file names to `FILES` in
+`scripts/group-photo-creatives.ts` (paths inside the example's folder, e.g.
+`"family/family-group.png"`), then run:
+
+```
+npm run group:creatives
+```
+
+It writes small WebPs to `public/group-photo/examples/<folder>/` (separate
+photos 480 px, the group photo 1400 px; about 1 MB for all three examples
+instead of 48 MB) and their sizes to `src/lib/group-photo-creatives.json`.
+Commit both. A name that isn't in the bucket is skipped and listed.
+
+Until the script is run, the page still shows a new folder or file: it reads
+the bucket when it renders (at most an hour behind) and uses the bucket's
+full-size file. With no examples at all it falls back to drawn
+illustrations, never a broken image.
