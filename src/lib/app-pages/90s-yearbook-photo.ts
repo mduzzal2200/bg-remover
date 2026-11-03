@@ -59,7 +59,7 @@ const page: AppPage = {
       heading: "What it does and doesn't change",
       paragraphs: [
         "It changes the backdrop, the light, the film look, your clothes and your hair styling, a little. It keeps your face, eye colour, skin tone and expression. You won't get a different haircut, but you might get more volume, a side part or bangs that suit the decade.",
-        "It doesn't add the yearbook page itself, with names and quotes. If you'd like to make a full page, add your name and a quote underneath in the [free photo editor](/editor), which has a text tool.",
+        "It doesn't add the yearbook page itself, with names and quotes. If you'd like to make a full page, add your name in a bottom corner with the free [watermark tool](/watermark-image), or lay out a page with a quote in a design app.",
         "And it doesn't make you younger. If you want the full \"me at 16\" effect, the [age progression](/creative/age-progression) app can show you at a different age first, and you can run the result through this one.",
       ],
     },
@@ -98,7 +98,7 @@ const page: AppPage = {
     { q: "Will it still look like me?", a: "Yes. Your face and identity are kept exactly the same; only the backdrop, light, clothes and hair styling change." },
     { q: "Which backdrop is the one from TikTok?", a: "Laser grid: the neon pink and blue beams. It's selected when you open the app." },
     { q: "Does it make me look younger?", a: "No, it keeps your age. For a younger version, use the age progression app first, then run that result through this one." },
-    { q: "Can I add my name and a quote?", a: "Not in this app, but you can add them afterwards in the free photo editor's text tool to make a full yearbook page." },
+    { q: "Can I add my name and a quote?", a: "Not in this app, but you can add a name afterwards with the free watermark tool, or design a full yearbook page in a design app." },
     { q: "Does it work with glasses?", a: "Yes, your glasses are kept. If they reflect a lot of light in the selfie, tilt your head slightly down." },
     { q: "Can I make one for a group?", a: "It's a single-person portrait. Ask everyone to make their own, then arrange them on one page like a real yearbook." },
     { q: "Is there a watermark?", a: "No. You download the full-size photo with no watermark." },

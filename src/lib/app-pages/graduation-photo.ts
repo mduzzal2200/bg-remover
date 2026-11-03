@@ -72,7 +72,7 @@ const page: AppPage = {
     {
       heading: "What can you do with your graduation photo?",
       items: [
-        { t: "Announcements and cards", d: "Add your name, degree and year in the [free photo editor](/editor) and send it to family or print it as a card." },
+        { t: "Announcements and cards", d: "Add your name, degree and year in a design app, or a single line with the free [watermark tool](/watermark-image), and send it to family or print it as a card." },
         { t: "A LinkedIn post", d: "Celebrate the milestone with a polished portrait and a few lines about what you studied and what's next." },
         { t: "A party banner or cake image", d: "Upscale it in the [image upscaler](/upscale) and use it for a banner, a photo cake or table cards at the party." },
         { t: "A framed print", d: "Choose a tall 4:5 or 3:4 shape, upscale it and print at 8 × 10 inches for a classic frame." },
@@ -83,7 +83,7 @@ const page: AppPage = {
       list: [
         "**Show your real university's crest or building.** The campus is invented; no school logos are added on purpose.",
         "**Match your exact gown, hood or stole.** It creates a typical academic gown in the colour you pick, not your institution's official regalia.",
-        "**Write your name or degree.** Add text afterwards with a text tool.",
+        "**Write your name or degree.** Add text afterwards with the free watermark tool or a design app.",
         "**Replace an official record.** It's a celebratory portrait, not a certificate or a proof of graduation.",
       ],
     },
@@ -127,7 +127,7 @@ const page: AppPage = {
     { q: "Can I choose my school's gown colour?", a: "Yes. Pick Black, Navy, Red, Royal blue or Green. Auto lets the app choose." },
     { q: "Will my face stay the same?", a: "Yes. Your face and identity are kept exactly; only your clothes, pose and background change." },
     { q: "Does it add my university's logo?", a: "No. The campus and regalia are generic, with no real school crests." },
-    { q: "Can I add my name and degree?", a: "Yes, afterwards. Use the text tool in the free photo editor to add your name, degree and year." },
+    { q: "Can I add my name and degree?", a: "Yes, afterwards. Add a line such as your name and year with the free watermark tool, or use a design app for more text." },
     { q: "Does it work for kids' graduations?", a: "Yes. It's popular for kindergarten and school leavers. Use a recent, clear photo of the child." },
     { q: "How much does it cost?", a: `${COST} per portrait, charged only when it's made. Packs start at ${PACK_FROM}; a free trial, where running, covers your first.` },
     { q: "Can I print it?", a: "Yes. Upscale it 2× or 4× and print at 8 × 10 inches or larger." },

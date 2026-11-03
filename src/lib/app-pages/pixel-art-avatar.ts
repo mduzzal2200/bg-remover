@@ -123,7 +123,7 @@ const page: AppPage = {
     { q: "What's the difference between 8-bit and 16-bit?", a: "8-bit is chunkier with very few colours; 16-bit has a finer grid and more colours, the classic console look." },
     { q: "Will it look like me?", a: "Yes, in pixel form. Your hair, outfit colours and pose are kept, which is what makes the sprite recognisable." },
     { q: "Does it keep what I'm doing in the photo?", a: "Yes. If you're riding a bike or holding a drink, your pixel character does too." },
-    { q: "Can I remove the PLAYER 1 text?", a: "It's part of the look. You can cover or crop it afterwards in the free photo editor." },
+    { q: "Can I remove the PLAYER 1 text?", a: "It's part of the look. You can crop it out afterwards with the free crop tool." },
     { q: "Is it good for a Discord or Steam avatar?", a: "Yes. Crop it square around your character; pixel art stays crisp at small sizes." },
     { q: "How much does it cost?", a: `${COST} per image, only when it's made. Packs start at ${PACK_FROM}; where a free trial runs, your first is free.` },
     { q: "How do I make it bigger without blurring?", a: "Enlarge it by a whole number, such as 2× or 4×, in a pixel-art editor with smoothing off. The image upscaler works too, but softens the square edges slightly." },

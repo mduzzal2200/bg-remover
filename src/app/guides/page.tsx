@@ -5,6 +5,9 @@ import Link from "next/link";
 import { editedPosts } from "@/lib/blog-edits.server";
 import { BLOG_TOPICS, topicOf, topicHref } from "@/lib/blog-topics";
 import { blogIndexable } from "@/lib/seo/index-policy";
+import HubArticle from "@/app/_components/HubArticle";
+import ListingMark from "@/app/_components/ListingMark";
+import guidesHub from "@/lib/hub-pages/guides";
 
 /** /guides — every topic hub, with its strongest guides. */
 
@@ -21,14 +24,15 @@ export const metadata: Metadata = seoMeta({
 export default async function GuidesIndex() {
   const posts = await editedPosts();
   return (
-    <main style={{ background: "var(--surface-2)", minHeight: "100vh", padding: "56px 24px 80px" }}>
-      <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+    <main style={{ background: "var(--surface-2)", minHeight: "100vh", paddingTop: 56 }}>
+      <div style={{ maxWidth: 1048, margin: "0 auto", padding: "0 24px 24px" }}>
         <h1 style={{ margin: "0 0 12px", fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 900, color: "var(--text)", letterSpacing: "-0.8px", lineHeight: 1.15 }}>
           Photo editing guides
         </h1>
         <p style={{ margin: "0 0 36px", fontSize: 17, color: "var(--text-muted)", lineHeight: 1.65, maxWidth: 640 }}>
           Every guide on the blog, grouped by what you are trying to do. Pick a topic to see all of its guides and the tools that go with them.
         </p>
+        <ListingMark at="start" />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(300px, 100%), 1fr))", gap: 18 }}>
           {BLOG_TOPICS.map((t) => {
             const mine = posts.filter((p) => topicOf(p) === t.slug);
@@ -51,7 +55,9 @@ export default async function GuidesIndex() {
             );
           })}
         </div>
+        <ListingMark at="end" />
       </div>
+      <HubArticle page={guidesHub} />
     </main>
   );
 }

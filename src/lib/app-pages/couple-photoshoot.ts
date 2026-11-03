@@ -62,7 +62,7 @@ const page: AppPage = {
     {
       heading: "Pre-wedding and couple photo ideas",
       items: [
-        { t: "Save-the-dates and invitations", d: "A Studio or Garden portrait makes a clean background for names and dates. Add text in the [free photo editor](/editor), or see the [wedding invite photo](/creative/wedding-invite-photo) app." },
+        { t: "Save-the-dates and invitations", d: "A Studio or Garden portrait makes a clean background for names and dates. Add a line of text with the free [watermark tool](/watermark-image), or see the [wedding invite photo](/creative/wedding-invite-photo) app, which can letter names and a date." },
         { t: "Plan your real shoot", d: "Try the palace, the beach and the city before booking a photographer and a location. Show them the version you both like." },
         { t: "Engagement announcements", d: "A cinematic portrait gets more love than a blurry selfie, and nobody has to dress up." },
         { t: "Anniversaries", d: "Married years ago without a pre-wedding shoot? Make one now from a recent photo." },
@@ -109,7 +109,7 @@ const page: AppPage = {
     { q: "Can we choose our outfits?", a: "Not here: it chooses coordinated wedding outfits. To describe exactly what you want, use the AI photo editor." },
     { q: "Is it only for Indian weddings?", a: "The default look is an Indian pre-wedding shoot. With Setting on Beach, Garden or Studio, the scene changes; for Western wedding clothes, describe them in the AI photo editor." },
     { q: "Does it work for same-sex couples?", a: "Yes. It's told to choose coordinated outfits that suit both of you. If the first result gets the outfits wrong, run it again, or describe exactly what you want in the AI photo editor." },
-    { q: "Can I use it on our wedding invitation?", a: "Yes, the portrait is yours to use. Add names and dates afterwards in the free photo editor." },
+    { q: "Can I use it on our wedding invitation?", a: "Yes, the portrait is yours to use. Add names and dates afterwards with the free watermark tool or in an invitation design app." },
     { q: "Is there a watermark?", a: "No. You both get the portrait at full size, unmarked, ready for cards, invites or the wall." },
   ],
 };

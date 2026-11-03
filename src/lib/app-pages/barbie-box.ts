@@ -137,7 +137,7 @@ const page: AppPage = {
     { q: "How much does it cost?", a: `${COST} for each doll picture, taken only when it's ready. Packs start at ${PACK_FROM}.` },
     { q: "What photo works best?", a: "A front-facing, half-body or full-body photo with bold clothes and a plain background." },
     { q: "Can I make a doll of a friend?", a: "Yes, with their permission. Upload a clear photo of them and post it with a caption about their accessories." },
-    { q: "Can I add my name to the box?", a: "Add it afterwards with the text tool in the free photo editor, on the box's top panel or across the bottom." },
+    { q: "Can I add my name to the box?", a: "Add it afterwards with the free watermark tool (centre or a corner), or in a design app for full control." },
     { q: "Is there a watermark?", a: "No. The boxed doll comes out at full size, nothing stamped on it." },
   ],
 };

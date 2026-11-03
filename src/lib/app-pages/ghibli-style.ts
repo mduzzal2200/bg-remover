@@ -72,7 +72,7 @@ const page: AppPage = {
       paragraphs: ["It's good at what it does, but it isn't magic. These are the cases where you'll want a second try, or a different photo."],
       list: [
         "**An exact likeness.** It's a drawing, so small things such as a scar or the exact shape of your eyebrows can be smoothed away.",
-        "**Text and logos.** Writing on a T-shirt or a shop sign usually comes out as squiggles. If the words matter, add them afterwards in the [free photo editor](/editor).",
+        "**Text and logos.** Writing on a T-shirt or a shop sign usually comes out as squiggles. If the words matter, add them afterwards with the free [watermark tool](/watermark-image) or a design app.",
         "**Hands in awkward poses.** Fingers sometimes merge or multiply. Run it again, or pick Head & shoulders so the hands are out of frame.",
         "**Very small faces.** In a wide landscape where you're a dot, you may be painted as a generic figure. Crop the photo tighter first.",
         "**The films' characters.** It won't add Totoro or No-Face to your picture. It paints the style, not the studio's characters.",

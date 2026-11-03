@@ -44,7 +44,10 @@ const DATA = {
   "/festivals": ["src/lib/festivals.ts", "src/lib/festival-apps.ts", "src/lib/festival-summary.ts"],
   "/ai": ["src/lib/growth-pages.ts"],
   "/use-cases": ["src/lib/growth-pages.ts"],
-  "/guides": ["src/lib/blog-topics.ts"],
+  "/guides": ["src/lib/blog-topics.ts", "src/lib/hub-pages/guides.ts", "src/lib/hub-pages/topics.ts", "src/app/_components/HubArticle.tsx"],
+  "/tools": ["src/lib/hub-pages/tools.ts", "src/app/_components/HubArticle.tsx"],
+  "/blog": ["src/lib/hub-pages/blog.ts", "src/app/blog/_components/BlogIndex.tsx"],
+  "/pricing": ["src/lib/hub-pages/pricing.ts", "src/lib/pricing-faq.ts", "src/app/pricing/PricingClient.tsx", "src/app/_components/HubArticle.tsx"],
 };
 
 const dirty = new Set(

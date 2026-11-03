@@ -68,6 +68,9 @@ const decode = (s) => s.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/
 function blocksOf(html) {
   const m = html.match(/<main[^>]*>([\s\S]*)<\/main>/);
   let body = m ? m[1] : html;
+  // Cards that repeat other pages' titles and excerpts (blog lists, topic hubs) sit between
+  // listing marks (app/_components/ListingMark); a hub is judged on the guide written for it.
+  body = body.replace(/<span[^>]*data-seo-listing="start"[^>]*><\/span>[\s\S]*?<span[^>]*data-seo-listing="end"[^>]*><\/span>/g, " ");
   body = body.replace(/<(script|style|nav|footer|header|svg|noscript)[\s\S]*?<\/\1>/g, " ");
   return body.split(/<[^>]+>/).map((b) => decode(b).replace(/\s+/g, " ").trim()).filter(Boolean);
 }

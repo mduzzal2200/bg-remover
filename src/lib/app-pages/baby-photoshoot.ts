@@ -78,7 +78,7 @@ const page: AppPage = {
       heading: "Baby photoshoot ideas to try",
       items: [
         { t: "Monthly milestones", d: "Take a photo on the same day each month and run it through with the same lighting. You get a matching set for the first year." },
-        { t: "Birth announcement", d: "A soft studio portrait makes a lovely announcement card. Add the name and date afterwards in the [free photo editor](/editor)." },
+        { t: "Birth announcement", d: "A soft studio portrait makes a lovely announcement card. Add the name and date afterwards with the free [watermark tool](/watermark-image), which places a line of text in a corner or the centre." },
         { t: "Grandparents' gift", d: "A framed print of the portrait is a simple present. Run it through the [image upscaler](/upscale) first for a sharp print." },
         { t: "First birthday invitations", d: "Use a portrait from the year as the front of the invitation, with the Bright & airy light." },
         { t: "Wondering what your baby will look like?", d: "Expecting? The [AI baby predictor](/creative/ai-baby-predictor) imagines a baby from both parents' photos." },

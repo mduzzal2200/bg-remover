@@ -53,7 +53,7 @@ const page: AppPage = {
     {
       heading: "What should your banner headline say?",
       paragraphs: [
-        "Keep it to five or six words that answer \"what do you do for people?\" Examples:\n\n- \"Helping SaaS teams hire faster\"\n- \"Product designer · Accessibility first\"\n- \"Data analyst turning numbers into decisions\"\n- \"Open to roles in UX research\"\n\nAvoid repeating your job title word for word (LinkedIn already shows it under your name) and skip long lists of skills. If you'd rather design the text yourself, leave the box empty and add it in the [free photo editor](/editor). Check spelling carefully; AI lettering can occasionally slip.",
+        "Keep it to five or six words that answer \"what do you do for people?\" Examples:\n\n- \"Helping SaaS teams hire faster\"\n- \"Product designer · Accessibility first\"\n- \"Data analyst turning numbers into decisions\"\n- \"Open to roles in UX research\"\n\nAvoid repeating your job title word for word (LinkedIn already shows it under your name) and skip long lists of skills. If you'd rather design the text yourself, leave the box empty and add it in a design app. Check spelling carefully; AI lettering can occasionally slip.",
       ],
     },
     {
@@ -114,7 +114,7 @@ const page: AppPage = {
     { q: "How do I make a LinkedIn banner with AI?", a: "Upload a chest-up photo, add a short headline if you like, choose a look and press Generate. Then upload the banner on your LinkedIn profile." },
     { q: "What size is a LinkedIn banner?", a: "About 4:1, with 1584 × 396 pixels recommended. The app makes a wide 16:9 image that you position in LinkedIn's uploader." },
     { q: "Will my profile photo cover part of the banner?", a: "Yes, on desktop it sits over the lower left. Keep text on the right and check the preview after uploading." },
-    { q: "Can I add my own headline?", a: "Yes. Type it into Text on the image, or leave it empty and add text later in the free photo editor." },
+    { q: "Can I add my own headline?", a: "Yes. Type it into Text on the image, or leave it empty and add text later in a design app." },
     { q: "Will it look like me?", a: "Yes. Your face and identity are kept, so the banner matches your profile photo." },
     { q: "Which look should I choose?", a: "Auto for a classic corporate blue, Clean for minimal, Bold for punchy colour, Dark mode for tech." },
     { q: "How much does it cost?", a: `${COST} per banner, only when it's made. Packs start at ${PACK_FROM}.` },

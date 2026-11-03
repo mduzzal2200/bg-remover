@@ -78,7 +78,7 @@ const page: AppPage = {
         "**Change your pet's breed or markings.** It keeps your pet's real features; that's the point.",
         "**Combine two pets in one portrait.** Make one for each and frame them as a pair.",
         "**Make a real painting.** It's a digital image in a painted style; order a canvas print for a physical version.",
-        "**Write your pet's name.** Add a name plate or title afterwards in the [free photo editor](/editor).",
+        "**Write your pet's name.** Add a name plate or title afterwards with the free [watermark tool](/watermark-image) (a bottom corner works well) or in a design app.",
       ],
     },
     {
@@ -128,7 +128,7 @@ const page: AppPage = {
     { q: "Can I put two pets in one portrait?", a: "The app is designed for one pet per portrait. Make one each and frame them as a pair." },
     { q: "Is it a good gift?", a: "Yes. Upscale it, print it on canvas and frame it. It's one of the most popular personalised gifts." },
     { q: "How much does it cost?", a: `${COST} per portrait, charged only when it's made. Packs start at ${PACK_FROM}; a free trial, where available, covers your first.` },
-    { q: "Can I add my pet's name?", a: "Yes, afterwards, with the text tool in the free photo editor." },
+    { q: "Can I add my pet's name?", a: "Yes, afterwards, with the free watermark tool or a design app." },
     { q: "Can I use an old photo of my pet?", a: "Yes, as long as the face is clear. If it's small or blurry, enlarge it in the image upscaler first for a sharper portrait." },
     { q: "Is there a watermark?", a: "No. Your pet portrait downloads at full size without a watermark." },
   ],

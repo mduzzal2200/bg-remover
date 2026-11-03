@@ -100,7 +100,7 @@ const page: AppPage = {
       items: [
         { t: "Mission badges for guests", d: "Make an astronaut photo of each child coming to the party, print them small and pin them on as \"crew\" badges." },
         { t: "A school space project", d: "Pair an astronaut portrait with facts about a real mission. It makes a poster stand out on the wall." },
-        { t: "A countdown invite", d: "Put the photo on an invitation with \"Launching on Saturday at 3 pm\". Add the text in the [free photo editor](/editor)." },
+        { t: "A countdown invite", d: "Put the photo on an invitation with \"Launching on Saturday at 3 pm\". Add the text with the free [watermark tool](/watermark-image) or a design app." },
         { t: "A thank-you card", d: "Send guests a card with the birthday child's astronaut photo and a \"Thanks for coming aboard\" message." },
       ],
     },

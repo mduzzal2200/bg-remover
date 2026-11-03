@@ -2,6 +2,7 @@ import Link from "next/link";
 import { editedPosts } from "@/lib/blog-edits.server";
 import BlogCover from "./BlogCover";
 import { mainsFrom } from "@/lib/blog-images";
+import ListingMark from "@/app/_components/ListingMark";
 import { readOverrides } from "@/lib/overrides";
 import { blogIndexable } from "@/lib/seo/index-policy";
 
@@ -31,14 +32,14 @@ export async function blogPageCount(): Promise<number> {
 }
 
 /** One page of the blog index: /blog is page 1, /blog/page/2 onwards the rest. */
-export default async function BlogIndex({ page }: { page: number }) {
+export default async function BlogIndex({ page, after }: { page: number; after?: React.ReactNode }) {
   const [overrides, all] = await Promise.all([readOverrides(), listedPosts()]);
   const mains = mainsFrom(overrides.pages);
   const pages = Math.max(1, Math.ceil(all.length / PER_PAGE));
   const POSTS = all.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   return (
-    <main style={{ background: "var(--surface-2)", minHeight: "100vh", padding: "60px 24px 80px" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+    <main style={{ background: "var(--surface-2)", minHeight: "100vh", paddingTop: 60, paddingBottom: after ? 0 : 80 }}>
+      <div style={{ maxWidth: 1148, margin: "0 auto", padding: "0 24px" }}>
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: page > 1 ? 40 : 56 }}>
           <div style={{ display: "inline-block", background: "var(--accent-soft)", color: "var(--accent)", border: "1px solid var(--accent-border)", borderRadius: 100, padding: "5px 14px", fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", marginBottom: 16 }}>
@@ -53,7 +54,8 @@ export default async function BlogIndex({ page }: { page: number }) {
           </p>
         </div>
 
-        {/* Grid */}
+        {/* Grid: post cards repeat each post's own title and excerpt */}
+        <ListingMark at="start" />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(480px, 100%), 1fr))", gap: 28 }}>
           {POSTS.map((post) => (
             <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
@@ -86,7 +88,9 @@ export default async function BlogIndex({ page }: { page: number }) {
         </div>
 
         <Pager page={page} pages={pages} />
+        <ListingMark at="end" />
       </div>
+      {after}
     </main>
   );
 }

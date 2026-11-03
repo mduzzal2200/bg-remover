@@ -14,7 +14,8 @@
     "seo-audit": "node scripts/seo-audit.mjs",
     "seo:lastmod": "node scripts/seo-lastmod.mjs",
     "seo:check": "node scripts/seo-check.mjs",
-    "seo:thin": "node scripts/seo-thin.mjs"
+    "seo:thin": "node scripts/seo-thin.mjs",
+    "blog:rewrites": "node scripts/blog-rewrites-index.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.55.0",

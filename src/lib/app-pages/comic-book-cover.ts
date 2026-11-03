@@ -49,7 +49,7 @@ const page: AppPage = {
       heading: "Adding your own title or caption",
       paragraphs: [
         "Type up to a short line into **Text on the image** and the app letters it on the cover, usually as the title or the caption burst. Short works best: a name (\"Captain Priya\"), a theme (\"The Birthday Issue\") or a joke (\"Coffee first, then heroics\"). Two to five words are easiest to read and most likely to be spelled perfectly.",
-        "Leave the box empty and the app fills the cover's text areas itself. If a word comes out misspelled, which AI lettering occasionally does, run it again, or keep the art and fix the text in the [free photo editor](/editor).",
+        "Leave the box empty and the app fills the cover's text areas itself. If a word comes out misspelled, which AI lettering occasionally does, run it again, or keep the art and fix the lettering in a design app.",
       ],
     },
     {

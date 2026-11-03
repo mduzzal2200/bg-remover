@@ -72,7 +72,7 @@ const page: AppPage = {
     {
       heading: "Ideas for your superhero photo",
       items: [
-        { t: "Birthday invitations", d: "\"Join the hero for their 7th birthday!\" Put the photo on an invite and add the details in the [free photo editor](/editor)." },
+        { t: "Birthday invitations", d: "\"Join the hero for their 7th birthday!\" Put the photo on an invite made in a design app and add the details there." },
         { t: "A hero-of-the-week poster", d: "Print a portrait for a classroom or office wall to celebrate someone who went the extra mile." },
         { t: "A film-poster post", d: "Use Full body framing and a tall 3:4 shape, then add a film title and \"coming soon\" in the editor." },
         { t: "A thank-you card", d: "A superhero portrait of a doctor, nurse, carer or teacher makes a memorable way to say thanks." },
@@ -96,7 +96,7 @@ const page: AppPage = {
     {
       heading: "Inventing your hero",
       items: [
-        { t: "Pick a hero name", d: "Puns on your name or job work well: \"Captain Code\", \"The Midnight Baker\", \"Doctor Calm\". Add it to the picture in the [free photo editor](/editor)." },
+        { t: "Pick a hero name", d: "Puns on your name or job work well: \"Captain Code\", \"The Midnight Baker\", \"Doctor Calm\". Add it to the picture with the free [watermark tool](/watermark-image) or a design app." },
         { t: "Choose colours with meaning", d: "Red & gold feels bold and classic, Blue & red trustworthy, Black stealth mysterious, Green full of energy, White & silver futuristic." },
         { t: "Give them a power", d: "Write it in the caption: the power to find lost keys, to make toddlers nap, to fix any printer." },
         { t: "Write an origin story", d: "A two-line origin in the post (\"Bitten by a radioactive spreadsheet…\") makes it twice as fun to share." },
@@ -127,7 +127,7 @@ const page: AppPage = {
     { q: "Is it a cartoon?", a: "No. It's made to look like a real photograph, like a still from an action film. For a comic look, use the comic book cover maker." },
     { q: "How much does it cost?", a: `${COST} per photo, only when it's made. Packs start at ${PACK_FROM}; a free trial, where available, covers the first.` },
     { q: "How do I get the whole cape in the picture?", a: "Choose Full body framing. It shows the full costume and the cape flowing behind you." },
-    { q: "Can I add a hero name to the picture?", a: "Yes. Open the result in the free photo editor and add your hero name with the text tool. For a cover with the title lettered in, use the comic book cover maker." },
+    { q: "Can I add a hero name to the picture?", a: "Yes. Add your hero name as a line of text with the free watermark tool, or design a poster in a design app. For a cover with the title lettered in, use the comic book cover maker." },
     { q: "Is there a watermark?", a: "No. Your hero photo downloads at full size with no watermark." },
   ],
 };

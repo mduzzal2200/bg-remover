@@ -69,7 +69,7 @@ const page: AppPage = {
     {
       heading: "Turning it into a card or invite",
       paragraphs: [
-        "Add \"Happy Thanksgiving\", \"Grateful for you\" or your dinner details with the text tool in the [free photo editor](/editor). For printing, enlarge it 2× in the [image upscaler](/upscale) and print at 5 × 7 inches.",
+        "Add \"Happy Thanksgiving\", \"Grateful for you\" or your dinner details with the free [watermark tool](/watermark-image) or a design app. For printing, enlarge it 2× in the [image upscaler](/upscale) and print at 5 × 7 inches.",
         "Want the greeting lettered for you, or the whole family at the table in one picture? The [Thanksgiving festival page](/festivals/thanksgiving) has a greeting card app, a family photo app and a harvest-table background app.",
       ],
     },
@@ -130,7 +130,7 @@ const page: AppPage = {
     { q: "Can I make a family Thanksgiving photo?", a: "This app makes one person. Use the family photo app on the Thanksgiving festival page for everyone together." },
     { q: "Does it work for Friendsgiving?", a: "Yes. Make a portrait for each friend with the same scene for a matching set." },
     { q: "How much does it cost?", a: `${COST} each, charged once the portrait arrives. The smallest pack is ${PACK_FROM}.` },
-    { q: "Can I add text?", a: "Yes. Add \"Happy Thanksgiving\" or your dinner details in the free photo editor, or use the Thanksgiving greeting card app on the festival page." },
+    { q: "Can I add text?", a: "Yes. Add \"Happy Thanksgiving\" or your dinner details with the free watermark tool, or use the Thanksgiving greeting card app on the festival page." },
     { q: "Can I use it after Thanksgiving?", a: "Yes. It works any time of year, and the autumn look suits fall posts, harvest festivals and cosy-season profile pictures too." },
     { q: "Is there a watermark?", a: "No. The Thanksgiving portrait is yours at full size, with nothing printed over it." },
   ],

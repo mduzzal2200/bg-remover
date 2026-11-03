@@ -89,7 +89,7 @@ const page: AppPage = {
       paragraphs: [
         "Anime pictures of two people are some of the most shared, for anniversaries, best-friend birthdays and matching profile pictures. A few things make them work.",
         "Use one photo with both of you close together, faces similar in size and both clearly lit. A selfie works well. Set Framing to Half body so both of you fit and your poses show, and leave Strength on Auto so both faces stay recognisable.",
-        "For matching profile pictures, make the couple picture first, then crop each person out of it in the [free photo editor](/editor). Because they come from the same drawing, the style, colours and light match perfectly, which separate pictures never quite do.",
+        "For matching profile pictures, make the couple picture first, then crop each person out of it in your phone's or computer's photo app, which lets you choose exactly where to crop. Because they come from the same drawing, the style, colours and light match perfectly, which separate pictures never quite do.",
         "If the app simplifies one face more than the other, run it again: the two of you are drawn a little differently each time.",
       ],
     },

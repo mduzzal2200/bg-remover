@@ -69,7 +69,7 @@ const page: AppPage = {
     {
       heading: "Turning your portrait into a card",
       paragraphs: [
-        "Write \"Merry Christmas\" or \"Happy Holidays from the Smiths\" across the picture in the [free photo editor](/editor). Ordering prints? A 2× pass through the [image upscaler](/upscale) keeps the fairy lights sharp at the standard 5 × 7 inch card size. Folded cards suit an upright 4:5 or 3:4 shape; a social post looks best square.",
+        "Write \"Merry Christmas\" or \"Happy Holidays from the Smiths\" across the picture with the free [watermark tool](/watermark-image), or in a design app. Ordering prints? A 2× pass through the [image upscaler](/upscale) keeps the fairy lights sharp at the standard 5 × 7 inch card size. Folded cards suit an upright 4:5 or 3:4 shape; a social post looks best square.",
         "Prefer a card with the greeting already lettered in? The [Christmas festival page](/festivals/christmas) has a greeting card app, plus a family photo and a festive background app.",
       ],
     },
@@ -78,7 +78,7 @@ const page: AppPage = {
       list: [
         "**Put several people in one portrait.** Each portrait is one person; make one each, or use the Christmas family photo app on the [festivals page](/festivals/christmas).",
         "**Show your real home.** The room and tree are invented.",
-        "**Write your message.** Add text afterwards with a text tool.",
+        "**Write your message.** Add text afterwards with the free watermark tool or a design app.",
         "**Choose the outfit colour.** Women usually get deep green velvet, men a green or red knit. For another outfit, use the [outfit changer](/creative/outfit-generator).",
       ],
     },
@@ -132,7 +132,7 @@ const page: AppPage = {
     { q: "Can I choose the scene?", a: "Yes. By the tree, By the fire, At the table, Outside in the snow or Studio." },
     { q: "Will my face stay the same?", a: "Yes. The tree, the fire and the festive outfit are added around you; your face isn't redrawn." },
     { q: "Can I make a family Christmas photo?", a: "Make one portrait per person with the same scene, or use the family photo app on the Christmas festival page for everyone in one picture." },
-    { q: "Can I add a greeting?", a: "Yes. Type it in the free photo editor after downloading, or pick the Christmas greeting card app, which letters \"Merry Christmas\" onto the picture for you." },
+    { q: "Can I add a greeting?", a: "Yes. Add a line with the free watermark tool after downloading, or pick the Christmas greeting card app, which letters \"Merry Christmas\" onto the picture for you." },
     { q: "What will I wear?", a: "Women usually get a deep green velvet top or dress; men a cosy knit sweater in deep green or red." },
     { q: "How much does it cost?", a: `${COST} per Christmas portrait, only for ones that are made. A ${PACK_FROM} pack is enough for a small family.` },
     { q: "Can I print it as a card?", a: "Yes. Upscale it 2× first, then print at 5 × 7 inches." },

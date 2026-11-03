@@ -69,7 +69,7 @@ const page: AppPage = {
     {
       heading: "Sending festival greetings",
       paragraphs: [
-        "A festive portrait makes a warm greeting on WhatsApp status, Instagram stories and family chats. To add \"Happy Diwali\" or \"Eid Mubarak\" in your own words, open the result in the [free photo editor](/editor) and use the text tool. For a ready-made card with the greeting lettered in, each festival on the [festivals hub](/festivals) also has a greeting card app.",
+        "A festive portrait makes a warm greeting on WhatsApp status, Instagram stories and family chats. To add \"Happy Diwali\" or \"Eid Mubarak\" in your own words, add a line with the free [watermark tool](/watermark-image) or design a card in a design app. For a ready-made card with the greeting lettered in, each festival on the [festivals hub](/festivals) also has a greeting card app.",
         "Planning to print? Run the portrait through the [image upscaler](/upscale) at 2× before ordering a card or a frame, so the jewellery and embroidery stay crisp.",
       ],
     },
@@ -79,7 +79,7 @@ const page: AppPage = {
         "**Centre on religious figures.** The portrait is built around festive dress, lights and decorations; it isn't designed to show deities, holy figures or scripture.",
         "**Show your real home.** The decorated room is invented, so it won't look like your own living room.",
         "**Copy a specific outfit.** It designs a festive look. For one exact lehenga or kurta, describe it in the [outfit changer](/creative/outfit-generator).",
-        "**Write greetings.** Add your message afterwards with a text tool or use a festival greeting card app.",
+        "**Write greetings.** Add your message afterwards with the free watermark tool or a design app, or use a festival greeting card app.",
       ],
     },
     {
@@ -121,7 +121,7 @@ const page: AppPage = {
     { q: "Which festivals are available?", a: "Diwali, Holi, Navratri, Eid, Christmas, Onam and Pongal. The festivals hub has 40 more festivals with their own apps." },
     { q: "Will my face stay the same?", a: "Yes. The festive dress, jewellery and decorations change, while your features, skin tone and smile stay yours." },
     { q: "What do men wear?", a: "For Diwali, an embroidered silk kurta with a Nehru jacket. Other festivals use their own traditional menswear." },
-    { q: "Can I add a greeting like Happy Diwali?", a: "Yes. Type your wishes onto the picture in the free photo editor, or open the festival on the festivals hub and use its greeting card app." },
+    { q: "Can I add a greeting like Happy Diwali?", a: "Yes. Add your wishes as a line of text with the free watermark tool, or open the festival on the festivals hub and use its greeting card app." },
     { q: "Does it work for family photos?", a: "This app is designed for one person. Each festival on the festivals hub has a family or couple photo app." },
     { q: "How much does it cost?", a: `${COST} for each festival portrait, charged only on success. Packs from ${PACK_FROM}.` },
     { q: "Is it respectful of religious traditions?", a: "It's built around festive dress, lights and decorations rather than religious figures or symbols. If a result doesn't feel right, run it again or tell us." },

@@ -78,7 +78,7 @@ const page: AppPage = {
       heading: "What it won't do",
       list: [
         "**Make other cards.** This app always makes The Sun. Other cards, like The Moon or The Star, aren't options here.",
-        "**Write your name.** The banner reads \"THE SUN\". To add a name or a message, use the text tool in the [free photo editor](/editor) afterwards.",
+        "**Write your name.** The banner reads \"THE SUN\". To add a name or a message, use the free [watermark tool](/watermark-image) afterwards, or a design app.",
         "**Make a full deck.** Each run makes one card from one photo.",
         "**Predict anything.** It's a portrait in a tarot style, not a reading.",
         "**Spell every letter perfectly every time.** AI lettering occasionally slips; check the banner, and run it again if a letter looks wrong.",
@@ -104,7 +104,7 @@ const page: AppPage = {
     { q: "Which tarot card does it make?", a: "The Sun: a golden halo and sun crown, a red-and-gold robe, sunflowers and an ornate gold border with \"THE SUN\" on the banner." },
     { q: "Can I choose a different card?", a: "Not in this app. It's built around The Sun card, one of the most positive in the deck." },
     { q: "Will the card look like me?", a: "Yes. It's an illustration, so your face is painted, but your features are kept recognisable. Front-facing photos give the strongest likeness." },
-    { q: "Can I add my name to the card?", a: "Add it afterwards with the text tool in the free photo editor. The app itself writes only the card title." },
+    { q: "Can I add my name to the card?", a: "Add it afterwards with the free watermark tool or a design app. The app itself writes only the card title." },
     { q: "How much does it cost?", a: `${COST} per card, only when it's made. Packs start at ${PACK_FROM}, and a free trial, where available, shows above the upload.` },
     { q: "Can I print it?", a: "Yes. Upscale it 2× or 4× first, then print. It comes out in a tall 3:4 card shape; pick 9:16 for a slimmer, deck-sized card." },
     { q: "What does The Sun mean in tarot?", a: "Joy, warmth, success and optimism. It's one of the most positive cards in the deck, which is why it makes such a good portrait or gift." },

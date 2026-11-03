@@ -94,7 +94,7 @@ const page: AppPage = {
       items: [
         { t: "A team poster", d: "Make one figure per person with the same presentation and arrange them in a row: \"Collect the whole team\"." },
         { t: "A job announcement", d: "Starting a new job? Post your minifigure with the accessories of your new role." },
-        { t: "A birthday invite", d: "Put the birthday child's minifigure on an invitation and add the details in the [free photo editor](/editor)." },
+        { t: "A birthday invite", d: "Put the birthday child's minifigure on an invitation made in a design app, with the date and place." },
       ],
     },
     {

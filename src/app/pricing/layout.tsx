@@ -1,9 +1,13 @@
 import { seoMeta } from "@/lib/seo/brand";
 import type { Metadata } from "next";
+import { MONTHLY_PLANS, PACKS, formatInr } from "@/lib/plans";
+
+const fromMonthly = `₹${formatInr(MONTHLY_PLANS[0].inr)}`;
+const fromPack = `₹${formatInr(PACKS[0].inr)}`;
 
 export const metadata: Metadata = seoMeta({
   title: { absolute: "Pricing — Pixel Shine Monthly Plans & Credit Packs" },
-  description: "Pixel Shine pricing: monthly AI credit plans from ₹415 (≈ $5) you can cancel any time, or one-time add-on packs from ₹166 that never expire. Free tools stay free.",
+  description: `PixelShine pricing: monthly AI credit plans from ${fromMonthly}, cancel any time, or one-time packs from ${fromPack} that never expire. Free tools stay free.`,
   alternates: { canonical: "https://www.sjpt.io/pricing" },
 });
 

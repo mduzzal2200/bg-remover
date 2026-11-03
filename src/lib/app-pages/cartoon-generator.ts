@@ -53,7 +53,7 @@ const page: AppPage = {
       heading: "What won't it do?",
       list: [
         "**Keep a serious face.** It's a cheerful style, so expect a smile.",
-        "**Write the words you want.** The background often includes a little sign or mug with a short phrase the AI chooses. You can't set it, so add your own text afterwards in the [free photo editor](/editor) if you need it.",
+        "**Write the words you want.** The background often includes a little sign or mug with a short phrase the AI chooses. You can't set it, so add your own text afterwards with the free [watermark tool](/watermark-image) or a design app if you need it.",
         "**Make a transparent sticker.** You get a picture with a background. To cut it out, run it through the [background remover](/remove-bg).",
         "**Draw in a specific artist's or show's style.** It has its own friendly style. For anime, Pixar-like or Ghibli looks, use those apps.",
       ],

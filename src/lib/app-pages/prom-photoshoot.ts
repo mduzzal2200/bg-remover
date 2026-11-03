@@ -83,7 +83,7 @@ const page: AppPage = {
       heading: "What can you do with your prom portrait?",
       items: [
         { t: "A countdown post", d: "Share the portrait a week before the dance with the date in the caption. It builds excitement without giving away the real outfit." },
-        { t: "Invitations and promposals", d: "Put the picture on an invite for an after-party, or on a card asking someone to the dance. Add the words in the [free photo editor](/editor)." },
+        { t: "Invitations and promposals", d: "Put the picture on an invite for an after-party, or on a card asking someone to the dance. Add the words in a design app." },
         { t: "A yearbook or memory page", d: "Schools and parents making a senior memory book can use a portrait for anyone missing from the official shoot." },
         { t: "A framed print", d: "Run it through the [image upscaler](/upscale) first, then print it at 5 × 7 or 8 × 10 inches for a frame on the shelf." },
       ],

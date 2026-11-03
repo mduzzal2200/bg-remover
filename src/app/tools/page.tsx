@@ -7,6 +7,8 @@ import { COMPRESSIONS } from "@/lib/compressions";
 import { CROPS } from "@/lib/crops";
 import ToolIcon, { iconKeyForHref } from "@/app/editor/ToolIcon";
 import ScrollReveal from "@/app/_components/ScrollReveal";
+import HubArticle from "@/app/_components/HubArticle";
+import toolsHub from "@/lib/hub-pages/tools";
 
 const BASE = "https://www.sjpt.io";
 const URL = `${BASE}/tools`;
@@ -14,10 +16,10 @@ const URL = `${BASE}/tools`;
 export const metadata: Metadata = seoMeta({
   title: { absolute: brandedTitle("All Free Image Tools — Convert, Compress, Crop, Upscale & More | Pixel Shine") },
   description:
-    "Every free Pixel Shine image tool in one place: upscale, compress, convert (PNG, JPG, WebP), crop, rotate, watermark, meme maker, image to PDF, and TikTok downloader. No watermark, no sign-up.",
+    "Every free PixelShine image tool in one place: compress, convert, crop, resize, rotate, blur, watermark, memes, image to PDF and more. No watermark.",
   keywords: "free image tools, online image tools, image converter, image compressor, crop image, upscale image, free photo tools",
   alternates: { canonical: URL },
-  openGraph: { title: "All Free Image Tools | Pixel Shine", description: "Every free Pixel Shine image tool in one place — no watermark, no sign-up.", url: URL, type: "website", siteName: "Pixel Shine" },
+  openGraph: { title: "All Free Image Tools | Pixel Shine", description: "Every free PixelShine image tool in one place, with no watermark.", url: URL, type: "website", siteName: "Pixel Shine" },
 });
 
 const CORE_TOOLS = [
@@ -155,6 +157,9 @@ export default function ToolsPage() {
             <Chips items={cropChips} />
           </div>
         </section>
+
+        {/* GUIDE: which tool, free vs credits, privacy, FAQ */}
+        <HubArticle page={toolsHub} />
 
         {/* TRENDING: 80s AI photo prompts */}
         <section style={{ padding: "8px 24px 40px", background: "var(--surface)" }}>

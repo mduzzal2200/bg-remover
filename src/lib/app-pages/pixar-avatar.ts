@@ -78,7 +78,7 @@ const page: AppPage = {
     {
       heading: "Ideas for your animated character",
       items: [
-        { t: "A movie-poster post", d: "Add a title and a tagline in the [free photo editor](/editor) and post your character as the star of a film that doesn't exist yet." },
+        { t: "A movie-poster post", d: "Add a title and a tagline in a design app and post your character as the star of a film that doesn't exist yet." },
         { t: "Party invitations", d: "A child's birthday invite with the birthday kid as an animated hero is a guaranteed hit. Leave space above the head for the text by choosing Half body framing." },
         { t: "Stickers and merch", d: "Remove the background with the [background remover](/remove-bg), then print the character on stickers, mugs or a T-shirt." },
         { t: "A family set", d: "Make one character per family member from separate selfies with the same settings, then line them up in a collage for a holiday card." },

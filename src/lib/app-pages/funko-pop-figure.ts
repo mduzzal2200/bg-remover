@@ -134,7 +134,7 @@ const page: AppPage = {
     { q: "How much does it cost?", a: `${COST} per vinyl figure, taken after it renders. Packs from ${PACK_FROM}.` },
     { q: "What photo works best?", a: "A clear upper-body or full-body photo with your hair and outfit visible and a plain background." },
     { q: "Do glasses and beards show on the figure?", a: "Yes, and they help. They're among the few details a dot-eyed face has, so they make the figure look much more like you." },
-    { q: "Can I change the number on the box?", a: "The app chooses it. Edit it afterwards in the free photo editor by covering it and typing your own number." },
+    { q: "Can I change the number on the box?", a: "The app chooses it. Change it afterwards in a design app by covering it with a number of your own." },
     { q: "Is there a watermark?", a: "No. The box shot downloads full size and unstamped." },
   ],
 };

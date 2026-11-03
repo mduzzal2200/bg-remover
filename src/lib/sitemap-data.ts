@@ -140,7 +140,7 @@ export async function blogUrls(): Promise<SitemapUrl[]> {
   const posts = await editedPosts();
   return dated(dedupe([
     { url: `${BASE}/blog` },
-    ...posts.filter(blogIndexable).map((post) => ({ url: `${BASE}/blog/${post.slug}`, lastModified: post.date })),
+    ...posts.filter(blogIndexable).map((post) => ({ url: `${BASE}/blog/${post.slug}`, lastModified: post.updated ?? post.date })),
   ]));
 }
 

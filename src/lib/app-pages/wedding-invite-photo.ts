@@ -35,7 +35,7 @@ const page: AppPage = {
       heading: "Adding your names and date",
       paragraphs: [
         "The **Text on the image** box lets you put a short line on the portrait, such as \"Aisha & Daniel · 14.06.2027\" or \"Save the date\". Keep it short: two names and a date read and spell best. The app places the words where they suit the composition.",
-        "Want full control of fonts and layout? Leave the box empty and add your text afterwards in the [free photo editor](/editor) or in your invitation design app. A clean photo with no text is also more flexible: you can use it for the invite, the wedding website and a welcome sign.",
+        "Want full control of fonts and layout? Leave the box empty and add your text afterwards in your invitation design app. A clean photo with no text is also more flexible: you can use it for the invite, the wedding website and a welcome sign.",
         "AI lettering occasionally slips a letter. Always check names and dates carefully before printing, and run it again if anything looks wrong.",
       ],
     },

@@ -78,7 +78,7 @@ const page: AppPage = {
         "**Copy a real film or actor.** It recreates the era's look, not a scene from a specific film or a particular star.",
         "**Pick the saree colour.** The default is red with a gold border. For a different colour, use the [AI saree photoshoot](/creative/saree-photoshoot) or describe it in the [outfit changer](/creative/outfit-generator).",
         "**Keep your outfit.** The saree or the hero's outfit replaces what you're wearing.",
-        "**Add song lyrics or titles.** Add text afterwards in the [free photo editor](/editor) if you want a poster feel.",
+        "**Add song lyrics or titles.** Add text afterwards in a design app if you want a poster feel.",
       ],
     },
     {
@@ -126,7 +126,7 @@ const page: AppPage = {
     { q: "What does Strength do?", a: "Subtle gives a light vintage grade; Strong adds heavier grain, warmer haze and a stronger retro look." },
     { q: "How much does it cost?", a: `${COST} per film still, and only when one is made. Credit packs from ${PACK_FROM}.` },
     { q: "Is it from a real film?", a: "No. It recreates the style of 90s Hindi cinema, not a scene from any particular film." },
-    { q: "Can I use it for a wedding or sangeet invite?", a: "Yes. A couple's film still makes a playful invitation. Add names and dates afterwards with the text tool in the free photo editor." },
+    { q: "Can I use it for a wedding or sangeet invite?", a: "Yes. A couple's film still makes a playful invitation. Add names and dates afterwards with the free watermark tool or an invitation design app." },
     { q: "Is there a watermark?", a: "No. The still downloads at full size with no logo, ready for a reel." },
   ],
 };

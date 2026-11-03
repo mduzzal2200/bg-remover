@@ -6,6 +6,9 @@ import { notFound } from "next/navigation";
 import { editedPosts } from "@/lib/blog-edits.server";
 import { BLOG_TOPICS, TOPIC_BY_SLUG, topicOf, topicHref } from "@/lib/blog-topics";
 import { NOINDEX, blogIndexable, guideIndexable } from "@/lib/seo/index-policy";
+import HubArticle from "@/app/_components/HubArticle";
+import ListingMark from "@/app/_components/ListingMark";
+import { TOPIC_GUIDES } from "@/lib/hub-pages/topics";
 
 /**
  * /guides/{topic} — a topic hub: every blog post on one subject, linked from
@@ -42,6 +45,7 @@ export default async function TopicHub({ params }: { params: Promise<{ topic: st
   if (!t) notFound();
 
   // The longest, most complete guides first; every post on the topic is listed.
+  const guide = TOPIC_GUIDES[t.slug];
   const posts = (await editedPosts())
     .filter((p) => topicOf(p) === t.slug)
     .sort((a, b) => Number(blogIndexable(b)) - Number(blogIndexable(a)) || (a.date < b.date ? 1 : -1));
@@ -71,9 +75,9 @@ export default async function TopicHub({ params }: { params: Promise<{ topic: st
   ];
 
   return (
-    <main style={{ background: "var(--surface-2)", minHeight: "100vh", padding: "48px 24px 80px" }}>
+    <main style={{ background: "var(--surface-2)", minHeight: "100vh", paddingTop: 48 }}>
       {ld.map((x, i) => <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: seoJson(x) }} />)}
-      <div style={{ maxWidth: 900, margin: "0 auto" }}>
+      <div style={{ maxWidth: 948, margin: "0 auto", padding: "0 24px 24px" }}>
         <nav aria-label="Breadcrumb" style={{ fontSize: 13, color: "var(--text-faint)", marginBottom: 24 }}>
           <Link href="/" style={{ color: "var(--text-faint)", textDecoration: "none" }}>Home</Link>
           {" / "}
@@ -96,6 +100,7 @@ export default async function TopicHub({ params }: { params: Promise<{ topic: st
           ))}
         </div>
 
+        <ListingMark at="start" />
         <h2 style={{ fontSize: 13, fontWeight: 800, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 14px" }}>
           {posts.length} {posts.length === 1 ? "guide" : "guides"}
         </h2>
@@ -111,6 +116,7 @@ export default async function TopicHub({ params }: { params: Promise<{ topic: st
             </li>
           ))}
         </ul>
+        <ListingMark at="end" />
 
         <div style={{ marginTop: 40, fontSize: 14, color: "var(--text-muted)" }}>
           More topics:{" "}
@@ -122,6 +128,7 @@ export default async function TopicHub({ params }: { params: Promise<{ topic: st
           ))}
         </div>
       </div>
+      {guide && <HubArticle page={guide} />}
     </main>
   );
 }
