@@ -45,6 +45,7 @@ const FEATURES = [
   { label: "Prompt to Edit", href: "/ai-editor" },
   { label: "AI Image Generator", href: "/app/create" },
   { label: "Object Remover", href: "/object-remover" },
+  { label: "AI Group Photo", href: "/group-photo" },
   { label: "Remove Watermark", href: "/watermark-remover" },
   { label: "Resize Image", href: "/resize-image" },
   { label: "Crop Image", href: "/crop-image" },

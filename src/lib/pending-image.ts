@@ -33,6 +33,10 @@ export type PendingContext = {
    * credits runs it — so this is a request, not an instruction.
    */
   autoRun?: boolean;
+  /** Several photos at once (Group Photo keeps all of them through sign-in). IndexedDB only. */
+  images?: string[];
+  /** A tool's own small settings, kept with the photos. */
+  options?: Record<string, string>;
   ts: number;
 };
 

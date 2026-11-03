@@ -11,6 +11,7 @@ const STATIC_LINKS: { name: string; blurb: string; href: string; icon: IconName 
   { name: "Create Image", blurb: "Generate an image from a description", href: "/app/create", icon: "sparkle" },
   { name: "Recreate", blurb: "Copy any photo's look with your face", href: "/app/recreate", icon: "copy" },
   { name: "AI Image Editor", blurb: "Upload a photo and describe the change", href: "/app/editor", icon: "editor" },
+  { name: "Group Photo", blurb: "Up to 14 single photos into one group photo", href: "/app/group-photo", icon: "group" },
   { name: "AI Apps", blurb: "200+ one-tap photo apps", href: "/app/apps", icon: "apps" },
   { name: "Festivals", blurb: "Diwali, Eid, Christmas, Lunar New Year and more", href: "/app/festivals", icon: "festival" },
   { name: "Community", blurb: "Prompts and images from creators", href: "/app/community", icon: "community" },

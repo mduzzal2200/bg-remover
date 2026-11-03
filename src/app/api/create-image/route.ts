@@ -6,7 +6,7 @@ import { recordGeneration } from "@/lib/ledger";
 import { storeImage } from "@/lib/store-image";
 import { CREDIT_COST } from "@/lib/plans";
 import { userMessage } from "@/lib/user-message";
-import { ASPECT_RATIOS, IMAGE_EDIT_MODELS, TEXT_TO_IMAGE_MODELS } from "@/lib/app-presets";
+import { ASPECT_RATIOS, IMAGE_EDIT_MODELS, TEXT_TO_IMAGE_MODELS, MAX_PHOTOS, maxImagesFor } from "@/lib/app-presets";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -22,6 +22,25 @@ const REFERENCE_AND_SUBJECT_NOTE =
 const REFERENCE_NOTE =
   "The provided image is a visual REFERENCE: match its composition, styling, lighting and mood while following the prompt above. Produce a new, realistic photograph.";
 
+/**
+ * Several photos of the user's own: everyone in them goes into one picture.
+ * With a reference, it is image 1 and the photos follow.
+ */
+function multiSubjectNote(photos: number, withReference: boolean): string {
+  const total = photos + (withReference ? 1 : 0);
+  const first = withReference ? 2 : 1;
+  return [
+    `You are given ${total} images.`,
+    withReference
+      ? "IMAGE 1 is the REFERENCE: match its composition, framing, camera angle, styling, setting, lighting and colour grade, following the prompt above, but do not reuse the people or products in it."
+      : "",
+    `IMAGES ${first} to ${total} are the SUBJECT photos. Put every person, pet or product from those photos into the result, each one exactly once: no one left out, no one doubled, and no extra people added, not even in the background.`,
+    "Keep every person's face, facial features, face shape, skin tone, hair, glasses if they wear them, age and build exactly the same as in their own photo, an exact likeness that is not beautified, and never blend, average or swap faces between people. Keep every product's shape, colours, materials, text and branding exactly the same.",
+    "Unless the prompt asks for something else, people face the camera with their heads upright and level (a slight natural turn is fine) and never copy the tilt, crop or phone angle of their photos. Arrange them naturally with every face fully visible.",
+    "Light everyone with one consistent light and the same colour temperature so they look photographed together in one moment, not pasted in. The result must look like a real photograph.",
+  ].filter(Boolean).join(" ");
+}
+
 const SUBJECT_NOTE =
   "Use the subject of the provided photo as the subject of this image. If it is a person, keep their face, facial features, skin tone, hair and identity exactly the same — an exact likeness, not beautified or idealised — and show them facing the camera with the head upright and level, even if the photo is tilted, unless the prompt asks for another angle. If it is a product or object, keep its shape, colours, materials, text and branding exactly the same. The result must look like a real photograph.";
 
@@ -34,7 +53,7 @@ export async function POST(req: NextRequest) {
   const { session, error } = await checkAuth(req);
   if (error) return error;
 
-  let body: { prompt?: unknown; model?: unknown; aspectRatio?: unknown; image?: unknown; reference?: unknown };
+  let body: { prompt?: unknown; model?: unknown; aspectRatio?: unknown; image?: unknown; images?: unknown; reference?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -48,11 +67,24 @@ export async function POST(req: NextRequest) {
   }
   // Read first: which models are allowed depends on whether there is a photo.
   const isImage = (v: unknown): v is string => typeof v === "string" && (/^https:\/\//.test(v) || /^data:image\/(png|jpeg|webp);base64,/.test(v));
-  const image = isImage(body.image) ? body.image : null;
-  if (body.image && !image) return NextResponse.json({ error: "Your image couldn't be read. Try adding it again." }, { status: 400 });
+  // `images` (one or more of the user's photos), or the single `image` older
+  // handoffs still send.
+  let photos: string[] = [];
+  if (Array.isArray(body.images) && body.images.length) {
+    if (!body.images.every(isImage)) return NextResponse.json({ error: "One of your images couldn't be read. Remove it and add it again." }, { status: 400 });
+    photos = body.images as string[];
+  } else if (body.image) {
+    if (!isImage(body.image)) return NextResponse.json({ error: "Your image couldn't be read. Try adding it again." }, { status: 400 });
+    photos = [body.image];
+  }
+  const image = photos[0] ?? null;
   // Passed to the image provider as-is and never fetched by this server.
   const reference = isImage(body.reference) ? body.reference : null;
   if (body.reference && !reference) return NextResponse.json({ error: "The reference image couldn't be read. Remove it and try again." }, { status: 400 });
+  const totalImages = photos.length + (reference ? 1 : 0);
+  if (photos.length > MAX_PHOTOS || totalImages > MAX_PHOTOS) {
+    return NextResponse.json({ error: `Add up to ${MAX_PHOTOS} images in all, counting the reference.` }, { status: 400 });
+  }
   // Auto-select Seedream for non-explicit mature/editorial requests where it is a better fit.
   // This is model selection only: provider content checks remain authoritative and are never bypassed.
   // Model choice only: fal's own moderation/policy remains authoritative.
@@ -62,8 +94,10 @@ export async function POST(req: NextRequest) {
     /\b(adult|mature|boudoir|lingerie|sensual|intimate fashion|implied nudity|artistic nude|nude|nudity|nsfw|topless|erotic|romantic couple|fashion editorial)\b/i.test(prompt) &&
     !/\b(minor|underage|child|teen|schoolgirl|schoolboy)\b/i.test(prompt);
   const allowedModels = image || reference ? EDIT_MODEL_IDS : GENERATE_MODEL_IDS;
-  const requestedModel = typeof body.model === "string" && allowedModels.has(body.model) ? body.model : (image || reference ? IMAGE_EDIT_MODELS[0].id : TEXT_TO_IMAGE_MODELS[0].id);
-  const model = matureEditorialRequest && (requestedModel === "nano-banana" || requestedModel === "gpt-image")
+  const pickedModel = typeof body.model === "string" && allowedModels.has(body.model) ? body.model : (image || reference ? IMAGE_EDIT_MODELS[0].id : TEXT_TO_IMAGE_MODELS[0].id);
+  // A model that can't take this many images falls back to Nano Banana Pro, which takes 14.
+  const requestedModel = totalImages > 2 && maxImagesFor(pickedModel) < totalImages ? IMAGE_EDIT_MODELS[0].id : pickedModel;
+  const model = matureEditorialRequest && (requestedModel === "nano-banana" || requestedModel === "gpt-image") && maxImagesFor("seedream-v45") >= totalImages
     ? "seedream-v45"
     : requestedModel;
   const aspectRatio = typeof body.aspectRatio === "string" && RATIOS.has(body.aspectRatio) ? body.aspectRatio : "1:1";
@@ -75,8 +109,9 @@ export async function POST(req: NextRequest) {
   const label = prompt.length > 60 ? `${prompt.slice(0, 57)}…` : prompt;
   try {
     const result =
-      reference && image ? (await editWithImages([reference, image], `${prompt}\n\n${REFERENCE_AND_SUBJECT_NOTE}`, model)).dataUrl
-      : reference ? (await editWithImages([reference], `${prompt}\n\n${REFERENCE_NOTE}`, model)).dataUrl
+      photos.length > 1 ? (await editWithImages([...(reference ? [reference] : []), ...photos], `${prompt}\n\n${multiSubjectNote(photos.length, !!reference)}`, model, aspectRatio)).dataUrl
+      : reference && image ? (await editWithImages([reference, image], `${prompt}\n\n${REFERENCE_AND_SUBJECT_NOTE}`, model, aspectRatio)).dataUrl
+      : reference ? (await editWithImages([reference], `${prompt}\n\n${REFERENCE_NOTE}`, model, aspectRatio)).dataUrl
       : image ? await editImage(image, `${prompt}\n\n${SUBJECT_NOTE}`, model, aspectRatio, { budgetMs: 240_000, raw: true })
       : await generateFromText(prompt, { model, aspect_ratio: aspectRatio, budgetMs: 240_000 });
     const [resultUrl, sourceUrl] = await Promise.all([
@@ -92,6 +127,7 @@ export async function POST(req: NextRequest) {
       resultUrl,
       model,
       prompt,
+      preset: photos.length > 1 ? `${photos.length} photos` : undefined,
       aspectRatio,
       creditsSpent: CREDIT_COST,
       status: "succeeded",

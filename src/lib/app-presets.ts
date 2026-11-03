@@ -374,6 +374,34 @@ export const IMAGE_EDIT_MODELS = [
   { id: "ideogram-v4-image-to-image", label: "Ideogram v4 Image-to-Image", hint: "Image editing" },
 ] as const;
 
+/**
+ * How many input images each model takes in one request, from fal's docs:
+ * Nano Banana Pro 14, the GPT Image endpoints 16, Seedream 4.5 10. The GPT
+ * ones are held to 14 so every picker says the same "up to 14". Models not
+ * listed are only known to take two (a reference plus your photo).
+ */
+export const MAX_INPUT_IMAGES: Readonly<Record<string, number>> = {
+  "nano-banana": 14,
+  "gpt-image-2.5-sunburst": 14,
+  "gpt-image-2.5-flare": 14,
+  "gpt-image-2": 14,
+  "gpt-image": 14,
+  "seedream-v45": 10,
+};
+
+/** The most images one request to this model can carry. */
+export function maxImagesFor(model: string): number {
+  return MAX_INPUT_IMAGES[model] ?? 2;
+}
+
+/** The most photos any picker accepts (Nano Banana Pro's limit). */
+export const MAX_PHOTOS = 14;
+
+/** Models that can make one picture from many photos, Nano Banana Pro first. */
+export const MULTI_PHOTO_MODELS = IMAGE_EDIT_MODELS
+  .filter((m) => maxImagesFor(m.id) >= 10)
+  .map((m) => ({ ...m, hint: `Up to ${maxImagesFor(m.id)} photos` }));
+
 export const TEXT_TO_IMAGE_MODELS = [
   { id: "nano-banana", label: "Nano Banana Pro", hint: "Text-to-image generation" },
   { id: "seedream-v45", label: "Seedream 4.5", hint: "Image editing" },
