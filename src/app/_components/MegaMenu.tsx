@@ -43,7 +43,7 @@ const FEATURES = [
   { label: "Remove Background", href: "/remove-bg" },
   { label: "Upscale Image", href: "/upscale" },
   { label: "Prompt to Edit", href: "/ai-editor" },
-  { label: "AI Image Generator", href: "/app/create" },
+  { label: "AI Image Generator", href: "/ai-image-generator" },
   { label: "Object Remover", href: "/object-remover" },
   { label: "AI Group Photo", href: "/group-photo" },
   { label: "Remove Watermark", href: "/watermark-remover" },

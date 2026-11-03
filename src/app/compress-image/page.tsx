@@ -3,13 +3,14 @@ import { brandedTitle } from "@/lib/seo/title";
 import GuidesBlock from "@/app/_components/GuidesBlock";
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { getPageConfig } from '@/lib/page-config'
+import { toolConfig, toolPage } from '@/lib/tool-pages'
+import AppArticle from '@/app/creative/[slug]/AppArticle'
 import { toolShareImages } from '@/lib/landing-images'
 import LandingPage from '../_components/LandingPage'
 import { COMPRESSIONS } from '@/lib/compressions'
 
 async function generateMetadataBase(): Promise<Metadata> {
-  const config = await getPageConfig('compress-image')
+  const config = await toolConfig('compress-image')
   return {
     title: { absolute: brandedTitle(config.title) },
     description: config.meta_description,
@@ -31,11 +32,12 @@ async function generateMetadataBase(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  const config = await getPageConfig('compress-image')
+  const config = await toolConfig('compress-image')
+  const tp = toolPage('compress-image')
 
   return (
     <>
-      <LandingPage path="/compress-image" guides={<GuidesBlock path="/compress-image" />} config={config} toolHref="/editor?tool=compress" pageId="compress-image" />
+      <LandingPage article={tp && <AppArticle sections={tp.sections} />} alt={tp?.alt} path="/compress-image" guides={<GuidesBlock path="/compress-image" />} config={config} toolHref="/editor?tool=compress" pageId="compress-image" />
 
       {/* Popular target sizes — internal links to the compress-to-size pages */}
       <section style={{ background: 'var(--surface)', padding: '56px 24px 72px' }}>

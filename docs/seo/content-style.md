@@ -83,7 +83,9 @@ Never a heading like "Key highlights" or "More about X".
     extra fingers?"), plus the ChatGPT/Gemini comparison where people ask it.
 12. Related apps — indexable ones first.
 
-### Tool page (`/remove-bg`, `/upscale`, …) — ~1,800 words
+### Tool page (`/remove-bg`, `/upscale`, …) — at least 1,000 words of its own
+
+The owner's floor (Nov 2026): tool pages 300–700 words, niche pages 500–800, blog posts 1,000–2,000+, and "write a bit more". We hold ourselves to more: 1,000+ own words on a tool page, 800+ on a niche page (a tool variant or a crop/convert/compress size page), 1,500+ on an app page or blog post. `npm run seo:thin -- --base <url>` measures a page's own words (text not shared with 4+ other pages) and its phrase overlap with pages of the same family (keep it under 15%). Copy for each tool page lives in `src/lib/tool-pages/<route>.ts`.
 
 H1 with the main phrase → the tool → how it works (3 steps) → what it's good
 at (use cases, each a question-led H2/H3) → when it's free and when it costs

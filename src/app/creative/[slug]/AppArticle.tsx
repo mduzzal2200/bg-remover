@@ -61,6 +61,28 @@ export default function AppArticle({ sections }: { sections: AppSection[] }) {
                 {s.list.map((text, j) => <li key={j}>{inline(text)}</li>)}
               </ul>
             )}
+            {s.table && (
+              <div style={{ overflowX: "auto", margin: "4px 0 18px", border: "1px solid var(--border)", borderRadius: 14 }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 15, lineHeight: 1.55 }}>
+                  <thead>
+                    <tr>
+                      {s.table.head.map((h) => (
+                        <th key={h} scope="col" style={{ textAlign: "left", padding: "10px 14px", background: "var(--surface-2)", color: "var(--text)", fontWeight: 800, borderBottom: "1px solid var(--border)", whiteSpace: "nowrap" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {s.table.rows.map((row, r) => (
+                      <tr key={r}>
+                        {row.map((cell, c) => (
+                          <td key={c} style={{ padding: "10px 14px", borderTop: r ? "1px solid var(--border)" : undefined, verticalAlign: "top", color: c ? "var(--text-muted)" : "var(--text)", fontWeight: c ? 400 : 700 }}>{inline(cell)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
             {s.after?.map((text, j) => <p key={j} style={p}>{inline(text)}</p>)}
           </section>
         ))}

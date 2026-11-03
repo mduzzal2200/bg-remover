@@ -117,6 +117,7 @@ export function toolsUrls(): SitemapUrl[] {
     { url: `${BASE}/watermark-remover` },
     { url: `${BASE}/object-remover` },
     { url: `${BASE}/group-photo` },
+    { url: `${BASE}/ai-image-generator` },
     { url: `${BASE}/invisible-watermark-remover` },
     ...CONVERSIONS.map((c) => ({ url: `${BASE}/convert/${c.slug}` })),
     ...COMPRESSIONS.map((c) => ({ url: `${BASE}/compress/${c.slug}` })),

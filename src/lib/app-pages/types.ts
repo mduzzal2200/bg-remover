@@ -23,7 +23,9 @@ export interface AppSection {
   items?: AppItem[];
   /** Bullets: tips, limits. */
   list?: string[];
-  /** Paragraphs after the items or list. */
+  /** A small table: a comparison, sizes, formats. Cells take **bold** and links too. */
+  table?: { head: string[]; rows: string[][] };
+  /** Paragraphs after the items, list or table. */
   after?: string[];
 }
 

@@ -100,6 +100,19 @@ for (const name of readdirSync(APP_PAGES_DIR)) {
   if (dates.length) result[`/creative/${name.slice(0, -3)}`] = dates[dates.length - 1];
 }
 
+/*
+  Tool pages with an article of their own (src/lib/tool-pages/<route>.ts):
+  the route's date also moves when its article or the article template does.
+*/
+const TOOL_PAGES_DIR = join(ROOT, "src", "lib", "tool-pages");
+for (const name of readdirSync(TOOL_PAGES_DIR)) {
+  if (!name.endsWith(".ts") || name === "index.ts" || name === "types.ts") continue;
+  const route = `/${name.slice(0, -3)}`;
+  const files = [`src/lib/tool-pages/${name}`, "src/app/creative/[slug]/AppArticle.tsx"];
+  const dates = [result[route], ...files.map(changed)].filter(Boolean).sort();
+  if (dates.length) result[route] = dates[dates.length - 1];
+}
+
 const sorted = Object.fromEntries(Object.entries(result).sort(([a], [b]) => a.localeCompare(b)));
 const json = JSON.stringify(sorted, null, 1) + "\n";
 

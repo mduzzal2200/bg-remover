@@ -19,6 +19,7 @@ const retiredPages = {
   '/ai/photo-editor': '/ai-editor',
   '/ai/background-changer': '/creative/background-changer',
   '/ai/photo-enhancer': '/upscale',
+  '/ai/ai-photo-generator': '/ai-image-generator',
   '/answers': '/guides',
   '/answers/remove-background-from-photo': '/remove-bg',
   '/answers/change-background-of-product-photo': '/remove-bg/product-photos',
