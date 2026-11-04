@@ -27,7 +27,7 @@ const TOTAL = COUNTS.total + ORIGINALS_COUNT;
 export const metadata: Metadata = seoMeta({
   title: { absolute: brandedTitle(`${TOTAL} AI Prompts — Free Image & Video Prompt Library | ${BRAND}`) },
   description:
-    `A free library of ${TOTAL} AI prompts for ${MODELS.map((m) => m.name).join(", ")} and more. Browse by model, medium, use case or style. Every prompt credits the creator who wrote it.`,
+    `A free library of ${TOTAL} AI image and video prompts for Nano Banana Pro, GPT Image, Seedream, Seedance and more, each credited to its author.`,
   keywords:
     "ai prompts, ai prompt library, image prompts, video prompts, nano banana pro prompts, gpt image 2 prompts, seedream prompts, seedance prompts, free ai prompts",
   alternates: { canonical: URL },
@@ -65,34 +65,27 @@ export default async function PromptsHub() {
   const weekly = curate("prompts.weekly", placements, featured(1))[0];
   const weeklyImage = weekly ? resolve(weekly.media === "video" ? weekly.videoThumbnail : weekly.images[0]) : null;
 
+  const faqs = [
+    {
+      q: `What is the ${BRAND} prompt library?`,
+      a: `A free, browsable collection of ${TOTAL} AI prompts: ${COUNTS.image} image prompts and ${COUNTS.video} video prompts drawn from open CC BY 4.0 collections, plus ${ORIGINALS_COUNT} written in-house. Every prompt has its own page, credits the person who wrote it, and can be copied without an account.`,
+    },
+    {
+      q: "Where do the prompts come from?",
+      a: "Most are adapted from YouMind OpenLab's open prompt collections on GitHub, published under CC BY 4.0. Each one was originally posted by an individual creator, and we credit them and link to their post on every card and every page. The rest are written by PixelShine.",
+    },
+    {
+      q: "Are the prompts free to use?",
+      a: "Yes. Copying is free and needs no account. The licence lets you use them commercially as long as the author is credited; we do that here, and you should keep the credit if you republish one.",
+    },
+    {
+      q: "Can I generate an image from a prompt here?",
+      a: "Yes. \"Generate this\" on an image prompt opens Create Image with the prompt filled in; generating uses credits. Video prompts are for copying into a video model's own app.",
+    },
+  ];
   const faqLd = {
     "@context": "https://schema.org", "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: `What is the ${BRAND} prompt library?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `A free, browsable collection of ${TOTAL} AI prompts — ${COUNTS.image} image prompts and ${COUNTS.video} video prompts drawn from open CC BY 4.0 collections, plus ${ORIGINALS_COUNT} written in-house. Every prompt has its own page, credits the person who wrote it, and can be copied without an account.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Where do the prompts come from?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Most are adapted from YouMind OpenLab's open prompt collections on GitHub, published under CC BY 4.0. Each one was originally posted by an individual creator, and we credit them and link to their post on every card and every page. The rest are written by Pixel Shine.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Are the prompts free to use?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes. Copying is free and needs no account. The licence lets you use them commercially as long as the author is credited — we do that here, and you should keep the credit if you republish one.",
-        },
-      },
-    ],
+    mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
   };
   const itemListLd = {
     "@context": "https://schema.org", "@type": "ItemList",
@@ -306,7 +299,7 @@ export default async function PromptsHub() {
               {[
                 { href: "/app/create", title: "Create Image", blurb: "Paste a prompt, add your photo, generate." },
                 { href: "/creative", title: "200 AI apps", blurb: "The same looks with the settings already chosen." },
-                { href: "/tools", title: "Free tools", blurb: "Upscale, crop, compress — no account, no credits." },
+                { href: "/tools", title: "Free tools", blurb: "Upscale, crop, compress: free, with no watermark." },
               ].map((t) => (
                 <Link key={t.href} href={t.href} className="jpt-hover" style={tile}>
                   <span style={{ display: "block", fontSize: 17, fontWeight: 800, color: "var(--text)" }}>{t.title}</span>
@@ -314,6 +307,17 @@ export default async function PromptsHub() {
                 </Link>
               ))}
             </div>
+          </section>
+
+          {/* ── FAQ: the same questions as the FAQPage data ─────────────── */}
+          <section style={{ marginTop: 56, maxWidth: 820 }}>
+            <H2>Prompt library questions</H2>
+            {faqs.map((f) => (
+              <details key={f.q} open style={{ borderTop: "1px solid var(--border)", padding: "14px 0" }}>
+                <summary style={{ cursor: "pointer", fontWeight: 800, color: "var(--text)", fontSize: 16 }}>{f.q}</summary>
+                <p style={{ margin: "8px 0 0", fontSize: 15.5, color: "var(--text-muted)", lineHeight: 1.75 }}>{f.a}</p>
+              </details>
+            ))}
           </section>
 
           {/* ── CREDIT ───────────────────────────────────────────────────── */}

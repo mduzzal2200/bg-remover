@@ -1,5 +1,7 @@
 import { seoJson, seoMeta } from "@/lib/seo/brand";
 import { brandedTitle } from "@/lib/seo/title";
+import { toolPage } from "@/lib/tool-pages";
+import AppArticle from "@/app/creative/[slug]/AppArticle";
 import GuidesBlock from "@/app/_components/GuidesBlock";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -12,35 +14,29 @@ const BASE = "https://www.sjpt.io";
 const URL = `${BASE}/qr-code-generator`;
 const GRAD = "linear-gradient(120deg,var(--accent),var(--accent-2))";
 
+/** The page's words: lib/tool-pages/qr-code-generator.ts. */
+const TP = toolPage("qr-code-generator")!;
+
 export const metadata: Metadata = seoMeta({
-  title: { absolute: brandedTitle("Free QR Code Generator — Create a QR Code Online | Pixel Shine") },
-  description:
-    "Free online QR code generator. Turn any link or text into a QR code and download it as a PNG or SVG — custom colours, no watermark, no sign-up, completely private.",
-  keywords:
-    "qr code generator, free qr code generator, create qr code, qr code maker online, generate qr code free, qr code png svg, custom qr code",
+  title: { absolute: brandedTitle(TP.title) },
+  description: TP.metaDescription,
+  keywords: TP.keywords,
   openGraph: {
-    title: "Free QR Code Generator — Create & Download QR Codes | Pixel Shine",
-    description: "Turn any link or text into a QR code and download PNG or SVG — free, custom colours, no sign-up.",
+    title: TP.title,
+    description: TP.metaDescription,
     url: URL,
     type: "website",
     siteName: "Pixel Shine",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free QR Code Generator | Pixel Shine",
-    description: "Create a QR code from any link or text and download it free — PNG or SVG, no sign-up.",
+    title: TP.title,
+    description: TP.metaDescription,
   },
   alternates: { canonical: URL },
 });
 
-const FAQS = [
-  { q: "Is this QR code generator free?", a: "Yes — completely free with no sign-up, no watermark and no limit on how many QR codes you create." },
-  { q: "Do the QR codes ever expire?", a: "No. These are static QR codes that encode your link or text directly, so they never expire and keep working forever." },
-  { q: "Can I download the QR code as an SVG?", a: "Yes. You can download a high-resolution PNG or a scalable SVG — SVG is ideal for print because it stays sharp at any size." },
-  { q: "Can I change the colours?", a: "Yes — pick any foreground and background colour. Keep good contrast (dark code on a light background) so scanners read it reliably." },
-  { q: "What can I put in a QR code?", a: "Any link (website, menu, form, social profile) or plain text — Wi-Fi details, contact info, a message, and more." },
-  { q: "Is my data private?", a: "Yes. Whatever you encode is never saved or shared." },
-];
+const FAQS = TP.faq;
 
 const appLd = {
   "@context": "https://schema.org", "@type": "SoftwareApplication",
@@ -79,7 +75,7 @@ export default function Page() {
                 Generator
               </h1>
               <p style={{ fontSize: "clamp(1rem,2vw,1.12rem)", color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 620, margin: "0 auto" }}>
-                Turn any link or text into a QR code and download it as a PNG or SVG. Custom colours, made in seconds — no watermark, no sign-up.
+                {TP.subtitle}
               </p>
             </div>
             <QrGenerator />
@@ -96,27 +92,9 @@ export default function Page() {
             style={{ width: "100%", height: "auto", display: "block", borderRadius: 18, border: "1px solid var(--border)", boxShadow: "0 18px 50px rgba(0,0,0,0.25)" }}
           />
         </section>
-        {/* HOW IT WORKS */}
-        <section style={{ padding: "56px 24px", background: "var(--surface)" }}>
-          <div style={{ maxWidth: 900, margin: "0 auto" }}>
-            <h2 style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 800, color: "var(--text)", margin: "0 0 32px", letterSpacing: "-0.02em", textAlign: "center" }}>
-              How to make a QR code
-            </h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 24 }}>
-              {[
-                { t: "Enter your link or text", d: "Paste a URL or type any text you want the QR code to open." },
-                { t: "Customise it", d: "Pick colours, size and error-correction to match your brand or print needs." },
-                { t: "Download", d: "Save a high-resolution PNG or a scalable SVG — free, no watermark." },
-              ].map((s, i) => (
-                <div key={i} style={{ background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 16, padding: "24px 22px" }}>
-                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: GRAD, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, marginBottom: 14 }}>{i + 1}</div>
-                  <h3 style={{ fontSize: 16, fontWeight: 800, color: "var(--text)", margin: "0 0 8px" }}>{s.t}</h3>
-                  <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.65, margin: 0 }}>{s.d}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+
+        {/* The article: lib/tool-pages */}
+        <AppArticle sections={TP.sections} />
 
         {/* PRICING (shared) */}
         <PricingSection toolName="QR Code Generator" />

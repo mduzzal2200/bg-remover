@@ -53,7 +53,7 @@ const page: AppPage = {
       heading: "What won't it do?",
       list: [
         "**Keep a serious face.** It's a cheerful style, so expect a smile.",
-        "**Write the words you want.** The background often includes a little sign or mug with a short phrase the AI chooses. You can't set it, so add your own text afterwards in the [free photo editor](/editor) if you need it.",
+        "**Write the words you want.** The background often includes a little sign or mug with a short phrase the AI chooses. You can't set it, so add your own text afterwards with the free [watermark tool](/watermark-image) or a design app if you need it.",
         "**Make a transparent sticker.** You get a picture with a background. To cut it out, run it through the [background remover](/remove-bg).",
         "**Draw in a specific artist's or show's style.** It has its own friendly style. For anime, Pixar-like or Ghibli looks, use those apps.",
       ],
@@ -87,22 +87,23 @@ const page: AppPage = {
     {
       heading: "What happens to your photo?",
       paragraphs: [
-        "It's sent to our image-model partner, fal.ai, to draw the cartoon, and to no one else. It's never used to train AI models or sold, and you own both your photo and the cartoon.",
-        "Your cartoons are saved in My Creations, where you can download or delete them at any time. You can also ask us to delete your account and everything in it.",
+        "Turning you into a cartoon happens on fal.ai's servers, the image-model service we work with; your photo isn't passed to anyone else. Cartoon or original, neither is fed into AI training or sold, and both belong to you.",
+        "You'll find every cartoon you've made in My Creations. Download one again whenever you need it, delete any of them, or ask us to close your account and erase the lot.",
       ],
     },
   ],
 
   faq: [
     { q: "How do I turn my photo into a cartoon?", a: "Upload a clear photo, choose a framing (Head & shoulders for an avatar) and press Generate. In under a minute you get a bright cartoon version of yourself." },
-    { q: "Is the cartoon generator free?", a: `Your account is free and needs no card. Each cartoon uses ${COST}; one-time credit packs start at ${PACK_FROM} and never expire. Where a free trial is running, the box above the upload says so and your first cartoon is free.` },
+    { q: "Is the cartoon generator free?", a: `Opening an account costs nothing. A cartoon is ${COST}, taken only after it's drawn; packs begin at ${PACK_FROM} and don't run out. If your country has a trial on, the note above the upload tells you.` },
     { q: "Will the cartoon still look like me?", a: "Yes, it keeps your hairstyle, clothes and pose and draws your features in a simpler way. If it drifts, set Strength to Subtle." },
     { q: "Can I make a cartoon of my family?", a: "Yes, with two or three people it works well. In bigger groups each face gets simpler, so crop to a few people at a time." },
     { q: "Why is my cartoon smiling when I wasn't?", a: "The style is drawn with a warm smile. Upload a photo where you're smiling for the most natural result." },
     { q: "Can I get a transparent background for a sticker?", a: "Run the cartoon through the background remover. It cuts you out of the scene and gives you a transparent PNG." },
     { q: "What's the difference between cartoon and anime?", a: "The cartoon style has bold outlines and flat, bright colour. The anime style is softer and more painterly, with expressive eyes. Try both on the same photo." },
     { q: "Can I use my cartoon for my business?", a: "Yes, the picture you download is yours to use on your website, cards or social media. Only upload photos you have the right to use." },
-    { q: "Do you watermark the download?", a: "No. The full-size cartoon downloads with no watermark." },
+    { q: "Can I turn a pet into a cartoon?", a: "Yes, pets often come out charming. For a painted or royal portrait of a pet, the pet portrait maker has dedicated styles." },
+    { q: "Do you watermark the download?", a: "Never. You get the cartoon at its full resolution, clean, to use as a profile picture or print." },
   ],
 };
 

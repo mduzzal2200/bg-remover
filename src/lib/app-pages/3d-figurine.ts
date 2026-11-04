@@ -67,7 +67,7 @@ const page: AppPage = {
     {
       heading: "What can't the action figure generator do yet?",
       list: [
-        "**Spell your name exactly.** It invents the box title from your photo and can't take typed text, and small print on the box can come out garbled. If you need your name on it, add it afterwards in the [free photo editor](/editor).",
+        "**Spell your name exactly.** It invents the box title from your photo and can't take typed text, and small print on the box can come out garbled. If you need your name on it, add it afterwards with the free [watermark tool](/watermark-image), which places a line of text in a corner or the centre.",
         "**Make several people into one set.** It's built for one figure. A group photo usually comes out as one figure or a muddle; run each person separately instead.",
         "**Make a 3D file.** You get a photo of a figure, not a model you can 3D print. A print shop would need a separate 3D model.",
         "**Copy a real brand's packaging.** It won't reproduce a toy company's logo, and you shouldn't try to sell the picture as an official product.",
@@ -105,7 +105,7 @@ const page: AppPage = {
     { q: "How do I make an action figure of myself?", a: "Upload a waist-up or full-body photo, choose a presentation (Base & box is the classic trend look) and press Generate. In under a minute you get a product-style photo of yourself as a boxed collectible." },
     { q: "Is the action figure generator free?", a: `Signing up is free and needs no card. Each figure uses ${COST}; one-time packs start at ${PACK_FROM} and the credits never expire. Where a free trial is running, the box above the upload shows it and your first figure is free.` },
     { q: "Can I get a real figure made from it?", a: "Not directly: you get a photo, not a 3D file. Some people take the picture to a 3D artist or a print-on-demand figure maker as a reference." },
-    { q: "Can I put my name on the box?", a: "Not inside the app. It writes its own title based on your photo. Add your name afterwards in the free photo editor, which has a text tool." },
+    { q: "Can I put my name on the box?", a: "Not inside the app. It writes its own title based on your photo. Add your name afterwards with the free watermark tool, which places a line of text where you choose." },
     { q: "Does it work for pets?", a: "It's made for people, so results with pets vary. A photo of you holding your pet works better: you become the figure and the pet often becomes an accessory." },
     { q: "Can I make a figure of a group or a couple?", a: "It's built for one figure per picture. For a couple, make two figures and place them side by side, or try the couple apps instead." },
     { q: "Is this the same as the Nano Banana figurine trend?", a: "Yes. That trend used Google's Nano Banana model to make a 1/7 scale figure on a clear base with a box behind it, which is what Base & box gives you. This app runs on Nano Banana Pro by default." },

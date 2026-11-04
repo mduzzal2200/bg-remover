@@ -2,6 +2,8 @@ import { seoMeta } from "@/lib/seo/brand";
 import { brandedTitle } from "@/lib/seo/title";
 import type { Metadata } from "next";
 import BlogIndex from "./_components/BlogIndex";
+import HubArticle from "@/app/_components/HubArticle";
+import blogHub from "@/lib/hub-pages/blog";
 
 export const metadata: Metadata = seoMeta({
   title: { absolute: brandedTitle("AI Photo Editing Guides & Tutorials | Pixel Shine") },
@@ -26,5 +28,5 @@ export const metadata: Metadata = seoMeta({
 export const revalidate = 300;
 
 export default function BlogIndexPage() {
-  return <BlogIndex page={1} />;
+  return <BlogIndex page={1} after={<HubArticle page={blogHub} />} />;
 }

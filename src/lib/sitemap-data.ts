@@ -117,6 +117,7 @@ export function toolsUrls(): SitemapUrl[] {
     { url: `${BASE}/watermark-remover` },
     { url: `${BASE}/object-remover` },
     { url: `${BASE}/group-photo` },
+    { url: `${BASE}/ai-image-generator` },
     { url: `${BASE}/invisible-watermark-remover` },
     ...CONVERSIONS.map((c) => ({ url: `${BASE}/convert/${c.slug}` })),
     ...COMPRESSIONS.map((c) => ({ url: `${BASE}/compress/${c.slug}` })),
@@ -139,7 +140,7 @@ export async function blogUrls(): Promise<SitemapUrl[]> {
   const posts = await editedPosts();
   return dated(dedupe([
     { url: `${BASE}/blog` },
-    ...posts.filter(blogIndexable).map((post) => ({ url: `${BASE}/blog/${post.slug}`, lastModified: post.date })),
+    ...posts.filter(blogIndexable).map((post) => ({ url: `${BASE}/blog/${post.slug}`, lastModified: post.updated ?? post.date })),
   ]));
 }
 

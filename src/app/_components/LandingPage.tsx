@@ -35,6 +35,17 @@ interface LandingPageProps {
   currentSlug?: string
   /** This page's path ("/remove-bg/product-photos"): the URL its structured data names. */
   path?: string
+  /**
+   * The page's own written article (lib/tool-pages, rendered on the server by
+   * ToolArticle). When it is there it replaces every block this component
+   * used to share between tools — the feature grid, the fixed three steps,
+   * the CTA band, the use-case cards, the comparison grid, the short SEO
+   * blocks and the About paragraphs — so the page reads as one article
+   * written for this tool, not a template.
+   */
+  article?: React.ReactNode
+  /** Alt text for the hero image(s), from the same tool page. */
+  alt?: { hero?: string; before?: string; after?: string }
 }
 
 const SITE_BASE = 'https://www.sjpt.io'
@@ -357,7 +368,7 @@ const PAGE_VISUALS: Record<string, { before: string; after: string; label: strin
   },
 }
 
-export default function LandingPage({ config, toolHref, pageId, isHome, relatedVariants, currentSlug, guides, path }: LandingPageProps) {
+export default function LandingPage({ config, toolHref, pageId, isHome, relatedVariants, currentSlug, guides, path, article, alt }: LandingPageProps) {
   // The signup trial, only where it is live for this visitor (lib/trial-offer).
   const trialOffer = useTrialOffer()
   // ── Structured data (rich results) ──────────────────────────────────────────
@@ -655,20 +666,20 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
           <div style={{ maxWidth: 820, margin: '56px auto 0', borderRadius: 24, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.16)', display: 'flex', position: 'relative', aspectRatio: '16 / 10' }}>
             <div style={{ flex: 1, position: 'relative' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={beforeAfter.before} alt={`${config.h1} — before (low resolution photo)`} loading="eager" decoding="async" style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(1.5px)', imageRendering: 'pixelated' }} />
+              <img src={beforeAfter.before} alt={alt?.before ?? `${config.h1} — before (low resolution photo)`} loading="eager" decoding="async" style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(1.5px)', imageRendering: 'pixelated' }} />
               <span style={{ position: 'absolute', bottom: 14, left: 14, padding: '6px 14px', background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', borderRadius: 8 }}>Low-Res Input</span>
             </div>
             <div style={{ width: 3, background: 'var(--surface)', flexShrink: 0 }} />
             <div style={{ flex: 1, position: 'relative' }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={beforeAfter.after} alt={`${config.h1} — after (free 4K enhanced result, no watermark)`} loading="eager" fetchPriority="high" decoding="async" style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={beforeAfter.after} alt={alt?.after ?? `${config.h1} — after (sharper, larger result)`} loading="eager" fetchPriority="high" decoding="async" style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
               <span style={{ position: 'absolute', bottom: 14, right: 14, padding: '6px 14px', background: 'rgba(255,106,26,0.40)', color: '#fff', fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', borderRadius: 8 }}>✨ 4K AI Upscaled</span>
             </div>
           </div>
         ) : heroImg ? (
           <div style={{ position: 'relative', maxWidth: 940, margin: '56px auto 0', borderRadius: 24, overflow: 'hidden', background: 'var(--surface)', padding: 10, boxShadow: '0 24px 80px var(--accent-soft)', border: '1px solid var(--accent-soft)' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={heroImg} alt={`${config.h1} — free online tool, no watermark (${visual.label})`} loading="eager" fetchPriority="high" decoding="async" width={1200} height={750} style={{ display: 'block', width: '100%', height: 'auto', borderRadius: 16 }} />
+            <img src={heroImg} alt={alt?.hero ?? `${config.h1} — example result (${visual.label})`} loading="eager" fetchPriority="high" decoding="async" width={1200} height={750} style={{ display: 'block', width: '100%', height: 'auto', borderRadius: 16 }} />
           </div>
         ) : (
           <div style={{ maxWidth: 820, margin: '56px auto 0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, borderRadius: 24, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.12)' }}>
@@ -686,7 +697,7 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
       </section>
 
       {/* ── "PERFECT FOR" CHIP BAR ───────────────────────────────────────── */}
-      <section style={{ background: 'var(--surface)', padding: '30px 24px 10px' }}>
+      {!article && <section style={{ background: 'var(--surface)', padding: '30px 24px 10px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--text)', marginRight: 4 }}>Perfect for</span>
           {({
@@ -774,10 +785,14 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
             </div>
           ))}
         </div>
-      </section>
+      </section>}
+
+      {/* The page's own article, when it has one: everything down to the
+          related links below is replaced by it. */}
+      {article}
 
       {/* ── FEATURES ─────────────────────────────────────────────────────── */}
-      {config.features?.length > 0 && (
+      {!article && config.features?.length > 0 && (
         <section style={{ padding: '88px 24px', background: 'var(--surface)' }}>
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -800,7 +815,7 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
       )}
 
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
-      <section style={{ padding: '88px 24px', background: 'linear-gradient(160deg, var(--surface-2) 0%, var(--accent-soft) 100%)' }}>
+      {!article && <section style={{ padding: '88px 24px', background: 'linear-gradient(160deg, var(--surface-2) 0%, var(--accent-soft) 100%)' }}>
         <div style={{ maxWidth: 960, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>How It Works</div>
@@ -821,10 +836,10 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ── UPLOAD CTA SECTION ───────────────────────────────────────────── */}
-      <section style={{ padding: '88px 24px', background: 'var(--surface)' }}>
+      {!article && <section style={{ padding: '88px 24px', background: 'var(--surface)' }}>
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <div style={{ background: 'linear-gradient(135deg,var(--surface-3),var(--bg-elevated))', borderRadius: 28, padding: '56px 48px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: -60, right: -60, width: 240, height: 240, background: 'radial-gradient(circle, rgba(255,106,26,0.40) 0%, transparent 70%)', pointerEvents: 'none' }} />
@@ -844,10 +859,10 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
             </div>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ── Use Cases ────────────────────────────────────────────────────── */}
-      {PAGE_USE_CASES[pageId] && (
+      {!article && PAGE_USE_CASES[pageId] && (
         <section style={{ padding: '80px 24px', background: 'var(--surface)' }}>
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: 48 }}>
@@ -871,7 +886,7 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
       )}
 
       {/* ── Comparison Table ─────────────────────────────────────────────── */}
-      {PAGE_COMPARISON[pageId] && (() => {
+      {!article && PAGE_COMPARISON[pageId] && (() => {
         const rows = PAGE_COMPARISON[pageId]
         const alt1 = rows[0].alt1name
         const alt2 = rows[0].alt2name
@@ -917,7 +932,7 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
       })()}
 
       {/* ── SEO Content ──────────────────────────────────────────────────── */}
-      {PAGE_SEO_CONTENT[pageId] && (
+      {!article && PAGE_SEO_CONTENT[pageId] && (
         <section style={{ padding: '80px 24px', background: 'var(--surface-2)' }}>
           <div style={{ maxWidth: 860, margin: '0 auto' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))', gap: 36, fontSize: 15, color: 'var(--text-muted)', lineHeight: 1.8 }}>
@@ -961,7 +976,7 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
             <div style={{ textAlign: 'center', marginBottom: 40 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>More Free Tools</div>
               <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 900, color: 'var(--text)', margin: '0 0 10px', letterSpacing: '-0.02em' }}>All your image tools in one place</h2>
-              <p style={{ fontSize: 16, color: 'var(--text-muted)', margin: 0 }}>100% free · No sign-up · No watermark · No install needed</p>
+              <p style={{ fontSize: 16, color: 'var(--text-muted)', margin: 0 }}>The browser tools are free with no watermark · the AI tools use credits</p>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14 }}>
               {FREE_TOOL_LINKS.filter(l => l.id !== pageId).map(l => (
@@ -971,7 +986,7 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
                   onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 2px 12px rgba(0,0,0,0.04)'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none'; }}>
                   <span style={{ fontSize: 30 }}>{l.icon}</span>
                   <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--text)', textAlign: 'center' }}>{l.title}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)' }}>Try free →</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)' }}>Open →</span>
                 </a>
               ))}
             </div>
@@ -986,7 +1001,7 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
           Editorial block. Gives the page a standalone, citable explanation of
           the tool — the signal answer engines look for, and the thing a
           feature grid alone never provides. */}
-      <section style={{ padding: '80px 24px', background: 'var(--surface-2)' }}>
+      {!article && <section style={{ padding: '80px 24px', background: 'var(--surface-2)' }}>
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>About</div>
           <h2 style={{ fontSize: 'clamp(1.6rem, 2.6vw, 2.1rem)', fontWeight: 900, color: 'var(--text)', margin: '0 0 18px', letterSpacing: '-0.02em' }}>
@@ -1000,7 +1015,7 @@ export default function LandingPage({ config, toolHref, pageId, isHome, relatedV
             expires or a monthly plan you can cancel any time. There is no watermark on anything you export.
           </p>
         </div>
-      </section>
+      </section>}
 
       {/* ── FAQ ──────────────────────────────────────────────────────────── */}
       {config.faq?.length > 0 && (

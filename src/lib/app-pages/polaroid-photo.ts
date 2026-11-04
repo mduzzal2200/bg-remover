@@ -46,7 +46,7 @@ const page: AppPage = {
       items: [
         { t: "Classic white", d: "A clean white instant-film frame with the wide border at the bottom. The look most people picture, and the best for posting." },
         { t: "Vintage", d: "An aged print: yellowed border, faded warm colour, the look of a photo found in a shoebox. Lovely for family photos and anything nostalgic." },
-        { t: "With a caption", d: "A white frame with a short handwritten caption in the bottom border. The app chooses the words, so treat it as a surprise; to write your own, use Classic white and add text in the [free photo editor](/editor)." },
+        { t: "With a caption", d: "A white frame with a short handwritten caption in the bottom border. The app chooses the words, so treat it as a surprise; to write your own, use Classic white and add a line in the bottom border with the free [watermark tool](/watermark-image) or a design app." },
       ],
       after: ["Use the 1:1 or 4:5 shape so the print and the table around it fill an Instagram post."],
     },
@@ -66,7 +66,7 @@ const page: AppPage = {
         "**Print it.** You get a picture of a print, not a physical photo. For a real print, upscale it in the [image upscaler](/upscale) and send it to a photo printer.",
         "**Keep the exact framing.** Instant film is nearly square, so a tall phone photo is cropped closer to fit.",
         "**Add other people.** It won't put you next to a celebrity or your younger self.",
-        "**Write the caption you choose.** With a caption writes its own words. Add yours afterwards with a text tool.",
+        "**Write the caption you choose.** With a caption writes its own words. Add yours afterwards with the free watermark tool or a design app.",
       ],
     },
     {
@@ -78,6 +78,15 @@ const page: AppPage = {
         { t: "Event invitations", d: "A print of the couple or the birthday person on an invite gives it a relaxed, retro feel." },
       ],
       after: ["Love retro? The [90s yearbook photo](/creative/90s-yearbook-photo) and the [Y2K aesthetic](/creative/y2k-aesthetic) are made for the same feed."],
+    },
+    {
+      heading: "How to make your instant print look even more real",
+      list: [
+        "**Pick an evening or indoor photo.** Flash-lit moments are what instant film was made for.",
+        "**Keep it simple.** One or two people and a few objects read best in a small square print.",
+        "**Post several together.** A row of three or four prints looks like a real stack of instant photos.",
+        "**Add a handwritten note.** Choose Classic white, then add a short note in the bottom border, with the free [watermark tool](/watermark-image) or in a design app with a handwriting-style font.",
+      ],
     },
     {
       heading: "What happens to your photo?",
@@ -93,7 +102,7 @@ const page: AppPage = {
     { q: "Is it free to use?", a: `Signing up is free and needs no card. Each print uses ${COST}; one-time credit packs start at ${PACK_FROM} and never expire. Where a free trial is running, the box above the upload says so and your first print is free.` },
     { q: "Can I make the Gemini Polaroid with a celebrity?", a: "No. This app turns your own photo into an instant print. It doesn't add celebrities or other people." },
     { q: "Will it still look like me?", a: "Yes. Faces are kept the same; only the film look, colours and frame change." },
-    { q: "Can I write my own caption?", a: "Not inside the app. Choose Classic white, then add your words to the bottom border in the free photo editor." },
+    { q: "Can I write my own caption?", a: "Not inside the app. Choose Classic white, then add your words to the bottom border with the free watermark tool or a design app." },
     { q: "Why is my photo cropped?", a: "Instant film is nearly square, so a tall phone photo is trimmed to fit the print. Keep the important part near the middle." },
     { q: "Is it a real Polaroid?", a: "No. It's a digital picture that looks like an instant-film print. PixelShine isn't connected to the Polaroid brand." },
     { q: "Can I print it?", a: "Yes. Upscale it first in the image upscaler, then print it like any photo." },

@@ -4,6 +4,9 @@ import GuidesBlock from "@/app/_components/GuidesBlock";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import LandingPage from "@/app/_components/LandingPage";
+import AppArticle from "@/app/creative/[slug]/AppArticle";
+import { withToolPage } from "@/lib/tool-pages";
+import { variantPage } from "@/lib/tool-pages/variants";
 import { toolShareImages } from "@/lib/landing-images";
 import {
   getVariant,
@@ -25,13 +28,18 @@ async function generateMetadataBase({ params }: { params: Promise<{ slug: string
   const v = getVariant(PARENT, slug);
   if (!v) return {};
   const url = `${BASE}${PARENT_META[PARENT].base}/${slug}`;
+  // The page's own article (lib/tool-pages/variants) supplies its words.
+  const tp = variantPage(PARENT, slug);
+  const title = tp?.title ?? v.title;
+  const description = tp?.metaDescription ?? v.metaDescription;
+  const h1 = tp?.h1 ?? v.h1;
   return {
-    title: { absolute: brandedTitle(v.title) },
-    description: v.metaDescription,
-    keywords: v.keywords,
+    title: { absolute: brandedTitle(title) },
+    description,
+    keywords: tp?.keywords ?? v.keywords,
     alternates: { canonical: url },
-    openGraph: { title: v.h1, description: v.metaDescription, url, images: toolShareImages(PARENT_PAGE_ID[PARENT]) },
-    twitter: { card: "summary_large_image", title: v.h1, description: v.metaDescription },
+    openGraph: { title: h1, description, url, images: toolShareImages(PARENT_PAGE_ID[PARENT]) },
+    twitter: { card: "summary_large_image", title: h1, description },
   };
 }
 
@@ -40,12 +48,13 @@ export default async function VariantPage({ params }: { params: Promise<{ slug: 
   const v = getVariant(PARENT, slug);
   if (!v) notFound();
 
-  const config = variantToConfig(v);
+  const tp = variantPage(PARENT, slug);
+  const config = withToolPage(variantToConfig(v), tp);
   const relatedVariants = variantsFor(PARENT).map((x) => ({ slug: x.slug, h1: x.h1, href: `${PARENT_META[PARENT].base}/${x.slug}` }));
 
   return (
     <>
-      <LandingPage path={`/remove-bg/${slug}`} guides={<GuidesBlock path={`/remove-bg/${slug}`} />} config={config} toolHref={PARENT_META[PARENT].toolHref} pageId={PARENT_PAGE_ID[PARENT]} relatedVariants={relatedVariants} currentSlug={slug} />
+      <LandingPage article={tp && <AppArticle sections={tp.sections} />} alt={tp?.alt} path={`/remove-bg/${slug}`} guides={<GuidesBlock path={`/remove-bg/${slug}`} />} config={config} toolHref={PARENT_META[PARENT].toolHref} pageId={PARENT_PAGE_ID[PARENT]} relatedVariants={relatedVariants} currentSlug={slug} />
     </>
   );
 }

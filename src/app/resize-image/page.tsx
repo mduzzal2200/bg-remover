@@ -2,12 +2,13 @@ import { withSeoMeta } from "@/lib/seo/brand";
 import { brandedTitle } from "@/lib/seo/title";
 import GuidesBlock from "@/app/_components/GuidesBlock";
 import { Metadata } from 'next'
-import { getPageConfig } from '@/lib/page-config'
+import { toolConfig, toolPage } from '@/lib/tool-pages'
+import AppArticle from '@/app/creative/[slug]/AppArticle'
 import { toolShareImages } from '@/lib/landing-images'
 import LandingPage from '../_components/LandingPage'
 
 async function generateMetadataBase(): Promise<Metadata> {
-  const config = await getPageConfig('resize-image')
+  const config = await toolConfig('resize-image')
   return {
     title: { absolute: brandedTitle(config.title) },
     description: config.meta_description,
@@ -29,11 +30,12 @@ async function generateMetadataBase(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  const config = await getPageConfig('resize-image')
+  const config = await toolConfig('resize-image')
+  const tp = toolPage('resize-image')
 
   return (
     <>
-      <LandingPage path="/resize-image" guides={<GuidesBlock path="/resize-image" />} config={config} toolHref="/editor?tool=resize" pageId="resize-image" />
+      <LandingPage article={tp && <AppArticle sections={tp.sections} />} alt={tp?.alt} path="/resize-image" guides={<GuidesBlock path="/resize-image" />} config={config} toolHref="/editor?tool=resize" pageId="resize-image" />
     </>
   )
 }

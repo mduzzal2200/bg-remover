@@ -19,6 +19,7 @@ const retiredPages = {
   '/ai/photo-editor': '/ai-editor',
   '/ai/background-changer': '/creative/background-changer',
   '/ai/photo-enhancer': '/upscale',
+  '/ai/ai-photo-generator': '/ai-image-generator',
   '/answers': '/guides',
   '/answers/remove-background-from-photo': '/remove-bg',
   '/answers/change-background-of-product-photo': '/remove-bg/product-photos',
@@ -28,7 +29,8 @@ const retiredPages = {
   '/answers/make-instagram-profile-picture': '/creative/instagram-pfp-maker',
   '/answers/make-professional-headshot-from-selfie': '/creative/professional-headshot',
   '/answers/make-youtube-thumbnail-from-photo': '/creative/youtube-thumbnail-generator',
-  '/answers/remove-object-from-photo': '/ai-editor/remove-object',
+  '/answers/remove-object-from-photo': '/object-remover',
+  '/ai-editor/remove-object': '/object-remover',
   '/answers/restore-old-photo': '/creative/restore-old-photos',
 };
 

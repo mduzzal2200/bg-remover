@@ -24,7 +24,12 @@ function fmtDur(s: number) {
   return `${m}:${sec}`;
 }
 
-export default function VideoWatermarkRemover() {
+/**
+ * The page passes its written article and FAQ (lib/tool-pages): the article
+ * replaces the old how-it-works and "why choose" blocks, and the FAQ shown
+ * here is the same list the page's FAQPage structured data is built from.
+ */
+export default function VideoWatermarkRemover({ article, faqs, subtitle }: { article?: React.ReactNode; faqs?: { q: string; a: string }[]; subtitle?: string } = {}) {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -76,7 +81,7 @@ export default function VideoWatermarkRemover() {
             Free TikTok <span style={{ background: GRAD, WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent", color: "transparent" }}>Watermark Remover</span>
           </h1>
           <p style={{ fontSize: "clamp(1rem,2vw,1.15rem)", color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 560, margin: "0 auto 34px" }}>
-            Paste a TikTok link and download the video <strong>without the watermark</strong> in HD — free, no app, no sign-up.
+            {subtitle ?? <>Paste a TikTok link and download the video <strong>without the watermark</strong> in HD — free, no app, no sign-up.</>}
           </p>
 
           {/* Paste box */}
@@ -155,6 +160,7 @@ export default function VideoWatermarkRemover() {
       </section>
 
       {/* HOW IT WORKS */}
+      {article ?? (
       <section style={{ padding: "72px 24px", background: "var(--surface)" }}>
         <div style={{ maxWidth: 960, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 48 }}>
@@ -176,6 +182,7 @@ export default function VideoWatermarkRemover() {
           </div>
         </div>
       </section>
+      )}
 
       {/* FEATURES / trust */}
       <section style={{ padding: "0 24px 40px", background: "var(--surface)" }}>
@@ -198,7 +205,9 @@ export default function VideoWatermarkRemover() {
         </p>
       </section>
 
-      {/* WHY BEST */}
+      {/* WHY BEST / WHY CHOOSE — only without the page's own article */}
+      {!article && (
+        <>
       <section style={{ padding: "72px 24px", background: "linear-gradient(135deg,var(--surface-3),var(--bg-elevated))" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 12 }}>
@@ -222,8 +231,6 @@ export default function VideoWatermarkRemover() {
           </div>
         </div>
       </section>
-
-      {/* WHY CHOOSE */}
       <section style={{ padding: "72px 24px", background: "linear-gradient(135deg,var(--surface-3),var(--bg-elevated))" }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: 12 }}>
@@ -248,6 +255,8 @@ export default function VideoWatermarkRemover() {
           </div>
         </div>
       </section>
+        </>
+      )}
 
       {/* FAQ */}
       <section style={{ padding: "40px 24px 88px", background: "var(--surface-2)" }}>
@@ -256,14 +265,14 @@ export default function VideoWatermarkRemover() {
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 12 }}>FAQ</div>
             <h2 style={{ fontSize: "clamp(1.7rem,3vw,2.1rem)", fontWeight: 900, color: "var(--text)", margin: 0, letterSpacing: "-0.02em" }}>Frequently asked questions</h2>
           </div>
-          {[
+          {(faqs ?? [
             { q: "Is the TikTok watermark remover free?", a: "Yes — it's completely free with no sign-up, no app, and no limit on how many videos you download." },
             { q: "Does it remove the TikTok logo and username?", a: "It fetches the original, clean version of the video without the moving TikTok watermark and username overlay." },
             { q: "Can I download in HD?", a: "Yes. When an HD source is available you'll see an HD button; otherwise the standard no-watermark MP4 is provided." },
             { q: "Can I download just the sound?", a: "Yes — use the Audio (MP3) button to save just the track from the video." },
             { q: "Do I need to install anything?", a: "No. Paste the link and download — nothing to install, works on phone and computer." },
             { q: "Is it legal?", a: "Downloading is a personal-use convenience. Always respect the creator's rights and TikTok's terms — only reuse videos you have permission to use, and credit the creator." },
-          ].map((f) => (
+          ]).map((f) => (
             <details key={f.q} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "14px 18px", marginBottom: 10 }}>
               <summary style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", cursor: "pointer" }}>{f.q}</summary>
               <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.7, margin: "10px 0 0" }}>{f.a}</p>

@@ -2,13 +2,14 @@ import { withSeoMeta } from "@/lib/seo/brand";
 import { brandedTitle } from "@/lib/seo/title";
 import GuidesBlock from "@/app/_components/GuidesBlock";
 import { Metadata } from 'next'
-import { getPageConfig } from '@/lib/page-config'
+import { toolConfig, toolPage } from '@/lib/tool-pages'
+import AppArticle from '@/app/creative/[slug]/AppArticle'
 import { toolShareImages } from '@/lib/landing-images'
 import LandingPage from '../_components/LandingPage'
 import { variantsFor, PARENT_META } from '@/lib/landing-variants'
 
 async function generateMetadataBase(): Promise<Metadata> {
-  const config = await getPageConfig('upscale')
+  const config = await toolConfig('upscale')
   return {
     title: { absolute: brandedTitle(config.title) },
     description: config.meta_description,
@@ -30,12 +31,13 @@ async function generateMetadataBase(): Promise<Metadata> {
 }
 
 export default async function UpscalePage() {
-  const config = await getPageConfig('upscale')
+  const config = await toolConfig('upscale')
+  const tp = toolPage('upscale')
   const relatedVariants = variantsFor('upscale').map(v => ({ slug: v.slug, h1: v.h1, href: `${PARENT_META['upscale'].base}/${v.slug}` }))
 
   return (
     <>
-      <LandingPage path="/upscale" guides={<GuidesBlock path="/upscale" />} config={config} toolHref="/editor?tool=upscale" pageId="upscale" relatedVariants={relatedVariants} />
+      <LandingPage article={tp && <AppArticle sections={tp.sections} />} alt={tp?.alt} path="/upscale" guides={<GuidesBlock path="/upscale" />} config={config} toolHref="/editor?tool=upscale" pageId="upscale" relatedVariants={relatedVariants} />
     </>
   )
 }

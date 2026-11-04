@@ -2,12 +2,13 @@ import { withSeoMeta } from "@/lib/seo/brand";
 import { brandedTitle } from "@/lib/seo/title";
 import GuidesBlock from "@/app/_components/GuidesBlock";
 import { Metadata } from 'next'
-import { getPageConfig } from '@/lib/page-config'
+import { toolConfig, toolPage } from '@/lib/tool-pages'
+import AppArticle from '@/app/creative/[slug]/AppArticle'
 import { toolShareImages } from '@/lib/landing-images'
 import LandingPage from '../_components/LandingPage'
 
 async function generateMetadataBase(): Promise<Metadata> {
-  const config = await getPageConfig('meme-generator')
+  const config = await toolConfig('meme-generator')
   return {
     title: { absolute: brandedTitle(config.title) },
     description: config.meta_description,
@@ -29,11 +30,12 @@ async function generateMetadataBase(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  const config = await getPageConfig('meme-generator')
+  const config = await toolConfig('meme-generator')
+  const tp = toolPage('meme-generator')
 
   return (
     <>
-      <LandingPage path="/meme-generator" guides={<GuidesBlock path="/meme-generator" />} config={config} toolHref="/editor?tool=meme" pageId="meme-generator" />
+      <LandingPage article={tp && <AppArticle sections={tp.sections} />} alt={tp?.alt} path="/meme-generator" guides={<GuidesBlock path="/meme-generator" />} config={config} toolHref="/editor?tool=meme" pageId="meme-generator" />
     </>
   )
 }

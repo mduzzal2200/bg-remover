@@ -89,29 +89,30 @@ const page: AppPage = {
       paragraphs: [
         "Anime pictures of two people are some of the most shared, for anniversaries, best-friend birthdays and matching profile pictures. A few things make them work.",
         "Use one photo with both of you close together, faces similar in size and both clearly lit. A selfie works well. Set Framing to Half body so both of you fit and your poses show, and leave Strength on Auto so both faces stay recognisable.",
-        "For matching profile pictures, make the couple picture first, then crop each person out of it in the [free photo editor](/editor). Because they come from the same drawing, the style, colours and light match perfectly, which separate pictures never quite do.",
+        "For matching profile pictures, make the couple picture first, then crop each person out of it in your phone's or computer's photo app, which lets you choose exactly where to crop. Because they come from the same drawing, the style, colours and light match perfectly, which separate pictures never quite do.",
         "If the app simplifies one face more than the other, run it again: the two of you are drawn a little differently each time.",
       ],
     },
     {
       heading: "What happens to your photo?",
       paragraphs: [
-        "It's sent to our image-model partner, fal.ai, to draw the illustration, and nowhere else. It's never used to train AI models and never sold, and both the photo and the illustration are yours.",
-        "Your illustrations are saved in My Creations. Download or delete them whenever you like, or ask us to delete your account and everything in it.",
+        "To redraw you in anime style, the photo travels to fal.ai, whose servers run our image models, and stops there. We don't hand it on, sell it or let it train any model, and the drawing is yours to keep.",
+        "Your anime portraits collect in My Creations. Pick one to download again, remove the ones you don't want, or ask us to wipe your account entirely.",
       ],
     },
   ],
 
   faq: [
     { q: "How do I turn my photo into anime?", a: "Upload a clear photo, choose a framing and a strength, and press Generate. You get an anime illustration of you, in your own scene, in under a minute." },
-    { q: "Is the photo to anime converter free?", a: `Making an account is free and needs no card. Each illustration uses ${COST}; one-time credit packs start at ${PACK_FROM} and never expire. Where a free trial is running, the box above the upload says so and your first one is free.` },
+    { q: "Is the photo to anime converter free?", a: `Signing up is free, no card needed. Each anime portrait takes ${COST} once it's finished, never for a failed run. Packs from ${PACK_FROM} keep their credits for good, and any trial running where you live is shown above the upload.` },
     { q: "Will it still look like me?", a: "Yes, it keeps your hairstyle, outfit and pose, and draws your face in anime proportions. For a closer likeness, set Strength to Subtle." },
     { q: "What's the difference between this and the Ghibli filter?", a: "Anime is modern and glowy with clean line art and keeps your real scene. Ghibli style is hand-painted, with watercolour skies and storybook backgrounds." },
     { q: "Can I make an anime profile picture?", a: "Yes. Set Framing to Head & shoulders and the shape to 1:1. Faces read best at small sizes that way." },
     { q: "Does it work with two people?", a: "Yes, couples and pairs of friends work well. With larger groups, faces get more generic." },
     { q: "Can I print it?", a: "Yes. For a large print, upscale it first in the image upscaler." },
     { q: "Can I choose a specific anime's style?", a: "No. It draws in a general modern-anime style and won't copy a particular series or its characters." },
-    { q: "Is there a watermark?", a: "No. The download is full size, with no watermark." },
+    { q: "Can I make a matching anime set with friends?", a: "Yes. Use the same framing and strength for each person's photo, and the portraits will look like characters from the same show." },
+    { q: "Is there a watermark?", a: "No mark of any kind: your anime picture downloads at the size it was drawn." },
   ],
 };
 

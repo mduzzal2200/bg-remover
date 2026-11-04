@@ -89,22 +89,23 @@ const page: AppPage = {
     {
       heading: "What happens to your photo?",
       paragraphs: [
-        "Your selfie is sent to our image-model partner, fal.ai, to make the portrait, and nowhere else. It isn't used to train AI models and is never sold, and you own both the selfie and the portrait.",
-        "Your portraits are saved in My Creations, so you can download them again. Delete any of them there at any time, or ask us to delete your account and everything in it.",
+        "Your selfie goes to fal.ai, the image-model company behind the portrait, for as long as it takes to make it. It isn't shared beyond that, isn't used to teach any AI and is never sold; the selfie and the glamour shot both stay yours.",
+        "Portraits are kept in My Creations, ready to download again. Delete a single one there whenever you like, or ask us to remove your whole account.",
       ],
     },
   ],
 
   faq: [
     { q: "How do I make an Old Hollywood glamour portrait?", a: "Upload a clear selfie and press Generate. The app adds 1950s formalwear, period hair and dramatic studio light. Choose Moody lighting for the most dramatic version." },
-    { q: "Is it free?", a: `Your account is free and needs no card. Each portrait uses ${COST}; one-time credit packs start at ${PACK_FROM} and never expire. Where a free trial is running, the box above the upload says so and your first portrait is free.` },
+    { q: "Is it free?", a: `The account is free. A glamour portrait costs ${COST}, deducted only when it appears; credit packs start at ${PACK_FROM} and stay valid. Where a trial is live, the box over the upload mentions it and the first portrait is on us.` },
     { q: "Will it still look like me?", a: "Yes. Your face and identity are kept exactly the same. Clothes, hair styling, light and background are what change." },
     { q: "Can I get it in colour?", a: "The classic look is black and white or sepia. For colour, open your result in the AI photo editor and ask it to colour the photo." },
     { q: "Does it work for men?", a: "Yes. Men are dressed in a dinner jacket and bow tie with slicked, parted hair, the classic leading-man portrait." },
     { q: "What is Hollywood glamour lighting?", a: "A hard light from high in front of the face, often called butterfly or Paramount lighting, with deep shadows around it. The Moody option gets closest." },
     { q: "Can I choose the outfit?", a: "Not in this app. It picks period formalwear for you. To describe a specific outfit, use the AI photo editor." },
     { q: "Can I print it?", a: "Yes. Black and white prints beautifully. For anything larger than A4, upscale it first in the image upscaler." },
-    { q: "Is there a watermark?", a: "No. The full-size portrait downloads with no watermark." },
+    { q: "Is it good for a framed print?", a: "Yes. Studio-style monochrome portraits suit frames well. Enlarge it 2× with the image upscaler, then print at 8 × 10 inches." },
+    { q: "Is there a watermark?", a: "No. The black-and-white portrait downloads at full resolution, ready to frame." },
   ],
 };
 

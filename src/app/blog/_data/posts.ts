@@ -5,6 +5,8 @@ export interface BlogPost {
   metaDescription: string;
   excerpt: string;
   date: string;
+  /** When the copy was last rewritten (dateModified, sitemap lastmod); defaults to `date`. */
+  updated?: string;
   readTime: string;
   category: string;
   keywords: string[];
@@ -16,6 +18,7 @@ export interface BlogPost {
 }
 
 import { blogImageUrl } from "@/lib/blog-images";
+import { withRewrite } from "./rewrites";
 import { UPSCALE_POSTS } from "./upscale-posts";
 import { UPSCALE_FREE_POSTS } from "./upscale-free-posts";
 import { UPSCALE_FREE_POSTS_2 } from "./upscale-free-posts-2";
@@ -192,8 +195,7 @@ Ready to cut out your first image? Head to Pixel Shine, open the Remove Backgrou
     slug: "ai-image-upscaler-enhance-photo-quality",
     title: "AI Image Upscaler: Enhance Any Photo to 4K Quality",
     metaTitle: "AI Image Upscaler — Enhance Photo Quality Online | Pixel Shine",
-    metaDescription:
-      "Upscale images to 2× or 4× resolution without losing quality. AI super-resolution sharpens details, reduces noise, and recovers fine texture from any photo.",
+    metaDescription: "Upscale images 2x or 4x without losing quality: AI super-resolution sharpens detail, reduces noise and recovers fine texture in any photo.",
     excerpt:
       "Traditional upscaling just stretches pixels — AI upscaling predicts and reconstructs real detail. Here's everything you need to know about getting sharper, larger images.",
     date: "2025-06-05",
@@ -1519,7 +1521,7 @@ Try Pixel Shine Upscaler Free →`,
     slug: "upscale-images-social-media-instagram-linkedin",
     title: "How to Upscale Images for Social Media: Instagram, LinkedIn & Beyond",
     metaTitle: "Upscale Images for Instagram, LinkedIn & Social Media | Pixel Shine",
-    metaDescription: "Social media platforms compress your images on upload. Learn the optimal resolution for each platform and how AI upscaling ensures your images always look sharp.",
+    metaDescription: "Social networks compress what you upload. The best resolution for each platform, and how AI upscaling keeps your posts and profile photos sharp.",
     excerpt: "Instagram, LinkedIn, and Facebook all compress your images on upload. Starting at higher resolution is the only way to counteract this — here's how.",
     date: "2025-06-20",
     readTime: "11 min read",
@@ -2272,7 +2274,7 @@ Upscale Your Profile Photo →`,
     slug: "upscale-real-estate-photos-property-listings",
     title: "How to Upscale Real Estate Photos for Property Listings (Get More Enquiries)",
     metaTitle: "Upscale Real Estate Photos for Property Listings | Pixel Shine",
-    metaDescription: "High-resolution property photos generate more enquiries and faster sales. Learn how AI upscaling improves real estate photos for Zillow, Rightmove, and more.",
+    metaDescription: "Sharper property photos get more enquiries. How AI upscaling improves real estate photos for listing sites like Zillow and Rightmove.",
     excerpt: "Property listings with high-resolution photos generate 2× more enquiries. If your real estate images are small or blurry, AI upscaling is the fastest fix.",
     date: "2025-07-04",
     readTime: "11 min read",
@@ -3962,7 +3964,7 @@ Start from the largest source you have, match the scale factor to the image size
     slug: "photo-resolution-increaser-free",
     title: "Free Photo Resolution Increaser — AI Tool That Actually Works",
     metaTitle: "Photo Resolution Increaser Free | Pixel Shine",
-    metaDescription: "Use Pixel Shine as a free photo resolution increaser. AI super-resolution enlarges your photos 2× or 4× with sharp detail — no watermark, no software needed.",
+    metaDescription: "Increase photo resolution online: enlarge photos 2x free in your browser, or 4x with Pro AI detail. No watermark and no software needed.",
     excerpt: "A free photo resolution increaser that works — Pixel Shine uses AI super-resolution to enlarge images while genuinely improving sharpness and detail.",
     date: "2025-08-28",
     readTime: "11 min read",
@@ -4117,7 +4119,7 @@ Instead of stretching pixels into a blur, it reconstructs real detail so your ph
     slug: "make-image-clearer-online-free",
     title: "Make Your Image Clearer Online for Free — AI Clarity Tool",
     metaTitle: "Make Image Clearer Online Free | Pixel Shine",
-    metaDescription: "Make any image clearer online for free with Pixel Shine. AI-powered clarity enhancement sharpens detail and removes blur in seconds — no software, no watermark.",
+    metaDescription: "Make a blurry or soft image clearer online: free 2x sharpening in your browser, or Pro AI that rebuilds detail. No software and no watermark.",
     excerpt: "Making an image clearer is about more than just sharpening edges. Pixel Shine\'s AI clarity tool reconstructs detail, reduces noise, and enhances overall image quality for free.",
     date: "2025-09-05",
     readTime: "11 min read",
@@ -4429,7 +4431,7 @@ Pixel Shine puts all of this within reach for free, with unlimited watermark-fre
     slug: "upscale-image-without-losing-quality-free",
     title: "Upscale Images Without Losing Quality for Free — AI Guide",
     metaTitle: "Upscale Image Without Losing Quality Free | Pixel Shine",
-    metaDescription: "Learn how to upscale images without losing quality for free. Pixel Shine uses AI super-resolution to enlarge photos with sharp, natural detail — no watermark.",
+    metaDescription: "How to upscale images without losing quality: free 2x browser upscaling, or AI super-resolution for sharp, natural detail. No watermark.",
     excerpt: "The biggest challenge in upscaling images is preserving quality. Pixel Shine solves this with AI super-resolution that actually improves quality while enlarging your images.",
     date: "2025-09-22",
     readTime: "11 min read",
@@ -4586,7 +4588,7 @@ Whether you're preparing portraits, product photos, prints, or precious memories
     slug: "best-free-ai-photo-enhancer-2025",
     title: "Best Free AI Photo Enhancer Tools, Ranked and Reviewed",
     metaTitle: "Best Free AI Photo Enhancer Tools | Pixel Shine",
-    metaDescription: "Discover the best free AI photo enhancer tools of 2025. We rank and review top options including Pixel Shine — the top pick for no-watermark free enhancement.",
+    metaDescription: "The best free AI photo enhancers compared: what each does well, its limits and catches, and when a paid AI upscale is worth it.",
     excerpt: "2025 has brought an explosion of AI photo enhancement tools. We rank the best free options — and explain why Pixel Shine tops the list for watermark-free, high-quality results.",
     date: "2025-10-01",
     readTime: "11 min read",
@@ -5053,7 +5055,7 @@ Enhance above marketplace minimums, keep your catalog consistent, and pair enhan
     slug: "ai-photo-restoration-free-online",
     title: "AI Photo Restoration Free Online — Bring Old and Damaged Photos Back",
     metaTitle: "AI Photo Restoration Free Online | Pixel Shine",
-    metaDescription: "Restore old and damaged photos online for free with Pixel Shine. AI removes scratches, grain, and blur from vintage photos — no software, no watermark needed.",
+    metaDescription: "Restore old and damaged photos online with AI: remove scratches, spots, grain and fading from vintage prints. No software and no watermark.",
     excerpt: "Old and damaged photos can be beautifully restored using AI. Pixel Shine offers free online photo restoration that removes grain, sharpens detail, and revives faded memories.",
     date: "2025-11-01",
     readTime: "11 min read",
@@ -5449,7 +5451,7 @@ Whether you're crafting 4K wallpapers, prepping large prints, or filling ultra-H
     slug: "enhance-portrait-photos-ai-free",
     title: "Enhance Portrait Photos with AI for Free — Sharper, More Detailed Results",
     metaTitle: "Enhance Portrait Photos AI Free | Pixel Shine",
-    metaDescription: "Enhance portrait photos with AI for free using Pixel Shine. Sharpen facial detail, reduce noise, and upscale portrait images — no watermark, no software required.",
+    metaDescription: "Enhance portrait photos with AI: sharpen facial detail, reduce noise and upscale small portraits, with no watermark and no software to install.",
     excerpt: "Portrait photos need special treatment — too much sharpening and skin looks unnatural; too little and the subject looks soft. Pixel Shine\'s AI portrait enhancement gets the balance right, for free.",
     date: "2025-12-01",
     readTime: "11 min read",
@@ -6871,7 +6873,7 @@ Ready to reinvent your photos' backgrounds? Head to Pixel Shine, upload your ima
     readTime: "11 min read",
     category: "Tutorial",
     keywords: ["remove object from photo free", "ai object remover", "erase people from photo", "remove unwanted object online free"],
-    toolHref: "/ai-editor/remove-object",
+    toolHref: "/object-remover",
     toolLabel: "Remove Object Free →",
         sections: [
       {
@@ -8603,8 +8605,7 @@ Pixel Shine makes this free, unlimited, and watermark-free, with no sign-up for 
     slug: "turn-photo-into-funko-pop-ai",
     title: "Turn Your Photo into a Funko Pop Figure with AI",
     metaTitle: "Turn Photo into Funko Pop AI — Free Online | Pixel Shine",
-    metaDescription:
-      "Turn any selfie into a Funko Pop vinyl figure in seconds using AI. No design skills needed — just upload your photo and get a hyper-detailed Funko Pop portrait instantly.",
+    metaDescription: "Turn a selfie into a Funko Pop-style vinyl figure with AI: big head, boxed figure look, made in seconds. Upload a photo, no design skills needed.",
     excerpt:
       "Funko Pop figures have become one of the biggest pop culture phenomena of the last decade. Now you can turn any photo of yourself — or anyone — into a hyper-realistic Funko Pop portrait using AI, in seconds.",
     date: "2025-07-01",
@@ -9485,8 +9486,7 @@ Pixel Shine makes the whole experience simple, with no download, no subscription
     slug: "ai-prom-photo-maker-free",
     title: "AI Prom Photo Maker: Get Stunning Prom Portraits Without the Studio",
     metaTitle: "AI Prom Photo Maker Free Online — Stunning Portraits | Pixel Shine",
-    metaDescription:
-      "Create stunning AI prom photos online for free. Upload your photo and get a gorgeous prom portrait — elegant dress, perfect lighting, dreamy background — in seconds.",
+    metaDescription: "Make an AI prom photo from your selfie: an elegant outfit, flattering light and a dreamy setting, with your face kept recognisable. Try it online.",
     excerpt:
       "Professional prom photography is expensive and you only get one shot. AI prom photo makers let you create stunning prom portraits before the big night — or turn any casual photo into a prom-worthy portrait anytime.",
     date: "2025-07-13",
@@ -9783,8 +9783,7 @@ Pixel Shine makes the whole experience simple, with no download, no subscription
     slug: "pixel-art-avatar-maker-ai-free",
     title: "AI Pixel Art Avatar Maker: Turn Your Photo into Pixel Art",
     metaTitle: "AI Pixel Art Avatar Maker — Turn Photo into Pixel Art Free | Pixel Shine",
-    metaDescription:
-      "Convert any photo into a detailed pixel art avatar with AI. 8-bit retro game style, vibrant colours, your actual face — free online, no design skill needed.",
+    metaDescription: "Turn a photo into a pixel art avatar with AI: 8-bit retro game style and bright colours, with your face still recognisable. No design skills needed.",
     excerpt:
       "Pixel art has gone from retro gaming nostalgia to one of the most celebrated digital art styles in the world. AI can turn any selfie into a detailed, vibrant pixel art avatar that actually looks like you.",
     date: "2025-07-17",
@@ -10551,8 +10550,7 @@ Try it now — Enhance Photo Free → at Pixel Shine.`,
     slug: "upscale-photo-for-printing-free",
     title: "How to Upscale a Photo for Printing — Free AI Guide",
     metaTitle: "Upscale Photo for Printing Free — AI Super-Resolution Guide | Pixel Shine",
-    metaDescription:
-      "How to upscale any photo for printing without losing quality. AI super-resolution makes digital photos print-ready at A4, A3, canvas, and poster sizes — free.",
+    metaDescription: "Upscale a photo for printing without losing quality: AI super-resolution makes digital photos print-ready at A4, A3, canvas and poster sizes.",
     excerpt:
       "Print quality depends on resolution. Most digital photos need to be significantly larger before they'll print cleanly at A3 or above. AI upscaling solves this — and the basic version is completely free.",
     date: "2025-07-27",
@@ -10713,8 +10711,7 @@ Calculate your target pixels, pick the right scale, inspect at 100% zoom, and pr
     slug: "ai-saree-photoshoot-filter",
     title: "AI Saree Photoshoot: Transform Any Photo into a Traditional Indian Portrait",
     metaTitle: "AI Saree Photoshoot Filter Free Online | Pixel Shine",
-    metaDescription:
-      "Transform any photo into a beautiful AI saree photoshoot portrait. Traditional Indian attire, vibrant colours, professional studio lighting — free to try online.",
+    metaDescription: "Turn a photo into an AI saree portrait: traditional drapes, rich colours and studio light, with your face kept recognisable. Try it online.",
     excerpt:
       "A saree portrait photoshoot with professional lighting and traditional styling can cost hundreds. AI puts that same result within reach from any clear photo — no studio, no costume, no photographer needed.",
     date: "2025-07-29",
@@ -10867,8 +10864,7 @@ See yourself draped in timeless elegance. Try AI Saree Photoshoot → at Pixel S
     slug: "ai-anime-style-photo-filter-free",
     title: "Turn Any Photo into Anime Art with AI — Free Online",
     metaTitle: "AI Anime Style Photo Filter Free Online | Pixel Shine",
-    metaDescription:
-      "Transform any photo into anime art style with AI. Studio Ghibli-inspired, vibrant anime aesthetics — convert your photo to anime online in seconds, no app needed.",
+    metaDescription: "Turn a photo into anime art with AI: Ghibli-inspired and vibrant anime looks that keep your features recognisable. Online, no app needed.",
     excerpt:
       "Anime art style is one of the most requested AI photo transformations in the world. Turn any portrait into beautiful anime-style art — from a quick social media post to a genuinely stunning piece of personalised artwork.",
     date: "2025-07-31",
@@ -11013,8 +11009,7 @@ Pixel Shine stands out because it's genuinely free to start, adds no watermarks,
     slug: "ai-professional-headshot-from-selfie-free",
     title: "How to Get a Professional Headshot from a Selfie Using AI (Free)",
     metaTitle: "AI Professional Headshot from Selfie Free Online | Pixel Shine",
-    metaDescription:
-      "Turn any selfie into a professional AI headshot for free. Studio quality, perfect for LinkedIn, resumes, and corporate profiles — no photographer, no studio needed.",
+    metaDescription: "Turn a selfie into a professional AI headshot for LinkedIn, resumes and company profiles: studio-style light and clean backgrounds, no studio.",
     excerpt:
       "Professional headshots cost $200–600 with a real photographer. AI can turn a decent selfie into a studio-quality professional portrait for free. Here's exactly how to get the best possible result.",
     date: "2025-08-02",
@@ -11173,8 +11168,7 @@ Whether you're job hunting, building a personal brand, or just tired of your out
     slug: "ai-couple-photoshoot-online-free",
     title: "AI Couple Photoshoot: Create Romantic Portraits from Any Two Photos",
     metaTitle: "AI Couple Photoshoot Generator Free Online | Pixel Shine",
-    metaDescription:
-      "Create a beautiful AI couple photoshoot from any two photos online for free. Romantic settings, professional lighting, intimate portraits — no photographer needed.",
+    metaDescription: "Create an AI couple photoshoot from your photos: romantic settings and flattering light, with both faces kept true. No photographer needed.",
     excerpt:
       "Couple photoshoots are meaningful but expensive. AI can create romantic, professional couple portraits from any two photos — even when you're in different locations. Here's how.",
     date: "2025-08-04",
@@ -11621,8 +11615,7 @@ Pixel Shine makes it genuinely free to start, adds no watermarks, and pairs the 
     slug: "ai-festival-photoshoot-free-online",
     title: "AI Festival Photoshoot: Create Vibrant Festival Portraits for Free",
     metaTitle: "AI Festival Photoshoot Generator Free Online | Pixel Shine",
-    metaDescription:
-      "Create vibrant AI festival photoshoot portraits for free online. Holi, Diwali, music festival vibes — colourful, energetic portraits without a photographer.",
+    metaDescription: "Make colourful AI festival portraits from a selfie: Holi, Diwali and music-festival looks, with no photographer needed. Try it online.",
     excerpt:
       "Festival photos are some of the most vibrant and energetic images people share — and getting a good one usually means being in the right place with the right photographer. AI lets you create festival-worthy portraits from any photo.",
     date: "2025-08-10",
@@ -12073,7 +12066,7 @@ Best of all, you don't need to pay or sign up to get professional-quality cutout
     slug: "how-to-change-photo-background-online-free",
     title: "How to Change Photo Background Online for Free",
     metaTitle: "Change Photo Background Online Free | Pixel Shine",
-    metaDescription: "Change any photo background online for free with Pixel Shine. Remove the old background and replace it with a new color, gradient, or custom image in seconds.",
+    metaDescription: "Change a photo's background online: remove the old one and swap in a colour, gradient or new scene with AI, ready in seconds.",
     excerpt: "Changing a photo background used to require Photoshop. Now you can swap any background online for free in under 30 seconds.",
     date: "2025-06-16",
     readTime: "11 min read",
@@ -12224,7 +12217,7 @@ You don't need Photoshop, a subscription, or even an account. Pixel Shine lets y
     slug: "remove-background-free-vs-paid-tools",
     title: "Free vs Paid Background Removers: Which Is Actually Better?",
     metaTitle: "Free vs Paid Background Remover Comparison | Pixel Shine",
-    metaDescription: "Comparing free and paid background removers in 2025. See which tools give the best quality, and why Pixel Shine's pay-as-you-go credits beat most paid plans.",
+    metaDescription: "Free vs paid background removers compared: which give the cleanest edges, their limits, and when pay-as-you-go credits beat a subscription.",
     excerpt: "Do you actually need to pay for a background remover? We tested the most popular tools to find out where free tools hold up and where they don't.",
     date: "2025-06-20",
     readTime: "11 min read",
@@ -13164,7 +13157,7 @@ The workflow is straightforward: define a standard, collect source photos, gener
     slug: "change-background-ai-editor",
     title: "How to Change Any Photo Background with AI (Step-by-Step)",
     metaTitle: "Change Photo Background with AI Editor | Pixel Shine",
-    metaDescription: "Change any photo background with AI in seconds. Use Pixel Shine's editor to remove, swap, or customize your photo background, free online, no Photoshop needed.",
+    metaDescription: "Change any photo background with AI in seconds: remove it, swap in a new scene or colour, or blur it, online with no Photoshop needed.",
     excerpt: "Changing a photo background with AI is now a 30-second task. Here is exactly how to do it with Pixel Shine's AI editor.",
     date: "2025-07-22",
     readTime: "11 min read",
@@ -14457,7 +14450,9 @@ const LIVE_TOOL_PREFIXES = [
   // Browser tools that had no blog coverage at all until now.
   "/resize-image", "/qr-code-generator", "/blur-image",
   // The AI apps. Live since paid features were switched on.
-  "/creative", "/ai-editor", "/ai-headshot", "/remove-bg", "/editor",
+  "/creative", "/ai-editor", "/ai-headshot", "/remove-bg", "/editor", "/object-remover",
+  // The size and format pages each tool has (/crop/…, /convert/…, /compress/…).
+  "/crop/", "/convert/", "/compress/",
 ];
 
 
@@ -14474,6 +14469,7 @@ const REDIRECTED = new Set(
 );
 
 export const POSTS: BlogPost[] = [...RAW_POSTS, ...UPSCALE_POSTS, ...UPSCALE_FREE_POSTS, ...UPSCALE_FREE_POSTS_2, ...TOOL_FREE_POSTS, ...TIKTOK_POSTS, ...SEO_POSTS, ...SEO_POSTS_2, ...SEO_POSTS_3, ...SEO_POSTS_4, ...SEO_POSTS_5, ...SEO_POSTS_6, ...SEO_POSTS_7, ...SEO_POSTS_8, ...SEO_POSTS_9, ...SEO_POSTS_10, ...TOOL_POSTS_2, ...APP_POSTS]
+  .map(withRewrite)
   .filter((p) => LIVE_TOOL_PREFIXES.some((pre) => p.toolHref.startsWith(pre)))
   .filter((p) => !REDIRECTED.has(p.slug))
   .map((p) => ({ ...p, image: p.image || blogImageUrl(p.slug) }))

@@ -8,7 +8,7 @@ import type { AppSection } from "@/lib/app-pages/types";
  */
 
 /** **bold** and [words](/path) inside one line. */
-function inline(text: string): React.ReactNode[] {
+export function inline(text: string): React.ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)\s]+\))/g).map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return <strong key={i} style={{ color: "var(--text)", fontWeight: 750 }}>{part.slice(2, -2)}</strong>;
@@ -49,6 +49,13 @@ export default function AppArticle({ sections }: { sections: AppSection[] }) {
         {sections.map((s, i) => (
           <section key={s.heading} style={{ marginTop: i ? 56 : 0 }}>
             <h2 id={anchor(s.heading)} style={h2}>{s.heading}</h2>
+            {s.figure && (
+              <figure style={{ margin: "0 0 20px" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={s.figure.src} alt={s.figure.alt} width={s.figure.width} height={s.figure.height} loading="lazy" decoding="async" style={{ display: "block", width: "100%", height: "auto", borderRadius: 16, border: "1px solid var(--border)", background: "var(--surface-2)" }} />
+                <figcaption style={{ fontSize: 14, color: "var(--text-faint)", marginTop: 8, lineHeight: 1.5 }}>{inline(s.figure.caption)}</figcaption>
+              </figure>
+            )}
             {s.paragraphs?.map((text, j) => <p key={j} style={p}>{inline(text)}</p>)}
             {s.items?.map((item) => (
               <div key={item.t}>
@@ -60,6 +67,28 @@ export default function AppArticle({ sections }: { sections: AppSection[] }) {
               <ul style={{ margin: "0 0 16px", paddingLeft: 22, display: "grid", gap: 8 }}>
                 {s.list.map((text, j) => <li key={j}>{inline(text)}</li>)}
               </ul>
+            )}
+            {s.table && (
+              <div style={{ overflowX: "auto", margin: "4px 0 18px", border: "1px solid var(--border)", borderRadius: 14 }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 15, lineHeight: 1.55 }}>
+                  <thead>
+                    <tr>
+                      {s.table.head.map((h) => (
+                        <th key={h} scope="col" style={{ textAlign: "left", padding: "10px 14px", background: "var(--surface-2)", color: "var(--text)", fontWeight: 800, borderBottom: "1px solid var(--border)", whiteSpace: "nowrap" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {s.table.rows.map((row, r) => (
+                      <tr key={r}>
+                        {row.map((cell, c) => (
+                          <td key={c} style={{ padding: "10px 14px", borderTop: r ? "1px solid var(--border)" : undefined, verticalAlign: "top", color: c ? "var(--text-muted)" : "var(--text)", fontWeight: c ? 400 : 700 }}>{inline(cell)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
             {s.after?.map((text, j) => <p key={j} style={p}>{inline(text)}</p>)}
           </section>

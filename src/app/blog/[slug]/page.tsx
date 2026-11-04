@@ -75,16 +75,36 @@ const FREE_TOOL_LINKS = [
 
 function renderBody(body: string) {
   const lines = body.split("\n").filter(Boolean);
-  return lines.map((line, i) => {
-    if (line.startsWith("**") && line.endsWith("**")) {
-      return <strong key={i} style={{ display: "block", marginTop: 18, marginBottom: 4, color: "var(--text)", fontWeight: 800 }}>{line.replace(/\*\*/g, "")}</strong>;
+  const out: React.ReactNode[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    // "- " lines in a row are one bulleted list.
+    if (line.startsWith("- ")) {
+      const items: string[] = [];
+      while (i < lines.length && lines[i].startsWith("- ")) items.push(lines[i++].slice(2));
+      i--;
+      out.push(
+        <ul key={i} style={{ margin: "0 0 16px", paddingLeft: 22, fontSize: 16, color: "var(--text-muted)", lineHeight: 1.75 }}>
+          {items.map((t, j) => <li key={j} style={{ marginBottom: 6 }}>{renderInline(t)}</li>)}
+        </ul>,
+      );
+      continue;
     }
-    return (
+    if (line.startsWith("### ")) {
+      out.push(<h3 key={i} style={{ fontSize: 18, fontWeight: 800, color: "var(--text)", margin: "22px 0 8px" }}>{renderInline(line.slice(4))}</h3>);
+      continue;
+    }
+    if (line.startsWith("**") && line.endsWith("**")) {
+      out.push(<strong key={i} style={{ display: "block", marginTop: 18, marginBottom: 4, color: "var(--text)", fontWeight: 800 }}>{line.replace(/\*\*/g, "")}</strong>);
+      continue;
+    }
+    out.push(
       <p key={i} style={{ margin: "0 0 14px", fontSize: 16, color: "var(--text-muted)", lineHeight: 1.75 }}>
         {renderInline(line)}
-      </p>
+      </p>,
     );
-  });
+  }
+  return out;
 }
 
 /** Only web links and our own paths become links; anything else stays plain text. */
@@ -141,7 +161,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     headline: post.title,
     description: post.metaDescription,
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.updated ?? post.date,
     image: (coverImage(post, mains) ?? post.image) || undefined,
     author: { "@type": "Organization", name: "Pixel Shine", url: "https://www.sjpt.io" },
     publisher: {

@@ -17,7 +17,7 @@ const AI_TOOLS = [
   { labelKey: "Image Upscaler",     href: "/upscale" },
   { labelKey: "Object Remover",     href: "/object-remover" },
   { labelKey: "AI Group Photo",     href: "/group-photo" },
-  { labelKey: "AI Image Generator", href: "/app/create" },
+  { labelKey: "AI Image Generator", href: "/ai-image-generator" },
   { labelKey: "All AI Photo Apps",  href: "/creative" },
   { labelKey: "Festival Photo Apps", href: "/festivals" },
 ];

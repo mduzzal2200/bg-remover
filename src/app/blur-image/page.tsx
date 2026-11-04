@@ -1,5 +1,7 @@
 import { seoJson, seoMeta } from "@/lib/seo/brand";
 import { brandedTitle } from "@/lib/seo/title";
+import { toolPage } from "@/lib/tool-pages";
+import AppArticle from "@/app/creative/[slug]/AppArticle";
 import GuidesBlock from "@/app/_components/GuidesBlock";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -12,35 +14,29 @@ const BASE = "https://www.sjpt.io";
 const URL = `${BASE}/blur-image`;
 const GRAD = "linear-gradient(120deg,var(--accent),var(--accent-2))";
 
+/** The page's words: lib/tool-pages/blur-image.ts. */
+const TP = toolPage("blur-image")!;
+
 export const metadata: Metadata = seoMeta({
-  title: { absolute: brandedTitle("Free Blur Image Tool — Blur or Pixelate Part of a Photo | Pixel Shine") },
-  description:
-    "Blur or pixelate part of an image free online. Hide faces, licence plates, addresses and sensitive info — drag a box to censor it. No watermark, no sign-up, completely private.",
-  keywords:
-    "blur image, blur part of image, blur face, pixelate image, censor image, blur image online free, hide sensitive information image, blur license plate",
+  title: { absolute: brandedTitle(TP.title) },
+  description: TP.metaDescription,
+  keywords: TP.keywords,
   openGraph: {
-    title: "Free Blur Image Tool — Blur or Pixelate Part of a Photo | Pixel Shine",
-    description: "Blur or pixelate faces and sensitive info in a photo, free. Drag a box to censor — no watermark, no sign-up.",
+    title: TP.title,
+    description: TP.metaDescription,
     url: URL,
     type: "website",
     siteName: "Pixel Shine",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free Blur Image Tool | Pixel Shine",
-    description: "Blur or pixelate part of a photo free — hide faces and sensitive info. No sign-up.",
+    title: TP.title,
+    description: TP.metaDescription,
   },
   alternates: { canonical: URL },
 });
 
-const FAQS = [
-  { q: "How do I blur part of an image?", a: "Upload your photo, then drag a box over the area you want to hide — it's blurred instantly. Repeat for as many areas as you like, then download." },
-  { q: "Can I pixelate instead of blur?", a: "Yes. Switch to Pixelate mode to censor an area with a mosaic effect instead of a soft blur — useful for a stronger, more obvious redaction." },
-  { q: "Is it good for hiding faces or licence plates?", a: "Yes — it's ideal for hiding faces, licence plates, house numbers, addresses, screenshots and any other sensitive detail before you share a photo." },
-  { q: "Does it add a watermark?", a: "No watermark, ever. Your edited image downloads clean at full resolution." },
-  { q: "Is my image uploaded to a server?", a: "No. Your photo is not stored or shared, and the original file on your device is never changed — which matters when you are hiding private information." },
-  { q: "Is it free?", a: "Yes — completely free, with no sign-up and no limit on how many images you blur." },
-];
+const FAQS = TP.faq;
 
 const appLd = {
   "@context": "https://schema.org", "@type": "SoftwareApplication",
@@ -79,7 +75,7 @@ export default function Page() {
                 Tool
               </h1>
               <p style={{ fontSize: "clamp(1rem,2vw,1.12rem)", color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 620, margin: "0 auto" }}>
-                Blur or pixelate any part of a photo to hide faces, licence plates and sensitive info. Just drag a box — your image stays private.
+                {TP.subtitle}
               </p>
             </div>
             <BlurTool />
@@ -96,27 +92,9 @@ export default function Page() {
             style={{ width: "100%", height: "auto", display: "block", borderRadius: 18, border: "1px solid var(--border)", boxShadow: "0 18px 50px rgba(0,0,0,0.25)" }}
           />
         </section>
-        {/* HOW IT WORKS */}
-        <section style={{ padding: "56px 24px", background: "var(--surface)" }}>
-          <div style={{ maxWidth: 900, margin: "0 auto" }}>
-            <h2 style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 800, color: "var(--text)", margin: "0 0 32px", letterSpacing: "-0.02em", textAlign: "center" }}>
-              How to blur part of an image
-            </h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 24 }}>
-              {[
-                { t: "Upload your photo", d: "Drag and drop or pick an image. Nothing is saved or shared." },
-                { t: "Drag over the area", d: "Draw a box over each face or detail you want to hide. Choose blur or pixelate and set the strength." },
-                { t: "Download", d: "Save the censored image at full resolution — free, with no watermark." },
-              ].map((s, i) => (
-                <div key={i} style={{ background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: 16, padding: "24px 22px" }}>
-                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: GRAD, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, marginBottom: 14 }}>{i + 1}</div>
-                  <h3 style={{ fontSize: 16, fontWeight: 800, color: "var(--text)", margin: "0 0 8px" }}>{s.t}</h3>
-                  <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.65, margin: 0 }}>{s.d}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+
+        {/* The article: lib/tool-pages */}
+        <AppArticle sections={TP.sections} />
 
         {/* PRICING (shared) */}
         <PricingSection toolName="Blur Image" />

@@ -66,20 +66,20 @@ text, so they are kept out of search rather than redirected.
 
 | Cluster | Primary URL | Main phrase | Also covers | Questions | Status / PR |
 |---|---|---|---|---|---|
-| AI headshot generator | /ai-headshot | ai headshot generator (free online) | ai headshot free, professional headshots, ai headshot generator for linkedin | how to use an AI headshot generator; AI headshot vs photographer; what photo to upload | live, rewrite PR 3 |
+| AI headshot generator | /ai-headshot | ai headshot generator (free online) | ai headshot free, professional headshots, ai headshot generator for linkedin | how to use an AI headshot generator; AI headshot vs photographer; what photo to upload | own article (Nov 2026) |
 | LinkedIn headshot | /ai-headshot/linkedin | linkedin headshot (free) | linkedin headshot generator, linkedin photo from selfie | how to take a LinkedIn headshot at home | live, PR 3 |
 | Corporate headshots | /ai-headshot/corporate | corporate headshot generator | team headshots, business headshot | matching headshots for a team | live, PR 3 |
-| Background remover | /remove-bg | remove background (free) | background remover, remove background from image online free, transparent background | how to remove the background from a picture; on iPhone; vs Canva / remove.bg | live, rewrite PR 3 |
+| Background remover | /remove-bg | remove background (free) | background remover, remove background from image online free, transparent background | how to remove the background from a picture; on iPhone; vs Canva / remove.bg | own article (Nov 2026) |
 | White / passport background | /remove-bg/passport-photo | white background photo | passport photo white background | how to make a white background for a passport photo | live, PR 3 |
 | Product photos | /remove-bg/product-photos | product photo background remover | white background product photo, amazon product photo | — | live, PR 3 |
 | Logo / signature | /remove-bg/logo, /remove-bg/signature | transparent logo, transparent signature | make logo / signature transparent | — | live |
 | Change background | /creative/background-changer | change background ai | ai background changer, replace photo background | how to change a photo background with AI | live, PR 2 batch 2 |
-| Upscaler | /upscale | image upscaler (free) | upscale image, increase image resolution, enhance photo quality, unblur image | how to unblur an image; how to increase resolution without losing quality | live, rewrite PR 3 |
+| Upscaler | /upscale | image upscaler (free) | upscale image, increase image resolution, enhance photo quality, unblur image | how to unblur an image; how to increase resolution without losing quality | own article (Nov 2026) |
 | 4K | /upscale/4k | 4k image upscaler | upscale to 4k free | — | live |
-| AI photo editor | /ai-editor | ai photo editor (free online) | edit photo with ai, ai image editor | how to edit a photo with AI (text prompts) | live, rewrite PR 3 |
-| Object removal | /ai-editor/remove-object | remove object from photo (free) | remove people from photo, magic eraser | how to remove an object from a photo | live, PR 3 |
-| AI image generator | /ai-image-generator | ai image generator (free) | text to image, ai art generator, free ai image generator no sign up, nano banana | how to write a good image prompt | **new**, PR 3 |
-| Resize / compress | /resize-image, /compress-image, /compress/* | resize image, compress image, image to 100kb | reduce image size, passport photo size | how to compress an image to 100 KB | live, PR 3 (resize, compress) |
+| AI photo editor | /ai-editor | ai photo editor (free online) | edit photo with ai, ai image editor | how to edit a photo with AI (text prompts) | own article (Nov 2026) |
+| Object removal | /object-remover | remove object from photo (free) | remove people from photo, magic eraser | how to remove an object from a photo | own page; /ai-editor/remove-object 301s here (Nov 2026) |
+| AI image generator | /ai-image-generator | ai image generator (free) | text to image, ai art generator, free ai image generator no sign up, nano banana | how to write a good image prompt | live, own page (Nov 2026) |
+| Resize / compress | /resize-image, /compress-image, /compress/* | resize image, compress image, image to 100kb | reduce image size, passport photo size | how to compress an image to 100 KB | own articles (Nov 2026); size pages next |
 | Prompts | /prompts, /nano-banana-pro-prompts | nano banana prompts, ai photo prompts | gemini photo prompts, chatgpt image prompts | how to write Nano Banana prompts | live; review with Search Console data |
 
 ### Retired: thin pages merged into their primary page (PR 1, 301)
@@ -99,7 +99,7 @@ text, so they are kept out of search rather than redirected.
 | /answers/make-instagram-profile-picture | /creative/instagram-pfp-maker |
 | /answers/make-professional-headshot-from-selfie | /creative/professional-headshot |
 | /answers/make-youtube-thumbnail-from-photo | /creative/youtube-thumbnail-generator |
-| /answers/remove-object-from-photo | /ai-editor/remove-object |
+| /answers/remove-object-from-photo | /object-remover |
 | /answers/restore-old-photo | /creative/restore-old-photos |
 | /answers (hub) | /guides |
 

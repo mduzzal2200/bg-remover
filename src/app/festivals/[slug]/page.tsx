@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CREDIT_COST } from "@/lib/plans";
-import { FESTIVALS, REGIONS, festivalAppSlug, getFestival, type Festival } from "@/lib/festivals";
+import { FESTIVALS, REGIONS, festivalAppSlug, getFestival } from "@/lib/festivals";
 import { festivalAppCards, summarize } from "@/lib/festival-summary";
 import { festivalIndexable, NOINDEX } from "@/lib/seo/index-policy";
 import { previewUrl } from "@/lib/creative-apps";
@@ -12,6 +12,8 @@ import { festivalOgImage } from "@/lib/festival-creatives";
 import FestivalAppCard from "../_components/FestivalAppCard";
 import FestivalCard from "../_components/FestivalCard";
 import FestivalFaq from "../_components/FestivalFaq";
+import { festivalGuide } from "@/lib/festival-guides";
+import { inline } from "@/app/creative/[slug]/AppArticle";
 
 export const dynamicParams = false;
 
@@ -40,18 +42,6 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   });
 }
 
-/** Photo advice for the kinds of app this festival has. */
-function tipsFor(f: Festival): string[] {
-  const kinds = new Set(f.apps.map((a) => a.kind));
-  const tips = ["Use a clear, well-lit photo where the face is easy to see. Daylight from a window works better than an overhead bulb, and sunglasses or a hand over the face make it harder to keep you looking like you."];
-  if (kinds.has("couple")) tips.push("For the couple photo, upload one picture of the two of you together. A photo of just you works too: you'll be shown on your own in the same scene.");
-  if (kinds.has("family") || kinds.has("friends")) tips.push("For the group photo, upload one picture with everyone in it and every face visible. The app keeps the same people; it won't add anyone or leave anyone out.");
-  if (kinds.has("card")) tips.push(`On the card, keep "${f.style.greeting}", choose No text, or type your own words. Lettering made by an image model can come out misspelled, so check it before you share.`);
-  if (kinds.has("scene")) tips.push("The background app keeps you exactly as you are and changes only what's behind you, so it's the one to use when you already love your outfit and pose.");
-  tips.push("Not quite right? Run it again: every generation is a new take, and a second one often lands.");
-  return tips;
-}
-
 export default function FestivalPage({ params }: { params: { slug: string } }) {
   const f = getFestival(params.slug);
   if (!f) notFound();
@@ -65,12 +55,11 @@ export default function FestivalPage({ params }: { params: { slug: string } }) {
     .slice(0, 6)
     .map(summarize);
 
+  const guide = festivalGuide(f.slug)!;
   const faqs = [
     { q: `When is ${f.name}?`, a: f.dateNote },
-    { q: `What can I make for ${f.name}?`, a: `${apps.map((a) => a.name).join(", ")}. Each one is a single tap: upload a photo and the app already knows the clothes, the setting and the light.` },
-    { q: "How much does it cost?", a: `Each image costs ${CREDIT_COST} credits. Credits come with a monthly plan or a one-time pack, and pack credits never expire. Downloads are full resolution with no watermark.` },
-    { q: "Will it still look like me?", a: "Keeping your face is the first thing every app is told: your features, skin tone and expression stay, and only the clothes, setting and light change. If a result drifts, run it again." },
-    { q: `How are ${f.name} pictures kept respectful?`, a: "They celebrate through clothes, food, lights and decorations. They never show deities, prophets or sacred figures, never add scripture or religious script, and never put a religious head covering or symbol on someone who isn't already wearing one." },
+    { q: `What can I make for ${f.name}?`, a: `Four ${f.name} pictures: ${apps.map((a) => a.name).join(", ")}.` },
+    ...guide.faq,
   ];
 
   const collectionLd = {
@@ -151,22 +140,47 @@ export default function FestivalPage({ params }: { params: { slug: string } }) {
       </section>
 
       <section style={{ padding: "44px 16px" }}>
-        <div style={{ maxWidth: 760, margin: "0 auto" }}>
-          <h2 style={h2}>How to get the best {f.name} photo</h2>
-          <ul style={{ margin: "16px 0 0", paddingLeft: 20, display: "grid", gap: 10 }}>
-            {tipsFor(f).map((t) => <li key={t.slice(0, 24)} style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.65 }}>{t}</li>)}
-          </ul>
+        <div style={{ maxWidth: 760, margin: "0 auto", display: "grid", gap: 40 }}>
+          {([
+            [`The story behind ${f.name}`, guide.story],
+            [`How ${f.name} is celebrated`, guide.celebrate],
+            [`What to wear in ${f.name} photos`, guide.wear],
+          ] as const).map(([title, paras]) => (
+            <div key={title}>
+              <h2 style={h2}>{title}</h2>
+              {paras.map((p) => <p key={p.slice(0, 24)} style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.75, margin: "14px 0 0" }}>{inline(p)}</p>)}
+            </div>
+          ))}
+          <div>
+            <h2 style={h2}>{f.name} photo ideas</h2>
+            <ul style={{ listStyle: "none", margin: "16px 0 0", padding: 0, display: "grid", gap: 12 }}>
+              {guide.ideas.map((x) => (
+                <li key={x.t} style={{ fontSize: 15.5, color: "var(--text-muted)", lineHeight: 1.65 }}>
+                  <strong style={{ color: "var(--text)" }}>{x.t}.</strong> {inline(x.d)}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
       <section style={{ padding: "44px 16px", background: "var(--surface)" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto" }}>
+          <h2 style={h2}>How to get the best {f.name} photo</h2>
+          <ul style={{ margin: "16px 0 0", paddingLeft: 20, display: "grid", gap: 10 }}>
+            {guide.tips.map((t) => <li key={t.slice(0, 24)} style={{ fontSize: 15, color: "var(--text-muted)", lineHeight: 1.65 }}>{inline(t)}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      <section style={{ padding: "44px 16px" }}>
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <h2 style={{ ...h2, marginBottom: 20 }}>{f.name} photo questions</h2>
           <FestivalFaq faqs={faqs} />
         </div>
       </section>
 
-      <section aria-labelledby="more-festivals" style={{ padding: "44px 16px 64px" }}>
+      <section aria-labelledby="more-festivals" style={{ padding: "44px 16px 64px", background: "var(--surface)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
             <h2 id="more-festivals" style={{ ...h2, margin: 0 }}>More festivals</h2>
